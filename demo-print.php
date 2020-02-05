@@ -15,7 +15,7 @@
  * @wordpress-plugin
  * Plugin Name:       Demoprint
  * Plugin URI:        http://wp-wordpress/demoprint
- * Description:       This is a short description of what the plugin does. It's displayed in the WordPress admin area.
+ * Description:       A demo plugin to print dynamic input from Gravity Forms
  * Version:           1.0.0
  * Author:            James Pham
  * Author URI:        https://jamespham.io
@@ -79,4 +79,25 @@ function run_demo_print() {
 	$plugin->run();
 
 }
+
+/**
+ *  Gravity form hooks to grab data from input
+ */
+function pre_submission($form) {
+    $_POST['input_26'] = 'new value for field 26';
+}
+add_action('gform_pre_submission', 'pre_submission');
+
+/**
+ *  Short Code to display Gravity Form inputs
+ */
+function wp_first_shortcode(){
+    echo "Please WORK! SHORTCODE GODS";
+//    $form_id = 1;
+//    $forms = GFAPI::get_forms($form_id);
+//    var_dump($forms);
+}
+
+add_shortcode('demoprint', 'wp_first_shortcode');
+
 run_demo_print();
