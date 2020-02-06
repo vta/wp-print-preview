@@ -111,18 +111,22 @@ function business_card_preview_shortcode(){
     // business card form id
     $form_id = 4;
 
-    // Grab the latest entry object
+    // Grab the latest entry object.
     $entry = get_latest_entry($form_id);
 
-    // created a copy. Will be used to re-add to entries if user confirms business card print.
-    $entry_copy = clone $entry;
+    // created a copy. Note: Arrays are cloned by assignmenet in PHP
+    $entry_copy = $entry;
 
     // retrieve input values
+    $entry_id = $entry['id'];
     $job_title = $entry[1];
     $first_name = $entry['2.3'];
     $last_name = $entry['2.6'];
     $email = $entry[3];
     $address = $entry[5];
+
+    // delete entry in preview. Not final submission
+    GFAPI::delete_entry($entry_id);
 
     echo "
         <h1>$job_title</h1>
