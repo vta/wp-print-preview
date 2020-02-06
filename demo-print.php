@@ -105,9 +105,6 @@ add_shortcode('business-card-preview', 'business_card_preview_shortcode');
  */
 function business_card_preview_shortcode(){
 
-    // TEST TO SEE IF SHORT CODE WORKS
-    echo "\nPlease WORK! SHORTCODE GODS\n";
-
     // business card form id
     $form_id = 4;
 
@@ -128,12 +125,24 @@ function business_card_preview_shortcode(){
     // delete entry in preview. Not final submission
     GFAPI::delete_entry($entry_id);
 
+    // Will be a preview in the future
     echo "
         <h1>$job_title</h1>
         <p>$first_name</p>
         <p>$last_name</p>
         <p>$email</p>
         <p.>$address'</p.>
+        
+        <button onclick='() => {cancel};'>Cancel</button>
+        
+        <!--Alternative: Try using short code for the same functionality-->
+        <script>
+            const cancel = e => {
+                e.preventDefault();
+                alert('Are you sure you want to cancel this job?');
+                window.location.href = 'http://wp-7_digitalpress/';
+            }
+        </script>
     ";
 
 }
