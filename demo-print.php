@@ -80,24 +80,58 @@ function run_demo_print() {
 
 }
 
-/**
- *  Gravity form hooks to grab data from input
- */
-function pre_submission($form) {
-    $_POST['input_26'] = 'new value for field 26';
-}
-add_action('gform_pre_submission', 'pre_submission');
+// SOLUTION TO PREVIEW PAGE: (CONFIRMATION STORES ENTRY EVEN IF USER DID NOT CONFIRM)
+// 1. STORE ENTRY INFORMATION IN LOCAL VARIABLE
+// 2. IMMEDIATELY DELETE ENTRY FROM ENTRIES
+// 3. PROCESS LOCAL VARIABLE INTO A PREVIEW
+// 4. PROVIDE BUTTONS TO ROUTE BACK TO PREVIOUS FORM, CANCEL TO GO HOME, SUBMIT
 
 /**
- *  Short Code to display Gravity Form inputs
+ * Grab the latest submitted entry from a form
+ *
+ * @param $form_id
+ * @return Entry - GF Entry object
  */
-function wp_first_shortcode(){
-    echo "Please WORK! SHORTCODE GODS";
-//    $form_id = 1;
-//    $forms = GFAPI::get_forms($form_id);
-//    var_dump($forms);
+function get_latest_entry($form_id) {
+    $business_card_form = GFAPI::get_form($form_id);
+    $entries = GFAPI::get_entries($form_id)[0];
+
+    return $entries;
 }
 
-add_shortcode('demoprint', 'wp_first_shortcode');
+add_shortcode('business-card-preview', 'business_card_preview_shortcode');
+/**
+ *  Short Code to display gravity form's field entries
+ */
+function business_card_preview_shortcode(){
+
+    // TEST TO SEE IF SHORT CODE WORKS
+    echo "\nPlease WORK! SHORTCODE GODS\n";
+
+    // business card form id
+    $form_id = 4;
+
+    // Grab the latest entry object
+    $entry = get_latest_entry($form_id);
+
+    // created a copy. Will be used to re-add to entries if user confirms business card print.
+    $entry_copy = clone $entry;
+
+    // retrieve input values
+    $job_title = $entry[1];
+    $first_name = $entry['2.3'];
+    $last_name = $entry['2.6'];
+    $email = $entry[3];
+    $address = $entry[5];
+
+    echo "
+        <h1>$job_title</h1>
+        <p>$first_name</p>
+        <p>$last_name</p>
+        <p>$email</p>
+        <p.>$address'</p.>
+    ";
+
+}
 
 run_demo_print();
