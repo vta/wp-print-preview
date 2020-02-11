@@ -97,10 +97,11 @@ function run_demo_print()
  */
 function get_latest_entry($form_id)
 {
-    $business_card_form = GFAPI::get_form($form_id);
-    $entries = GFAPI::get_entries($form_id)[0];
+//    $business_card_form = GFAPI::get_form($form_id);
+    $latest_entry = GFAPI::get_entries($form_id)[0];
 
-    return $entries;
+
+    return $latest_entry;
 }
 
 add_shortcode('business-card-preview', 'business_card_preview_shortcode');
@@ -118,6 +119,9 @@ function business_card_preview_shortcode()
     // @TODO - need to refactor form entry elsewhere. Query params?
     $entry = get_latest_entry($form_id);
 
+//    print_r($entry);
+//    echo "<pre>Latest Entry to be deleted</pre>";
+
     // retrieve input values
     $entry_id = $entry['id'];
     $job_title = $entry[1];
@@ -128,11 +132,20 @@ function business_card_preview_shortcode()
 
     // delete entry in preview. Not final submission
     // @TODO - Will delete latest entry if shortcode appears in a page/post.
-    GFAPI::delete_entry($entry_id);
+    // @TODO - need to verify this will fire only once. Not a good design. Deletes on
+    //          redirect/POST to this page. Current Hack around.
+    if (!isset($_POST['confirm'])) {
+        GFAPI::delete_entry($entry_id);
+    }
 
     if (isset($_POST['confirm'])) {
 
+        // retrieve from below Form below (found inside shortcode)
         $post_entry = $_POST['entry'];
+
+//        var_dump($post_entry);
+//        echo "<pre>Confirm</pre>";
+
         // submit entry to Gravity Forms page. Grab from below form POST
         GFAPI::add_entry($post_entry);
 
@@ -149,7 +162,7 @@ function business_card_preview_shortcode()
         // @TODO - pre-populate all inputs with previous user values
         $form_url = 'http://wp-7_digitalpress/business-card-printing';
 
-        wp_redirect($form_url);
+        add_action('redirect_template', wp_redirect($form_url));
 
     } else {
 
