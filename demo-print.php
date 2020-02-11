@@ -26,8 +26,8 @@
  */
 
 // If this file is called directly, abort.
-if ( ! defined( 'WPINC' ) ) {
-	die;
+if (!defined('WPINC')) {
+    die;
 }
 
 /**
@@ -35,34 +35,36 @@ if ( ! defined( 'WPINC' ) ) {
  * Start at version 1.0.0 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define( 'DEMO_PRINT_VERSION', '1.0.0' );
+define('DEMO_PRINT_VERSION', '1.0.0');
 
 /**
  * The code that runs during plugin activation.
  * This action is documented in includes/class-demo-print-activator.php
  */
-function activate_demo_print() {
-	require_once plugin_dir_path( __FILE__ ) . 'includes/class-demo-print-activator.php';
-	Demo_Print_Activator::activate();
+function activate_demo_print()
+{
+    require_once plugin_dir_path(__FILE__) . 'includes/class-demo-print-activator.php';
+    Demo_Print_Activator::activate();
 }
 
 /**
  * The code that runs during plugin deactivation.
  * This action is documented in includes/class-demo-print-deactivator.php
  */
-function deactivate_demo_print() {
-	require_once plugin_dir_path( __FILE__ ) . 'includes/class-demo-print-deactivator.php';
-	Demo_Print_Deactivator::deactivate();
+function deactivate_demo_print()
+{
+    require_once plugin_dir_path(__FILE__) . 'includes/class-demo-print-deactivator.php';
+    Demo_Print_Deactivator::deactivate();
 }
 
-register_activation_hook( __FILE__, 'activate_demo_print' );
-register_deactivation_hook( __FILE__, 'deactivate_demo_print' );
+register_activation_hook(__FILE__, 'activate_demo_print');
+register_deactivation_hook(__FILE__, 'deactivate_demo_print');
 
 /**
  * The core plugin class that is used to define internationalization,
  * admin-specific hooks, and public-facing site hooks.
  */
-require plugin_dir_path( __FILE__ ) . 'includes/class-demo-print.php';
+require plugin_dir_path(__FILE__) . 'includes/class-demo-print.php';
 
 /**
  * Begins execution of the plugin.
@@ -73,10 +75,11 @@ require plugin_dir_path( __FILE__ ) . 'includes/class-demo-print.php';
  *
  * @since    1.0.0
  */
-function run_demo_print() {
+function run_demo_print()
+{
 
-	$plugin = new Demo_Print();
-	$plugin->run();
+    $plugin = new Demo_Print();
+    $plugin->run();
 
 }
 
@@ -92,7 +95,8 @@ function run_demo_print() {
  * @param $form_id
  * @return Entry - GF Entry object
  */
-function get_latest_entry($form_id) {
+function get_latest_entry($form_id)
+{
     $business_card_form = GFAPI::get_form($form_id);
     $entries = GFAPI::get_entries($form_id)[0];
 
@@ -103,7 +107,8 @@ add_shortcode('business-card-preview', 'business_card_preview_shortcode');
 /**
  *  Short Code to display gravity form's field entries
  */
-function business_card_preview_shortcode(){
+function business_card_preview_shortcode()
+{
 
     // business card form id
     $form_id = 4;
@@ -131,16 +136,21 @@ function business_card_preview_shortcode(){
         <p>$first_name</p>
         <p>$last_name</p>
         <p>$email</p>
-        <p.>$address'</p.>
+        <p.>$address</p.>
         
-        <button onclick='() => {cancel};'>Cancel</button>
+        <!--have to pass event object manually-->
+        <button onclick='cancel(event);'>Cancel</button>
         
         <!--Alternative: Try using short code for the same functionality-->
         <script>
-            const cancel = e => {
+            // could not use es6 syntax 
+            function cancel (e) {
+                // prevent page refresh upon button click
                 e.preventDefault();
-                alert('Are you sure you want to cancel this job?');
-                window.location.href = 'http://wp-7_digitalpress/';
+                // confirm if the user wants to cancel print job and redirect home
+                if(confirm('Are you sure you want to cancel this job?')) {
+                    window.location.href = 'http://wp-7_digitalpress/';
+                }
             }
         </script>
     ";
