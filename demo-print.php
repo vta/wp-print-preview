@@ -106,6 +106,7 @@ function get_latest_entry($form_id)
 add_shortcode('business-card-preview', 'business_card_preview_shortcode');
 /**
  *  Short Code to display gravity form's field entries
+ * @TODO - separate shortcode into its own module
  */
 function business_card_preview_shortcode()
 {
@@ -114,10 +115,8 @@ function business_card_preview_shortcode()
     $form_id = 4;
 
     // Grab the latest entry object.
+    // @TODO - need to refactor form entry elsewhere. Query params?
     $entry = get_latest_entry($form_id);
-
-    // created a copy. Note: Arrays are cloned by assignmenet in PHP
-    $entry_copy = $entry;
 
     // retrieve input values
     $entry_id = $entry['id'];
@@ -128,33 +127,69 @@ function business_card_preview_shortcode()
     $address = $entry[5];
 
     // delete entry in preview. Not final submission
+    // @TODO - Will delete latest entry if shortcode appears in a page/post.
     GFAPI::delete_entry($entry_id);
 
-    // Will be a preview in the future
-    echo "
-        <h1>$job_title</h1>
-        <p>$first_name</p>
-        <p>$last_name</p>
-        <p>$email</p>
-        <p.>$address</p.>
-        
-        <!--have to pass event object manually-->
-        <button onclick='cancel(event);'>Cancel</button>
-        
-        <!--Alternative: Try using short code for the same functionality-->
-        <script>
-            // could not use es6 syntax 
-            function cancel (e) {
-                // prevent page refresh upon button click
-                e.preventDefault();
-                // confirm if the user wants to cancel print job and redirect home
-                if(confirm('Are you sure you want to cancel this job?')) {
-                    window.location.href = 'http://wp-7_digitalpress/';
-                }
-            }
-        </script>
-    ";
+    if (isset($_POST['confirm'])) {
 
+        $post_entry = $_POST['entry'];
+        // submit entry to Gravity Forms page. Grab from below form POST
+        GFAPI::add_entry($post_entry);
+
+        echo "
+            <h2>You're business card was submitted!</h2>
+            <p>Please allow 2-3 days for the order to process.</p>
+            <a href='http://wp-7_digitalpress'>Back to Home</a>
+        ";
+
+        exit();
+
+    } elseif (isset($_POST['go_back'])) {
+        // @TODO - go back to business card page
+        // @TODO - pre-populate all inputs with previous user values
+        $form_url = 'http://wp-7_digitalpress/business-card-printing';
+
+        wp_redirect($form_url);
+
+    } else {
+
+        // Will be a preview in the future
+        echo "
+            <h1>$job_title</h1>
+            <p>$first_name</p>
+            <p>$last_name</p>
+            <p>$email</p>
+            <p>$address</p>
+            
+            <!--have to pass event object manually-->
+            <form method='post'>
+                <!--hidden input to pass to confirm POST-->
+        ";
+
+        foreach($entry as $key => $value) {
+            echo "<input type='hidden' name='entry[$key]' value='$value'>";
+        }
+
+        echo "
+                <button name='confirm' value='confirm'>Confirm</button>
+                <button name='go_back' value='go_back'>Go Back</button>
+                <button onclick='cancel(event);'>Cancel</button>
+            </form>
+            
+            <!--Consider separating into its own JS file-->
+            <script>
+                // could not use es6 syntax 
+                function cancel (e) {
+                    // prevent page refresh upon button click
+                    e.preventDefault();
+                    // confirm if the user wants to cancel print job and redirect home
+                    if(confirm('Are you sure you want to cancel this job?')) {
+                        window.location.href = 'http://wp-7_digitalpress/';
+                    }
+                }
+            </script>
+        ";
+    }
 }
 
 run_demo_print();
