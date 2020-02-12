@@ -89,21 +89,6 @@ function run_demo_print()
 // 3. PROCESS LOCAL VARIABLE INTO A PREVIEW
 // 4. PROVIDE BUTTONS TO ROUTE BACK TO PREVIOUS FORM, CANCEL TO GO HOME, SUBMIT
 
-/**
- * Grab the latest submitted entry from a form
- *
- * @param $form_id
- * @return Entry - GF Entry object
- */
-function get_latest_entry($form_id)
-{
-//    $business_card_form = GFAPI::get_form($form_id);
-    $latest_entry = GFAPI::get_entries($form_id)[0];
-
-
-    return $latest_entry;
-}
-
 add_shortcode('business-card-preview', 'business_card_preview_shortcode');
 /**
  *  Short Code to display gravity form's field entries
@@ -111,63 +96,36 @@ add_shortcode('business-card-preview', 'business_card_preview_shortcode');
  */
 function business_card_preview_shortcode()
 {
-
-    // business card form id
-    $form_id = 4;
-
     // Grab the latest entry object.
-    // @TODO - need to refactor form entry elsewhere. Query params?
-    $entry = get_latest_entry($form_id);
-
-//    print_r($entry);
-//    echo "<pre>Latest Entry to be deleted</pre>";
+    // $entry_id provided by query param
+    $entry = GFAPI::get_entry($_GET['entry_id']);
 
     // retrieve input values
-    $entry_id = $entry['id'];
-    $job_title = $entry[1];
-    $first_name = $entry['2.3'];
-    $last_name = $entry['2.6'];
-    $email = $entry[3];
-    $address = $entry[5];
-
-    // delete entry in preview. Not final submission
-    // @TODO - Will delete latest entry if shortcode appears in a page/post.
-    // @TODO - need to verify this will fire only once. Not a good design. Deletes on
-    //          redirect/POST to this page. Current Hack around.
-    if (!isset($_POST['confirm'])) {
-        GFAPI::delete_entry($entry_id);
+    if (isset($entry)) {
+        $job_title = $entry[1];
+        $first_name = $entry['2.3'];
+        $last_name = $entry['2.6'];
+        $email = $entry[3];
+        $address = $entry[5];
     }
 
-    if (isset($_POST['confirm'])) {
-
-        // retrieve from below Form below (found inside shortcode)
-        $post_entry = $_POST['entry'];
-
-//        var_dump($post_entry);
-//        echo "<pre>Confirm</pre>";
-
-        // submit entry to Gravity Forms page. Grab from below form POST
-        GFAPI::add_entry($post_entry);
-
-        echo "
-            <h2>You're business card was submitted!</h2>
-            <p>Please allow 2-3 days for the order to process.</p>
-            <a href='http://wp-7_digitalpress'>Back to Home</a>
-        ";
+    if (isset($_POST['delete'])) {
+        // @TODO - confirm (alert) user if they are sure they want to delete
+        // @TODO - on confirm, delete message and display delete message
+        // @TODO - have buttons redirect to home or create new business card
 
         exit();
 
     } elseif (isset($_POST['go_back'])) {
         // @TODO - go back to business card page
         // @TODO - pre-populate all inputs with previous user values
-        $form_url = 'http://wp-7_digitalpress/business-card-printing';
-
-        add_action('redirect_template', wp_redirect($form_url));
 
     } else {
 
         // Will be a preview in the future
         echo "
+            <h3>Your order is being processed. Please allow 2-3 business days for the order to complete.</h3>
+
             <h1>$job_title</h1>
             <p>$first_name</p>
             <p>$last_name</p>
@@ -176,31 +134,9 @@ function business_card_preview_shortcode()
             
             <!--have to pass event object manually-->
             <form method='post'>
-                <!--hidden input to pass to confirm POST-->
-        ";
-
-        foreach($entry as $key => $value) {
-            echo "<input type='hidden' name='entry[$key]' value='$value'>";
-        }
-
-        echo "
-                <button name='confirm' value='confirm'>Confirm</button>
-                <button name='go_back' value='go_back'>Go Back</button>
-                <button onclick='cancel(event);'>Cancel</button>
+                <button name='edit' value='edit'>Edit</button>
+                <button name='delete' value='delete'>Delete</button>
             </form>
-            
-            <!--Consider separating into its own JS file-->
-            <script>
-                // could not use es6 syntax 
-                function cancel (e) {
-                    // prevent page refresh upon button click
-                    e.preventDefault();
-                    // confirm if the user wants to cancel print job and redirect home
-                    if(confirm('Are you sure you want to cancel this job?')) {
-                        window.location.href = 'http://wp-7_digitalpress/';
-                    }
-                }
-            </script>
         ";
     }
 }
