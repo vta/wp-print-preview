@@ -96,13 +96,12 @@ add_shortcode('business-card-preview', 'business_card_preview_shortcode');
  */
 function business_card_preview_shortcode()
 {
-    $current_user_id = intval(wp_get_current_user()->data->ID);
-    $entry = GFAPI::get_entry($_GET['entry_id']);
-
-    echo "<pre>";
-    var_dump(wp_get_current_user()->data->ID);    // user ID
-    print_r($entry);
-    echo "</pre>";
+//    echo "<pre>";
+//    var_dump(wp_get_current_user()->data->ID);    // user ID
+//    print_r($entry);
+//    echo "</pre>";
+    // verify current user matches entry user
+    check_entry_ownership();
 
     // retrieve input values
     // $entry_id provided by query param
@@ -120,16 +119,7 @@ function business_card_preview_shortcode()
 
     }
 
-    if ($current_user_id != $entry['created_by']) {
-        // @TODO - confirm that user owns. User ID is accessed by $entry['created_by'] – type int
-        echo "
-            <h1>Sorry, you are not authorized to edit this page</h1>
-            <p>Please login to access this page.</p>
-            <a href='/wp-login.php?'>Login</a>
-         ";
-        exit();
-
-    } elseif (isset($_POST['cancel'])) {
+    if (isset($_POST['cancel'])) {
         // @TODO - confirm (alert) user if they are sure they want to delete
         // @TODO - on confirm, delete message and display delete message
         // @TODO - have buttons redirect to home or create new business card
@@ -140,16 +130,19 @@ function business_card_preview_shortcode()
         ";
         exit();
 
-    } elseif (isset($_POST['edit'])) {
-        // @TODO - go back to business card page
-        // @TODO - pre-populate all inputs with previous user value
-        // @TODO - need to make sure that edits page EDITS (and not create)
-        // @TODO - need to confirm correct user before allowing edits
-        // access user ID with $entry['created_by'] and wp_get_current_user()->data->ID
-        // Will be needed to implemented on form apge redirect
-        exit();
+    } // elseif (isset($_POST['edit'])) {
+//        // @TODO - go back to business card page
+//        // @TODO - pre-populate all inputs with previous user value
+//        // @TODO - need to make sure that edits page EDITS (and not create)
+//        // @TODO - need to confirm correct user before allowing edits
+//        // access user ID with $entry['created_by'] and wp_get_current_user()->data->ID
+//        // Will be needed to implemented on form page redirect
+//        wp_redirect('/edit-business-card-order/');
+//
+//        exit();
 
-    } else {
+//    }
+    else {
         // Will be a preview in the future
         echo "
             <h3>Your order is being processed. Please allow 2-3 business days for the order to complete.</h3>
@@ -167,6 +160,114 @@ function business_card_preview_shortcode()
             </form>
         ";
     }
+}
+
+add_action('wp_loaded', 'redirect_edit_page');
+function redirect_edit_page()
+{
+
+    if (isset($_POST['edit'])) {
+        // @TODO - go back to business card page
+        // @TODO - pre-populate all inputs with previous user value
+        // @TODO - need to make sure that edits page EDITS (and not create)
+        // @TODO - need to confirm correct user before allowing edits
+        // access user ID with $entry['created_by'] and wp_get_current_user()->data->ID
+        // Will be needed to implemented on form page redirect
+        if (isset($_GET['entry_id'])) {
+            $entry_id = $_GET['entry_id'];
+            $entry = GFAPI::get_entry($_GET['entry_id']);
+            $job_title = $entry[1];
+            $first_name = $entry['2.3'];
+            $last_name = $entry['2.6'];
+            $email = $entry[3];
+            $address = $entry[5];
+
+            $query_param = "?job_title=$job_title&first_name=$first_name&last_name=$last_name&email=$email&address=$email&entry_id=$entry_id";
+            wp_redirect('/edit-business-card-order/' . $query_param);
+            exit();
+        }
+    }
+
+}
+
+/**
+ * Temporary short code to be added to an "EDIT" page
+ *
+ * Acts as auth code to make sure logged in user is the owner of short code
+ */
+add_shortcode('business-card-edit', 'business_card_edit_shortcode');
+/**
+ * Short Code to display gravity form's field entries
+ *
+ * PHP injection to manipulate Business Card Form to:
+ * - ensure that owner entry is the current logged-in user
+ * - pre-populate the form via query params. This is done with the redirect "redirect_edit_page"
+ * - AND update existing entry using $entry_id (as opposed to creating a new entry)
+ */
+function business_card_edit_shortcode()
+{
+    // @TODO - method 1: have the GF shortcode grab the query param and populate values
+    // verify current user matches entry user
+    check_entry_ownership();
+
+    // @TODO - change submission action to EDIT current entry instead of adding new entry
+    // Used snippets from techslides.com
+    // @reference - http://techslides.com/editing-gravity-forms-entries-on-the-front-end
+    function pre_submission_edit($form)
+    {
+//            //submitted new values that need to be used to update the original entry via $success = GFAPI::update_entry( $entry );
+//            var_dump($_POST);
+//            $entry_id = $_GET['entry_id'];
+//
+//            //Get original entry id
+//            parse_str($_SERVER["QUERY_STRING"]); //will be stored in $entry
+//
+//            //get the actual entry we want to edit
+//            $edit_entry = GFAPI::get_entry($entry_id);
+//
+//            //make changes to it from new values in $_POST, this shows only the first field update
+//            $edit_entry[1] = $_POST["input_1"];
+//
+//            //update it
+//            $was_updated = GFAPI::update_entry($edit_entry);
+//
+//            if (is_wp_error($was_updated)) {
+//                echo "<h3>Could not update your business card.</h3>";
+//            } else {
+//                //success, so redirect
+//                header("Location: http://domain.com/confirmation/");
+//            }
+//
+//            //dont process and create new entry
+//            die();
+    }
+    add_action('gform_pre_submission_4', 'pre_submission_edit');
+
+}
+
+/**
+ * Check if current user matches entry user. Notifies user if not and provides login or home page
+ */
+function check_entry_ownership()
+{
+
+    // entry_id provided by query param
+    $entry = GFAPI::get_entry($_GET['entry_id']);
+    $current_user_id = intval(wp_get_current_user()->data->ID);
+
+    $entry_user =  $entry['created_by'] || null;
+
+    if ($current_user_id != $entry_user) {
+        // Current user does not match entry owner
+        echo "
+            <h1>Sorry, you are not authorized to edit this page</h1>
+            <p>Please login to access this page.</p>
+            <a href='/wp-login.php?'>Login</a>
+            <a href='/'>Back to Home</a>
+        ";
+        exit();
+    }
+
 }
 
 run_demo_print();
