@@ -113,7 +113,7 @@ function business_card_preview_shortcode()
         // @TODO - confirm (alert) user if they are sure they want to delete
         // @TODO - on confirm, delete message and display delete message
         // @TODO - have buttons redirect to home or create new business card
-
+        GFAPI::delete_entry($entry);
         exit();
 
     } elseif (isset($_POST['go_back'])) {
@@ -133,10 +133,14 @@ function business_card_preview_shortcode()
             <p>$address</p>
             
             <!--have to pass event object manually-->
-            <form method='post'>
+            <form method='post' id='confirm-bc'>
                 <button name='edit' value='edit'>Edit</button>
                 <button name='delete' value='delete'>Delete</button>
             </form>
+            
+            <script>
+              
+            </script>
         ";
     }
 }
