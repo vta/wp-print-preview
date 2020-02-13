@@ -96,32 +96,60 @@ add_shortcode('business-card-preview', 'business_card_preview_shortcode');
  */
 function business_card_preview_shortcode()
 {
-    // Grab the latest entry object.
-    // $entry_id provided by query param
+    $current_user_id = intval(wp_get_current_user()->data->ID);
     $entry = GFAPI::get_entry($_GET['entry_id']);
 
+    echo "<pre>";
+    var_dump(wp_get_current_user()->data->ID);    // user ID
+    print_r($entry);
+    echo "</pre>";
+
     // retrieve input values
-    if (isset($entry)) {
+    // $entry_id provided by query param
+    if (isset($_GET['entry_id'])) {
+        $entry = GFAPI::get_entry($_GET['entry_id']);
         $job_title = $entry[1];
         $first_name = $entry['2.3'];
         $last_name = $entry['2.6'];
         $email = $entry[3];
         $address = $entry[5];
+
+    } else {
+        echo "<h2>Error! No entry was matched with this request.</h2>";
+        exit();
+
     }
 
-    if (isset($_POST['delete'])) {
+    if ($current_user_id != $entry['created_by']) {
+        // @TODO - confirm that user owns. User ID is accessed by $entry['created_by'] – type int
+        echo "
+            <h1>Sorry, you are not authorized to edit this page</h1>
+            <p>Please login to access this page.</p>
+            <a href='/wp-login.php?'>Login</a>
+         ";
+        exit();
+
+    } elseif (isset($_POST['cancel'])) {
         // @TODO - confirm (alert) user if they are sure they want to delete
         // @TODO - on confirm, delete message and display delete message
         // @TODO - have buttons redirect to home or create new business card
-        GFAPI::delete_entry($entry);
+        GFAPI::delete_entry($entry['id']);
+        echo "
+            <h3>Your order has been cancelled. The Copy Center team will be notified immediately.</h3>
+            <a href='/'>Back to Home</a>
+        ";
         exit();
 
-    } elseif (isset($_POST['go_back'])) {
+    } elseif (isset($_POST['edit'])) {
         // @TODO - go back to business card page
-        // @TODO - pre-populate all inputs with previous user values
+        // @TODO - pre-populate all inputs with previous user value
+        // @TODO - need to make sure that edits page EDITS (and not create)
+        // @TODO - need to confirm correct user before allowing edits
+        // access user ID with $entry['created_by'] and wp_get_current_user()->data->ID
+        // Will be needed to implemented on form apge redirect
+        exit();
 
     } else {
-
         // Will be a preview in the future
         echo "
             <h3>Your order is being processed. Please allow 2-3 business days for the order to complete.</h3>
@@ -134,13 +162,9 @@ function business_card_preview_shortcode()
             
             <!--have to pass event object manually-->
             <form method='post' id='confirm-bc'>
-                <button name='edit' value='edit'>Edit</button>
-                <button name='delete' value='delete'>Delete</button>
+                <button name='edit' value='edit'>Edit Order</button>
+                <button name='cancel' value='cancel'>Cancel Order</button>
             </form>
-            
-            <script>
-              
-            </script>
         ";
     }
 }
