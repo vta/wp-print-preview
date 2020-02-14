@@ -88,6 +88,8 @@ function run_demo_print()
 // 2. IMMEDIATELY DELETE ENTRY FROM ENTRIES
 // 3. PROCESS LOCAL VARIABLE INTO A PREVIEW
 // 4. PROVIDE BUTTONS TO ROUTE BACK TO PREVIOUS FORM, CANCEL TO GO HOME, SUBMIT
+// RETURN "<html>". DO NOT ECHO
+// @see https://wordpress.stackexchange.com/questions/140466/custom-shortcode-being-executed-when-saving-page-in-wp-admin
 
 add_shortcode('business-card-preview', 'business_card_preview_shortcode');
 /**
@@ -96,10 +98,12 @@ add_shortcode('business-card-preview', 'business_card_preview_shortcode');
  */
 function business_card_preview_shortcode()
 {
+    // DEBUGGING
 //    echo "<pre>";
 //    var_dump(wp_get_current_user()->data->ID);    // user ID
 //    print_r($entry);
 //    echo "</pre>";
+
     // verify current user matches entry user
     check_entry_ownership();
 
@@ -113,10 +117,6 @@ function business_card_preview_shortcode()
         $email = $entry[3];
         $address = $entry[5];
 
-    } else {
-        echo "<h2>Error! No entry was matched with this request.</h2>";
-        exit();
-
     }
 
     if (isset($_POST['cancel'])) {
@@ -124,7 +124,7 @@ function business_card_preview_shortcode()
         // @TODO - on confirm, delete message and display delete message
         // @TODO - have buttons redirect to home or create new business card
         GFAPI::delete_entry($entry['id']);
-        echo "
+        return "
             <h3>Your order has been cancelled. The Copy Center team will be notified immediately.</h3>
             <a href='/'>Back to Home</a>
         ";
@@ -144,7 +144,7 @@ function business_card_preview_shortcode()
 //    }
     else {
         // Will be a preview in the future
-        echo "
+        return "
             <h3>Your order is being processed. Please allow 2-3 business days for the order to complete.</h3>
 
             <h1>$job_title</h1>
@@ -250,16 +250,26 @@ function business_card_edit_shortcode()
  */
 function check_entry_ownership()
 {
+    // @TODO - current workaround. Fires within editor (missing query param causes error)
+    if (!isset($_GET['entry_id'])) {
+        return;
+    }
 
     // entry_id provided by query param
     $entry = GFAPI::get_entry($_GET['entry_id']);
     $current_user_id = intval(wp_get_current_user()->data->ID);
 
-    $entry_user =  $entry['created_by'] || null;
+    if (is_wp_error($entry['created_by'])) {
+        // if the following exists
+        return "<h1>BIG ERROR</h1>";
+        exit();
+    } else {
+        $entry_user = $entry['created_by'];
+    }
 
     if ($current_user_id != $entry_user) {
         // Current user does not match entry owner
-        echo "
+        return "
             <h1>Sorry, you are not authorized to edit this page</h1>
             <p>Please login to access this page.</p>
             <a href='/wp-login.php?'>Login</a>
