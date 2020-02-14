@@ -21,13 +21,13 @@ Clone this repository in your WordPress `themes` folder and activate the plugin.
 In your page editors, create two new pages. You can call them anything you would like.
 
 **Business Confirm Page**
-1. In this page, please create a new  block and insert a shortcode with `[business_card_preview_shortcode]`.
+1. In this page, please create a new  block and insert a shortcode with `[business-card-preview]`.
 2. Select the **Document** tab and under the **Permalink** dropdown menu, type in `business-card-confirmation`.
 
 **Edit Business Card Page**
 The steps here are similar to the previous page.
-1. In this page, please create a new block and insert a shortcode with `[business_card_edit]`.
-2. Select the **Document** tab and under the **Permalink** dropdown menu, type in `business-card-confirmation`.
+1. In this page, please create a new block and insert a shortcode with `[business-card-edit]`.
+2. Select the **Document** tab and under the **Permalink** dropdown menu, type in `edit-business-card`.
 3. Please add one more block with business card Gravity Forms shortcode: `[gravityform id="4" title="false"
 description="false" ajax="true"`
 
