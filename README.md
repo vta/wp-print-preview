@@ -1,22 +1,23 @@
-# === Business Card Print Plugin ===
-Contributors: James Pham & Gordon Hackett
-Author link: https://jamespham.io & http://linuxwebexpert.com
-Tags: comments, spam
-Requires at least: 5.2.3
-Tested up to: 3.4
-Stable tag: 4.3
-License: GPLv2 or later
-License URI: http://www.gnu.org/licenses/gpl-2.0.html
+# Business Card Print Plugin
 
-**Description** - a plugin to transform VTA business card orders via Gravity Forms into a dynamic image preview. With
-the help of Imagick, the plugin will produce an image file that will be processed by the Copy Center team to print the
+- Contributors: James Pham & Gordon Hackett
+- Author link: https://jamespham.io & http://linuxwebexpert.com
+- Tags: comments, spam
+- Requires at least: 5.2.3
+- Tested up to: 3.4
+- Stable tag: 4.3
+- License: GPLv2 or later
+- License URI: http://www.gnu.org/licenses/gpl-2.0.html
+
+## Description
+ A plugin to transform VTA business card orders via Gravity Forms into a dynamic image preview. Withthe help of Imagick, the plugin will produce an image file that will be processed by the Copy Center team to print the
 actual business cards. The user will also have the option to edit or delete submitted business card forms (not an
 included feature of Gravity forms).
 
 ## Getting Started
 Clone this repository in your WordPress `themes` folder and activate the plugin.
 
-### Required Pages
+**Create Required Pages**
 In your page editors, create two new pages. You can call them anything you would like.
 
 **Business Confirm Page**
@@ -43,4 +44,4 @@ In the order that the fields appear in the form, the paramter names are:
 
 Once all of the above steps are set up correctly, the plugin should function.
 
-Cheers! 🍻
+Cheers! :beer:
