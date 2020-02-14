@@ -99,10 +99,10 @@ add_shortcode('business-card-preview', 'business_card_preview_shortcode');
 function business_card_preview_shortcode()
 {
     // DEBUGGING
-//    echo "<pre>";
+    echo "<pre>";
 //    var_dump(wp_get_current_user()->data->ID);    // user ID
-//    print_r($entry);
-//    echo "</pre>";
+    print_r($_POST);
+    echo "</pre>";
 
     // verify current user matches entry user
     check_entry_ownership();
@@ -165,6 +165,8 @@ function business_card_preview_shortcode()
 add_action('wp_loaded', 'redirect_edit_page');
 function redirect_edit_page()
 {
+    // check if current user owns entry
+    check_entry_ownership();
 
     if (isset($_POST['edit'])) {
         // @TODO - go back to business card page
@@ -184,6 +186,7 @@ function redirect_edit_page()
 
             $query_param = "?job_title=$job_title&first_name=$first_name&last_name=$last_name&email=$email&address=$email&entry_id=$entry_id";
             wp_redirect('/edit-business-card-order/' . $query_param);
+
             exit();
         }
     }
@@ -210,39 +213,56 @@ function business_card_edit_shortcode()
     // verify current user matches entry user
     check_entry_ownership();
 
+    // DEBUGGING
+    $entry_id = $_GET['entry_id'];
+    $entry = GFAPI::get_entry($entry_id);
+    echo "<pre>";
+    print_r($entry);
+    echo "</pre>";
+
     // @TODO - change submission action to EDIT current entry instead of adding new entry
     // Used snippets from techslides.com
     // @reference - http://techslides.com/editing-gravity-forms-entries-on-the-front-end
     function pre_submission_edit($form)
     {
-//            //submitted new values that need to be used to update the original entry via $success = GFAPI::update_entry( $entry );
-//            var_dump($_POST);
-//            $entry_id = $_GET['entry_id'];
-//
-//            //Get original entry id
-//            parse_str($_SERVER["QUERY_STRING"]); //will be stored in $entry
-//
-//            //get the actual entry we want to edit
-//            $edit_entry = GFAPI::get_entry($entry_id);
-//
-//            //make changes to it from new values in $_POST, this shows only the first field update
-//            $edit_entry[1] = $_POST["input_1"];
-//
-//            //update it
-//            $was_updated = GFAPI::update_entry($edit_entry);
-//
-//            if (is_wp_error($was_updated)) {
-//                echo "<h3>Could not update your business card.</h3>";
-//            } else {
-//                //success, so redirect
-//                header("Location: http://domain.com/confirmation/");
-//            }
-//
-//            //dont process and create new entry
-//            die();
-    }
-    add_action('gform_pre_submission_4', 'pre_submission_edit');
+        $entry_id = $_GET['entry_id'];
 
+        // update entry fields with new post values
+        $entry = GFAPI::get_entry($entry_id);
+        $entry['id'] = $entry_id;
+        $entry[1] = $_POST[1];
+        $entry['2.3'] = $_POST['2.3'];
+        $entry['2.6'] = $_POST['2.6'];
+        $entry[3] = $_POST[3];
+        $entry[5] = $_POST[5];
+
+        // make changes to current entry
+        GFAPI::update_entry($entry);
+
+        // @TODO - attach additional POST variable to tag this submission as an edit
+        $_POST['edit_business_card'] = true;
+        $_POST['entry_id'] = $entry_id;
+
+    }
+}
+
+/**
+ * Business Card Edit redirect
+ *
+ * redirects to business card confirmation page from business card edit page after submission.
+ */
+add_action('wp_loaded', 'redirect_edit_submission');
+function redirect_edit_submission()
+{
+    check_entry_ownership();
+
+    if (isset($_POST['edit_business_card'])) {
+        // redirect user to confirmation page
+
+        $entry_id = $_POST['entry_id'];
+        header('Location: ' . '/business-card-confirmation/?entry_id=' . $entry_id);
+
+    }
 }
 
 /**
