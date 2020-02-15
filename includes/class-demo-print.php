@@ -78,6 +78,7 @@ class Demo_Print {
 		$this->set_locale();
 		$this->define_admin_hooks();
 		$this->define_public_hooks();
+		$this->get_loader();
 
 	}
 
@@ -172,7 +173,8 @@ class Demo_Print {
 
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
-
+		$this->loader->add_shortcode( 'business-card-preview', $plugin_public, "Demo_Print_Public::business_card_preview_shortcode", $priority = 10, $accepted_args = 2 );
+		$this->loader->add_shortcode('business-card-edit', $plugin_public, 'Demo_Print_Public::business_card_edit_shortcode',  $priority = 10, $accepted_args = 2);
 	}
 
 	/**

@@ -100,7 +100,14 @@ class Demo_Print_Public {
 
 	}
 
-    public function business_card_preview_shortcode()
+    /**
+     * A shortcode to preview Business card image. Gives user options to edit
+     * current entry or delete.
+     *
+     * @param $atts
+     * @return string
+     */
+    public function business_card_preview_shortcode( $atts )
     {
         // DEBUGGING
 //    echo "<pre>";
@@ -109,7 +116,7 @@ class Demo_Print_Public {
 //    echo "</pre>";
 
         // verify current user matches entry user
-        check_entry_ownership();
+//        check_entry_ownership();
 
         // retrieve input values
         // $entry_id provided by query param
@@ -155,7 +162,7 @@ class Demo_Print_Public {
             <p>$last_name</p>
             <p>$email</p>
             <p>$address</p>
-            
+
             <!--have to pass event object manually-->
             <form method='post' id='confirm-bc'>
                 <button name='edit' value='edit'>Edit Order</button>
@@ -163,6 +170,69 @@ class Demo_Print_Public {
             </form>
         ";
         }
-    }
+
+        // view that is
+        return BusinessCardHelper::view();
+
+
+        $args = shortcode_atts(
+            array(
+                'arg1' => 'arg1',
+                'arg2' => 'arg2',
+            ),
+            $atts
+        );
+
+        // code...
+
+        $var = (strtolower($args['arg1']) != "") ? strtolower($args['arg1']) : 'default';
+
+        // code...
+
+        return $var;
 
     }
+
+    /**
+     * @param $atts
+     */
+    public function business_card_edit_shortcode ( $atts )
+    {
+        // @TODO - method 1: have the GF shortcode grab the query param and populate values
+        // verify current user matches entry user
+        check_entry_ownership();
+
+        // DEBUGGING
+        $entry_id = $_GET['entry_id'];
+        $entry = GFAPI::get_entry($entry_id);
+        echo "<pre>";
+        print_r($entry);
+        echo "</pre>";
+
+        // @TODO - change submission action to EDIT current entry instead of adding new entry
+        // Used snippets from techslides.com
+        // @reference - http://techslides.com/editing-gravity-forms-entries-on-the-front-end
+        function pre_submission_edit($form)
+        {
+            $entry_id = $_GET['entry_id'];
+
+            // update entry fields with new post values
+            $entry = GFAPI::get_entry($entry_id);
+            $entry['id'] = $entry_id;
+            $entry[1] = $_POST[1];
+            $entry['2.3'] = $_POST['2.3'];
+            $entry['2.6'] = $_POST['2.6'];
+            $entry[3] = $_POST[3];
+            $entry[5] = $_POST[5];
+
+            // make changes to current entry
+            GFAPI::update_entry($entry);
+
+            // @TODO - attach additional POST variable to tag this submission as an edit
+            $_POST['edit_business_card'] = true;
+            $_POST['entry_id'] = $entry_id;
+
+        }
+    }
+
+}
