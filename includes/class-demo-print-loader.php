@@ -1,5 +1,7 @@
 <?php
 
+include_once $_SERVER['DOCUMENT_ROOT'] . '/wp-content/plugins/demo-print/includes/class-demo-print-helper.php';
+
 /**
  * Register all actions and filters for the plugin
  *
