@@ -1,5 +1,5 @@
 <?php
-Class BusinessCardHelper
+Class Business_Card_Helper
 {
     public function view()
     {
@@ -31,13 +31,32 @@ Class BusinessCardHelper
         if ($current_user_id != $entry_user) {
             // Current user does not match entry owner
             return "
-            <h1>Sorry, you are not authorized to edit this page</h1>
-            <p>Please login to access this page.</p>
-            <a href='/wp-login.php?'>Login</a>
-            <a href='/'>Back to Home</a>
-        ";
+                <h1>Sorry, you are not authorized to edit this page</h1>
+                <p>Please login to access this page.</p>
+                <a href='/wp-login.php?'>Login</a>
+                <a href='/'>Back to Home</a>
+            ";
             exit();
         }
 
+    }
+
+    /**
+     * Callback to redirect to business-card-edit. Contains
+     */
+    public function business_card_edit_redirect()
+    {
+        if ( isset($_POST['edit']) ) {
+            // grab entry_id and its respective field/values
+            $entry_id = $_GET['entry_id'];
+            $entry = GFAPI::get_entry($entry_id);
+            $job_title = $entry[1];
+            $first_name = $entry['2.3'];
+            $last_name = $entry['2.6'];
+            $email = $entry[3];
+            $address = $entry[5];
+
+            wp_redirect('/business-card-edit/?entry_id=' . $entry_id);
+        }
     }
 }

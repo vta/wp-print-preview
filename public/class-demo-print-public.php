@@ -125,15 +125,15 @@ class Demo_Print_Public
         );
 
         // DEBUGGING
-//    echo "<pre>";
+    echo "<pre>";
 //    var_dump(wp_get_current_user()->data->ID);    // user ID
-//    print_r($entry);
-//    echo "</pre>";
+    print_r($_POST);
+    echo "</pre>";
 
         // code...
 
         // verify current user matches entry user
-        BusinessCardHelper::check_entry_ownership();
+        Business_Card_Helper::check_entry_ownership();
 
         // retrieve input values
         // $entry_id provided by query param
@@ -156,34 +156,19 @@ class Demo_Print_Public
                 <a href='/'>Back to Home</a>
             ";
 
-        } elseif ( isset($_POST['edit']) ) {
+        } //elseif ( isset($_POST['edit']) ) {
             // @TODO - go back to business card page
             // @TODO - pre-populate all inputs with previous user value
             // @TODO - need to make sure that edits page EDITS (and not create)
             // @TODO - need to confirm correct user before allowing edits
             // access user ID with $entry['created_by'] and wp_get_current_user()->data->ID
             // Will be needed to implemented on form page redirect
-            add_action('template_redirect', 'business_card_edit_redirect');
-            /**
-             * Callback to redirect to business-card-edit. Contains
-             */
-            function business_card_edit_redirect()
-            {
-                // grab entry_id and its respective field/values
-                $entry_id = $_GET['entry_id'];
-                $entry = GFAPI::get_entry($entry_id);
-                $job_title = $entry[1];
-                $first_name = $entry['2.3'];
-                $last_name = $entry['2.6'];
-                $email = $entry[3];
-                $address = $entry[5];
 
-                wp_redirect('/business-card-edit/?entry_id=' . $entry_id);
-            }
+//            exit();
 
-            exit();
+        //}
 
-        } else {
+        else {
             // Will be a preview in the future
             return "
                 <h3>Your order is being processed. Please allow 2-3 business days for the order to complete.</h3>
@@ -221,7 +206,7 @@ class Demo_Print_Public
 
         // @TODO - method 1: have the GF shortcode grab the query param and populate values
         // verify current user matches entry user
-        BusinessCardHelper::check_entry_ownership();
+        Business_Card_Helper::check_entry_ownership();
 
         // DEBUGGING
         $entry_id = $_GET['entry_id'];
