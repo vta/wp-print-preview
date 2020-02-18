@@ -1,7 +1,7 @@
 # Business Card Print Plugin
 
 - Contributors: James Pham & Gordon Hackett
-- Author link: https://jamespham.io & http://linuxwebexpert.com
+- Author link: https://jamespham.io & https://github.com/linuxwebexpert
 - Tags: comments, spam
 - Requires at least: 5.2.3
 - Tested up to: 3.4
