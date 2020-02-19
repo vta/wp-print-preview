@@ -70,11 +70,21 @@ Class Demo_Print_Helper
         $job_title = $entry[1];
         $first_name = $entry['2.3'];
         $last_name = $entry['2.6'];
+        $full_name = $first_name . ' ' . $last_name;
         $email = $entry[3];
         $address = $entry[5];
 
+//        $strokeColor = new ImagickPixel(imagick::COLOR_BLACK);
+        $draw = new \ImagickDraw();
+        $draw->setFillColor('black');
+        $draw->setStrokeColor('black');
+        $draw->setStrokeWidth(2);
+        $draw->setFontSize(36);
+        $draw->annotation(0, 0, 'Hello World');
+
         $image = new \Imagick();
         $image->readImage(plugin_dir_path(__FILE__).'../public/template.png');
+//        $image->drawImage($draw);     // attempting to draw text onto image
         $image->setImageColorspace(Imagick::COLORSPACE_SRGB);
         $image->setImageUnits(Imagick::RESOLUTION_PIXELSPERINCH);
         $image->setResolution(600,600);
@@ -84,6 +94,5 @@ Class Demo_Print_Helper
         $image->writeImage(plugin_dir_path(__FILE__).'../public/newimage.png');
 
         return $image->getFilename();
-
     }
 }
