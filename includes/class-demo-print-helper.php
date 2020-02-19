@@ -1,5 +1,5 @@
 <?php
-Class Business_Card_Helper
+Class Demo_Print_Helper
 {
     public function view()
     {
@@ -18,13 +18,12 @@ Class Business_Card_Helper
 
         // entry_id provided by query param
         $entry = GFAPI::get_entry($_GET['entry_id']);
-        $current_user_id = intval(wp_get_current_user()->data->ID);
+        $current_user = wp_get_current_user();
+        ($current_user->exists()) ? $current_user_id = $current_user->ID : $current_user_id = 0;
 
         if (is_wp_error($entry['created_by'])) {
-            // if the following exists
-            return "<h1>BIG ERROR</h1>";
-            exit();
-        } else {
+            trigger_error('Gravity Forms::get_entry - ' . $entry->get_error(), E_ERROR);
+        }else {
             $entry_user = $entry['created_by'];
         }
 
@@ -42,6 +41,7 @@ Class Business_Card_Helper
     }
 
     /**
+     * @todo - removed from public hooks - we should discuss merits versus GF built-in calls
      * Callback to redirect to business-card-edit. Contains
      */
     public function business_card_edit_redirect()
