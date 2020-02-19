@@ -1,4 +1,9 @@
 <?php
+
+use Imagick;
+use ImagickDraw;
+use ImagickPixel;
+
 Class Demo_Print_Helper
 {
     public function view()
@@ -58,5 +63,27 @@ Class Demo_Print_Helper
 
             wp_redirect('/business-card-edit/?entry_id=' . $entry_id);
         }
+    }
+
+    public function business_card_proof($entry)
+    {
+        $job_title = $entry[1];
+        $first_name = $entry['2.3'];
+        $last_name = $entry['2.6'];
+        $email = $entry[3];
+        $address = $entry[5];
+
+        $image = new \Imagick();
+        $image->readImage(plugin_dir_path(__FILE__).'../public/template.png');
+        $image->setImageColorspace(Imagick::COLORSPACE_SRGB);
+        $image->setImageUnits(Imagick::RESOLUTION_PIXELSPERINCH);
+        $image->setResolution(600,600);
+        $image->setImageFormat('png');
+
+        $image->setFilename('newimage');
+        $image->writeImage(plugin_dir_path(__FILE__).'../public/newimage.png');
+
+        return $image->getFilename();
+
     }
 }

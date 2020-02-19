@@ -131,11 +131,7 @@ class Demo_Print_Public
         // $entry_id provided by query param
         if ( isset($_GET['entry_id']) ) {
             $entry = GFAPI::get_entry($_GET['entry_id']);
-            $job_title = $entry[1];
-            $first_name = $entry['2.3'];
-            $last_name = $entry['2.6'];
-            $email = $entry[3];
-            $address = $entry[5];
+            $image = (new Demo_Print_Helper())->business_card_proof($entry);
         }
 
         /**
@@ -165,6 +161,8 @@ class Demo_Print_Public
             <p>$last_name</p>
             <p>$email</p>
             <p>$address</p>
+            
+            <img src='/wp-content/plugins/wp-print-preview/public/$image.png' />
 
             <!--have to pass event object manually-->
             <form method='post' id='confirm-bc'>
