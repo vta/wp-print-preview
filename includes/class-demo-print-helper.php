@@ -148,6 +148,10 @@ Class Demo_Print_Helper
         // PHONE
         // @TODO - add phone + cell phone field
 
+        $overlay = new \Imagick();
+        $overlay->newImage(300*3.5,300*2,new ImagickPixel('transparent'));
+        $overlay->drawImage($draw);
+
         $image = new \Imagick();
         $image->readImage(plugin_dir_path(__FILE__).'../public/template.png');
         $image->setImageColorspace(Imagick::COLORSPACE_SRGB);
@@ -164,6 +168,8 @@ Class Demo_Print_Helper
         $image->drawImage($email_text);
 
         $image->setFilename('newimage');
+//        $image->drawImage($draw);     // attempting to draw text onto image
+        $image->compositeImage($overlay, Imagick::COMPOSITE_BLEND, 50, 50,Imagick::CHANNEL_ALPHA);
         $image->writeImage(plugin_dir_path(__FILE__).'../public/newimage.png');
 
         return $image->getFilename();
