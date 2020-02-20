@@ -1,7 +1,7 @@
 <?php
 
 use Imagick;
-use ImagickDraw;
+use Imagickname;
 use ImagickPixel;
 
 Class Demo_Print_Helper
@@ -56,7 +56,7 @@ Class Demo_Print_Helper
             $entry_id = $_GET['entry_id'];
             $entry = GFAPI::get_entry($entry_id);
             $job_title = $entry[1];
-            $first_name = $entry['2.3'];
+            $first_name = $entry['$CHAR_SPACE'];
             $last_name = $entry['2.6'];
             $email = $entry[3];
             $address = $entry[5];
@@ -67,32 +67,106 @@ Class Demo_Print_Helper
 
     public function business_card_proof($entry)
     {
+        // GF form input
         $job_title = $entry[1];
-        $first_name = $entry['2.3'];
+        $first_name = $entry['$CHAR_SPACE'];
         $last_name = $entry['2.6'];
         $full_name = $first_name . ' ' . $last_name;
         $email = $entry[3];
         $address = $entry[5];
 
-//        $strokeColor = new ImagickPixel(imagick::COLOR_BLACK);
-        $draw = new \ImagickDraw();
-        $draw->setFillColor('black');
-        $draw->setStrokeColor('black');
-        $draw->setStrokeWidth(2);
-        $draw->setFontSize(36);
-        $draw->annotation(0, 0, 'Hello World');
+        // indentation for text
+        $x_indentation = 98;
+
+        // character spacing
+        $CHAR_SPACE = 2.3;
+
+        // COLOR CONTANTS
+        $LIGHT_BLUE = '#4CB4E7';
+        $DARK_BLUE = '#29588C';
+        $DARK_GRAY = '#4C4E56';
+
+        // SLOGAN
+        $slogan_text = new \ImagickDraw();
+        $slogan_text->setFont(plugin_dir_path(__FILE__) . '/MuseoSans_300_Italic.otf');
+        $slogan_text->setFillColor($LIGHT_BLUE);
+        $slogan_text->setStrokeColor($LIGHT_BLUE);
+        $slogan_text->setStrokeWidth(2);
+        $slogan_text->setFontSize(6.5);
+        $slogan_text->setTextKerning($CHAR_SPACE);
+        $slogan_text->annotation(1261, 435, 'Solutions that move you');
+
+        // NAME
+        $name_text = new \ImagickDraw();
+        $name_text->setFont(plugin_dir_path(__FILE__) . '/MuseoSans_700.otf');
+        $name_text->setFillColor($DARK_BLUE);
+        $name_text->setStrokeColor($DARK_BLUE);
+        $name_text->setStrokeWidth(2);
+        $name_text->setFontSize(9);
+        $name_text->setTextKerning($CHAR_SPACE);
+        $name_text->annotation($x_indentation, 560, $full_name);
+
+        // JOB TITLE
+        $job_title_text = new \ImagickDraw();
+        $job_title_text->setFont(plugin_dir_path(__FILE__) . '/MuseoSans_300.otf');
+        $job_title_text->setFillColor($DARK_GRAY);
+        $job_title_text->setStrokeColor($DARK_GRAY);
+        $job_title_text->setStrokeWidth(2);
+        $job_title_text->setFontSize(7.5);
+        $job_title_text->setTextKerning($CHAR_SPACE);
+        $job_title_text->annotation($x_indentation, 630, $job_title);
+
+        // ADDRESS
+        $address_text = new \ImagickDraw();
+        $address_text->setFont(plugin_dir_path(__FILE__) . '/MuseoSans_300.otf');
+        $address_text->setFillColor($DARK_GRAY);
+        $address_text->setStrokeColor($DARK_GRAY);
+        $address_text->setStrokeWidth(2);
+        $address_text->setFontSize(7.5);
+        $address_text->setTextKerning($CHAR_SPACE);
+        $address_text->annotation($x_indentation, 835, $address);
+
+        // EMAIL LABEL
+        $email_label_text = new \ImagickDraw();
+        $email_label_text->setFont(plugin_dir_path(__FILE__) . '/MuseoSans_300.otf');
+        $email_label_text->setFillColor($DARK_GRAY);
+        $email_label_text->setStrokeColor($DARK_GRAY);
+        $email_label_text->setFontSize(7.5);
+        $email_label_text->setTextKerning($CHAR_SPACE);
+        $email_label_text->annotation($x_indentation, 920, 'Email');
+
+        // EMAIL
+        $email_text = new \ImagickDraw();
+        $email_text->setFont(plugin_dir_path(__FILE__) . '/MuseoSans_300.otf');
+        $email_text->setFillColor($LIGHT_BLUE);
+        $email_text->setStrokeColor($LIGHT_BLUE);
+        $email_text->setStrokeWidth(2);
+        $email_text->setFontSize(7.5);
+        $email_text->setTextKerning($CHAR_SPACE);
+        $email_text->annotation($x_indentation + 200, 920, $email);
+
+        // PHONE
+        // @TODO - add phone + cell phone field
 
         $image = new \Imagick();
         $image->readImage(plugin_dir_path(__FILE__).'../public/template.png');
-//        $image->drawImage($draw);     // attempting to draw text onto image
         $image->setImageColorspace(Imagick::COLORSPACE_SRGB);
         $image->setImageUnits(Imagick::RESOLUTION_PIXELSPERINCH);
         $image->setResolution(600,600);
+
         $image->setImageFormat('png');
+
+        $image->drawImage($slogan_text);
+        $image->drawImage($name_text);
+        $image->drawImage($job_title_text);
+        $image->drawImage($address_text);
+        $image->drawImage($email_label_text);
+        $image->drawImage($email_text);
 
         $image->setFilename('newimage');
         $image->writeImage(plugin_dir_path(__FILE__).'../public/newimage.png');
 
         return $image->getFilename();
     }
+
 }
