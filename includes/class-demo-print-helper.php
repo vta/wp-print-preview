@@ -74,7 +74,7 @@ Class Demo_Print_Helper
         $full_name = $first_name . ' ' . $last_name;
         $email = $entry[3];
         $address = $entry[5];
-        $phone = $this->_convertPhoneFormat($entry[8]);
+        $phone = $this->_convertPhoneFormat($entry[6]);
 
         // indentation for text
         $x_indentation = 98;
@@ -175,7 +175,7 @@ Class Demo_Print_Helper
         );
 
         // CONDITIONALLY ADD MOBILE FIELD IF EXISTS
-        if ( !empty($entry[9]) ) {
+        if ( !empty($entry[7]) ) {
 
             // grab mobile from entry & convert format
             $mobile = $this->_convertPhoneFormat($entry[9]);

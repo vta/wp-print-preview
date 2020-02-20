@@ -1,6 +1,6 @@
 <?php
 
-include_once(plugin_dir_path( __DIR__ ) . '/includes/class-demo-print-helper.php');
+include_once(plugin_dir_path(__DIR__) . '/includes/class-demo-print-helper.php');
 
 /**
  * The public-facing functionality of the plugin.
@@ -155,19 +155,15 @@ class Demo_Print_Public
 
         return "
             <h3>Your order is being processed. Please allow 2-3 business days for the order to complete.</h3>
-
-            <h1>$job_title</h1>
-            <p>$first_name</p>
-            <p>$last_name</p>
-            <p>$email</p>
-            <p>$address</p>
             
             <img src='/wp-content/plugins/wp-print-preview/public/$image.png' />
 
             <!--have to pass event object manually-->
             <form method='post' id='confirm-bc'>
-                <button name='edit' value='edit'>Edit Order</button>
-                <button name='cancel' value='cancel'>Cancel Order</button>
+                <!-- <button name='edit' value='edit'>Edit Order</button> -->
+                <div class='container d-flex justify-content-end'>
+                  <button class='btn btn-lg btn-danger' name='cancel' value='cancel'>Cancel Order</button>
+                </div>
             </form>
         ";
 
