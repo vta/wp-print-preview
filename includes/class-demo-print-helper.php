@@ -1,7 +1,7 @@
 <?php
 
 use Imagick;
-use Imagickname;
+use ImagickDraw;
 use ImagickPixel;
 
 Class Demo_Print_Helper
@@ -74,6 +74,7 @@ Class Demo_Print_Helper
         $full_name = $first_name . ' ' . $last_name;
         $email = $entry[3];
         $address = $entry[5];
+        $phone = $this->_convertPhoneFormat($entry[8]);
 
         // indentation for text
         $x_indentation = 98;
@@ -144,12 +145,64 @@ Class Demo_Print_Helper
             'kerning' => $CHAR_SPACE,
             'annotation' => array('x' => $x_indentation + 200, 'y' => 920, 'text' => $email)
         );
+        // PHONE LABEL
+        $phone_label_text = array(
+            'font' => plugin_dir_path(__FILE__) . '/MuseoSans_300.otf',
+            'color' => $DARK_GRAY,
+            'stroke_width' => $STROKE_WIDTH,
+            'font_size' => 7.5,
+            'kerning' => $CHAR_SPACE,
+            'annotation' => array('x' => $x_indentation, 'y' => 1003, 'text' => 'Phone')
+        );
+        // PHONE
+        $phone_text = array(
+            'font' => plugin_dir_path(__FILE__) . '/MuseoSans_300.otf',
+            'color' => $LIGHT_BLUE,
+            'stroke_width' => $STROKE_WIDTH,
+            'font_size' => 7.5,
+            'kerning' => $CHAR_SPACE,
+            'annotation' => array('x' => $x_indentation + 220, 'y' => 1003, 'text' => $phone)
+        );
 
         // combine text params into one array
-        $text_params_arr = array( $slogan_text, $name_text, $job_title_text, $address_text, $email_label_text, $email_text );
+        $text_params_arr = array(
+            $slogan_text,
+            $name_text,
+            $job_title_text,
+            $address_text,
+            $email_label_text, $email_text,
+            $phone_label_text, $phone_text
+        );
 
-        // PHONE
-        // @TODO - add phone + cell phone field
+        // CONDITIONALLY ADD MOBILE FIELD IF EXISTS
+        if ( !empty($entry[9]) ) {
+
+            // grab mobile from entry & convert format
+            $mobile = $this->_convertPhoneFormat($entry[9]);
+
+            // MOBILE LABEL
+            $mobile_label_text = array(
+                'font' => plugin_dir_path(__FILE__) . '/MuseoSans_300.otf',
+                'color' => $DARK_GRAY,
+                'stroke_width' => $STROKE_WIDTH,
+                'font_size' => 7.5,
+                'kerning' => $CHAR_SPACE,
+                'annotation' => array('x' => $x_indentation + 684, 'y' => 1003, 'text' => '| Mobile')
+            );
+            // MOBILE
+            $mobile_text = array(
+                'font' => plugin_dir_path(__FILE__) . '/MuseoSans_300.otf',
+                'color' => $LIGHT_BLUE,
+                'stroke_width' => $STROKE_WIDTH,
+                'font_size' => 7.5,
+                'kerning' => $CHAR_SPACE,
+                'annotation' => array('x' => $x_indentation + 951, 'y' => 1003, 'text' => $mobile)
+            );
+
+            // add to array
+            array_push($text_params_arr, $mobile_label_text, $mobile_text);
+
+        }
 
 //        $overlay = new \Imagick();
 //        $overlay->newImage(300*3.5,300*2,new ImagickPixel('transparent'));
@@ -176,6 +229,10 @@ Class Demo_Print_Helper
         return $image->getFilename();
     }
 
+    /**
+     * @param $params
+     * @return ImagickDraw
+     */
     private function _drawText($params)
     {
         $draw = new ImagickDraw();
@@ -194,6 +251,18 @@ Class Demo_Print_Helper
         $draw->annotation($x, $y, $text);
 
         return $draw;
+    }
+
+    // convert format (XXX)XXX-XXXX to XXX-XXX-XXXX
+
+    /**
+     * @param $str
+     * @return string
+     */
+    private function _convertPhoneFormat($str)
+    {
+        preg_match('/^\((\d{3})\) (\d{3})-(\d{4})$/', $str, $matches );
+        return $matches[1] . '-' . $matches[2] . '-' . $matches[3];
     }
 
 }
