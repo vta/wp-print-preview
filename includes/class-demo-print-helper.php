@@ -82,15 +82,20 @@ Class Demo_Print_Helper
         $draw->setFontSize(36);
         $draw->annotation(0, 0, 'Hello World');
 
+        $overlay = new \Imagick();
+        $overlay->newImage(300*3.5,300*2,new ImagickPixel('transparent'));
+        $overlay->drawImage($draw);
+
         $image = new \Imagick();
         $image->readImage(plugin_dir_path(__FILE__).'../public/template.png');
-//        $image->drawImage($draw);     // attempting to draw text onto image
         $image->setImageColorspace(Imagick::COLORSPACE_SRGB);
         $image->setImageUnits(Imagick::RESOLUTION_PIXELSPERINCH);
         $image->setResolution(600,600);
         $image->setImageFormat('png');
 
         $image->setFilename('newimage');
+//        $image->drawImage($draw);     // attempting to draw text onto image
+        $image->compositeImage($overlay, Imagick::COMPOSITE_BLEND, 50, 50,Imagick::CHANNEL_ALPHA);
         $image->writeImage(plugin_dir_path(__FILE__).'../public/newimage.png');
 
         return $image->getFilename();
