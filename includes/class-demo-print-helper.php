@@ -69,7 +69,7 @@ Class Demo_Print_Helper
     {
         // GF form input
         $job_title = $entry[1];
-        $first_name = $entry['$CHAR_SPACE'];
+        $first_name = $entry['2.3'];
         $last_name = $entry['2.6'];
         $full_name = $first_name . ' ' . $last_name;
         $email = $entry[3];
