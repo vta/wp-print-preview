@@ -1,6 +1,6 @@
 <?php
 
-include_once(plugin_dir_path(__DIR__) . '/includes/class-demo-print-helper.php');
+include_once(plugin_dir_path(__DIR__) . '/includes/class-wp-print-preview-helper.php');
 
 /**
  * The public-facing functionality of the plugin.
@@ -8,8 +8,8 @@ include_once(plugin_dir_path(__DIR__) . '/includes/class-demo-print-helper.php')
  * @link       https://jamespham.io
  * @since      1.0.0
  *
- * @package    Demo_Print
- * @subpackage Demo_Print/public
+ * @package    Wp_Print_Preview
+ * @subpackage Wp_Print_Preview/public
  */
 
 /**
@@ -18,11 +18,11 @@ include_once(plugin_dir_path(__DIR__) . '/includes/class-demo-print-helper.php')
  * Defines the plugin name, version, and two examples hooks for how to
  * enqueue the public-facing stylesheet and JavaScript.
  *
- * @package    Demo_Print
- * @subpackage Demo_Print/public
+ * @package    Wp_Print_Preview
+ * @subpackage Wp_Print_Preview/public
  * @author     James Pham <jamespham93@yahoo.com>
  */
-class Demo_Print_Public
+class Wp_Print_Preview_Public
 {
 
     /**
@@ -70,15 +70,15 @@ class Demo_Print_Public
          * This function is provided for demonstration purposes only.
          *
          * An instance of this class should be passed to the run() function
-         * defined in Demo_Print_Loader as all of the hooks are defined
+         * defined in Wp_Print_Preview_Loader as all of the hooks are defined
          * in that particular class.
          *
-         * The Demo_Print_Loader will then create the relationship
+         * The Wp_Print_Preview_Loader will then create the relationship
          * between the defined hooks and the functions defined in this
          * class.
          */
 
-        wp_enqueue_style($this->plugin_name, plugin_dir_url(__FILE__) . 'css/demo-print-public.css', array(), $this->version, 'all');
+        wp_enqueue_style($this->plugin_name, plugin_dir_url(__FILE__) . 'css/wp-print-preview-public.css', array(), $this->version, 'all');
 
     }
 
@@ -94,15 +94,15 @@ class Demo_Print_Public
          * This function is provided for demonstration purposes only.
          *
          * An instance of this class should be passed to the run() function
-         * defined in Demo_Print_Loader as all of the hooks are defined
+         * defined in Wp_Print_Preview_Loader as all of the hooks are defined
          * in that particular class.
          *
-         * The Demo_Print_Loader will then create the relationship
+         * The Wp_Print_Preview_Loader will then create the relationship
          * between the defined hooks and the functions defined in this
          * class.
          */
 
-        wp_enqueue_script($this->plugin_name, plugin_dir_url(__FILE__) . 'js/demo-print-public.js', array('jquery'), $this->version, false);
+        wp_enqueue_script($this->plugin_name, plugin_dir_url(__FILE__) . 'js/wp-print-preview-public.js', array('jquery'), $this->version, false);
 
     }
 
@@ -125,13 +125,13 @@ class Demo_Print_Public
         );
 
         // verify current user matches entry user
-        (new Demo_Print_Helper)->check_entry_ownership();
+        (new Wp_Print_Preview_Helper)->check_entry_ownership();
 
         // retrieve input values
         // $entry_id provided by query param
         if ( isset($_GET['entry_id']) ) {
             $entry = GFAPI::get_entry($_GET['entry_id']);
-            $image = (new Demo_Print_Helper())->business_card_proof($entry);
+            $image = (new Wp_Print_Preview_Helper())->business_card_proof($entry);
         }
 
         /**
@@ -186,7 +186,7 @@ class Demo_Print_Public
 
         // @TODO - method 1: have the GF shortcode grab the query param and populate values
         // verify current user matches entry user
-        (new Demo_Print_Helper)->check_entry_ownership();
+        (new Wp_Print_Preview_Helper)->check_entry_ownership();
 
         // DEBUGGING
         $entry_id = $_GET['entry_id'];

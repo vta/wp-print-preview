@@ -9,8 +9,8 @@
  * @link       https://jamespham.io
  * @since      1.0.0
  *
- * @package    Demo_Print
- * @subpackage Demo_Print/includes
+ * @package    Wp_Print_Preview
+ * @subpackage Wp_Print_Preview/includes
  */
 
 /**
@@ -20,11 +20,11 @@
  * so that it is ready for translation.
  *
  * @since      1.0.0
- * @package    Demo_Print
- * @subpackage Demo_Print/includes
+ * @package    Wp_Print_Preview
+ * @subpackage Wp_Print_Preview/includes
  * @author     James Pham <jamespham93@yahoo.com>
  */
-class Demo_Print_i18n {
+class Wp_Print_Preview_i18n {
 
 
 	/**
@@ -35,7 +35,7 @@ class Demo_Print_i18n {
 	public function load_plugin_textdomain() {
 
 		load_plugin_textdomain(
-			'demo-print',
+			'wp-print-preview',
 			false,
 			dirname( dirname( plugin_basename( __FILE__ ) ) ) . '/languages/'
 		);

@@ -4,11 +4,11 @@ use Imagick;
 use ImagickDraw;
 use ImagickPixel;
 
-Class Demo_Print_Helper
+Class Wp_Print_Preview_Helper
 {
     public function view()
     {
-        return "<h1>It works!<</h1>";
+
     }
 
     /**

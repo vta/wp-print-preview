@@ -6,8 +6,8 @@
  * @link       https://jamespham.io
  * @since      1.0.0
  *
- * @package    Demo_Print
- * @subpackage Demo_Print/includes
+ * @package    Wp_Print_Preview
+ * @subpackage Wp_Print_Preview/includes
  */
 
 /**
@@ -17,11 +17,11 @@
  * the plugin, and register them with the WordPress API. Call the
  * run function to execute the list of actions and filters.
  *
- * @package    Demo_Print
- * @subpackage Demo_Print/includes
+ * @package    Wp_Print_Preview
+ * @subpackage Wp_Print_Preview/includes
  * @author     James Pham <jamespham93@yahoo.com>
  */
-class Demo_Print_Loader {
+class Wp_Print_Preview_Loader {
 
 	/**
 	 * The array of actions registered with WordPress.

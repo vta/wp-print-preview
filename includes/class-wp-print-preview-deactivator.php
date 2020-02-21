@@ -6,8 +6,8 @@
  * @link       https://jamespham.io
  * @since      1.0.0
  *
- * @package    Demo_Print
- * @subpackage Demo_Print/includes
+ * @package    Wp_Print_Preview
+ * @subpackage Wp_Print_Preview/includes
  */
 
 /**
@@ -16,11 +16,11 @@
  * This class defines all code necessary to run during the plugin's deactivation.
  *
  * @since      1.0.0
- * @package    Demo_Print
- * @subpackage Demo_Print/includes
+ * @package    Wp_Print_Preview
+ * @subpackage Wp_Print_Preview/includes
  * @author     James Pham <jamespham93@yahoo.com>
  */
-class Demo_Print_Deactivator {
+class Wp_Print_Preview_Deactivator {
 
 	/**
 	 * Short Description. (use period)

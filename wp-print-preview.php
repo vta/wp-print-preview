@@ -10,18 +10,18 @@
  *
  * @link              https://jamespham.io
  * @since             1.0.0
- * @package           Demo_Print
+ * @package           Wp_Print_Preview
  *
  * @wordpress-plugin
- * Plugin Name:       Demoprint
- * Plugin URI:        http://wp-wordpress/demoprint
- * Description:       A demo plugin to print dynamic input from Gravity Forms
+ * Plugin Name:       WP Print Preview
+ * Plugin URI:        http://wp-wordpress/wp-print-preview
+ * Description:       A WordPress print preview plugin to preview and output PNG file of a business card.
  * Version:           1.0.0
  * Author:            James Pham
  * Author URI:        https://jamespham.io
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
- * Text Domain:       demo-print
+ * Text Domain:       wp-print-preview
  * Domain Path:       /languages
  */
 
@@ -35,36 +35,36 @@ if (!defined('WPINC')) {
  * Start at version 1.0.0 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define('DEMO_PRINT_VERSION', '1.0.0');
+define('WP_PRINT_PREVIEW_VERSION', '1.0.0');
 
 /**
  * The code that runs during plugin activation.
- * This action is documented in includes/class-demo-print-activator.php
+ * This action is documented in includes/class-wp-print-preview-activator.php
  */
-function activate_demo_print()
+function activate_wp_print_preview()
 {
-    require_once plugin_dir_path(__FILE__) . 'includes/class-demo-print-activator.php';
-    Demo_Print_Activator::activate();
+    require_once plugin_dir_path(__FILE__) . 'includes/class-wp-print-preview-activator.php';
+    Wp_Print_Preview_Activator::activate();
 }
 
 /**
  * The code that runs during plugin deactivation.
- * This action is documented in includes/class-demo-print-deactivator.php
+ * This action is documented in includes/class-wp-print-preview-deactivator.php
  */
-function deactivate_demo_print()
+function deactivate_wp_print_preview()
 {
-    require_once plugin_dir_path(__FILE__) . 'includes/class-demo-print-deactivator.php';
-    Demo_Print_Deactivator::deactivate();
+    require_once plugin_dir_path(__FILE__) . 'includes/class-wp-print-preview-deactivator.php';
+    Wp_Print_Preview_Deactivator::deactivate();
 }
 
-register_activation_hook(__FILE__, 'activate_demo_print');
-register_deactivation_hook(__FILE__, 'deactivate_demo_print');
+register_activation_hook(__FILE__, 'activate_wp_print_preview');
+register_deactivation_hook(__FILE__, 'deactivate_wp_print_preview');
 
 /**
  * The core plugin class that is used to define internationalization,
  * admin-specific hooks, and public-facing site hooks.
  */
-require plugin_dir_path(__FILE__) . 'includes/class-demo-print.php';
+require plugin_dir_path(__FILE__) . 'includes/class-wp-print-preview.php';
 
 /**
  * Begins execution of the plugin.
@@ -75,10 +75,10 @@ require plugin_dir_path(__FILE__) . 'includes/class-demo-print.php';
  *
  * @since    1.0.0
  */
-function run_demo_print()
+function run_wp_print_preview()
 {
 
-    $plugin = new Demo_Print();
+    $plugin = new Wp_Print_Preview();
     $plugin->run();
 
 }
@@ -93,4 +93,4 @@ function run_demo_print()
 // USING SHORTCODE W/ WPPB TUTORIAL: https://github.com/JoeSz/WordPress-Plugin-Boilerplate-Tutorial/blob/master/plugin-name/tutorials/register_a_shortcode_in_plugin.php
 
 
-run_demo_print();
+run_wp_print_preview();
