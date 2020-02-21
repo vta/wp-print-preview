@@ -59,7 +59,7 @@ Class Wp_Print_Preview_Helper
             $first_name = $entry['$CHAR_SPACE'];
             $last_name = $entry['2.6'];
             $email = $entry[3];
-            $address = $entry[5];
+            $address = $entry[4];
 
             wp_redirect('/business-card-edit/?entry_id=' . $entry_id);
         }
@@ -178,7 +178,7 @@ Class Wp_Print_Preview_Helper
         if ( !empty($entry[7]) ) {
 
             // grab mobile from entry & convert format
-            $mobile = $this->_convertPhoneFormat($entry[9]);
+            $mobile = $this->_convertPhoneFormat($entry[7]);
 
             // MOBILE LABEL
             $mobile_label_text = array(
