@@ -1,9 +1,5 @@
 <?php
 
-use Imagick;
-use ImagickDraw;
-use ImagickPixel;
-
 Class Wp_Print_Preview_Helper
 {
     public function view()
@@ -56,7 +52,7 @@ Class Wp_Print_Preview_Helper
             $entry_id = $_GET['entry_id'];
             $entry = GFAPI::get_entry($entry_id);
             $job_title = $entry[1];
-            $first_name = $entry['$CHAR_SPACE'];
+            $first_name = $entry['2.3'];
             $last_name = $entry['2.6'];
             $email = $entry[3];
             $address = $entry[4];
@@ -67,14 +63,26 @@ Class Wp_Print_Preview_Helper
 
     public function business_card_proof($entry)
     {
+        // retrieve array of IDs
+        $field_ids = $this->_retrieveFieldIds();
+
         // GF form input
-        $job_title = $entry[1];
-        $first_name = $entry['2.3'];
-        $last_name = $entry['2.6'];
+        $job_title = $entry[ $field_ids['job_title'] ];
+        $first_name = $entry[ $field_ids['first_name'] ];
+        $last_name = $entry[ $field_ids['last_name']];
         $full_name = $first_name . ' ' . $last_name;
-        $email = $entry[3];
-        $address = $entry[5];
-        $phone = $this->_convertPhoneFormat($entry[6]);
+        $email = $entry[ $field_ids['email'] ];
+        $address = $entry[ $field_ids['address'] ];
+        $phone = $this->_convertPhoneFormat($entry[ $field_ids['phone'] ]);
+
+//        echo "<pre>";
+//        var_dump($field_ids);
+//        echo "\n--------------------------\n";
+//        var_dump(GFAPI::get_field(4, 8));
+//        echo "\n--------------------------\n";
+//        var_dump(GFAPI::get_form(4));
+////        var_dump($entry);
+//        echo "</pre>";
 
         // indentation for text
         $x_indentation = 98;
@@ -175,10 +183,10 @@ Class Wp_Print_Preview_Helper
         );
 
         // CONDITIONALLY ADD MOBILE FIELD IF EXISTS
-        if ( !empty($entry[7]) ) {
+        if ( !empty($entry[ $field_ids['mobile'] ]) ) {
 
             // grab mobile from entry & convert format
-            $mobile = $this->_convertPhoneFormat($entry[7]);
+            $mobile = $this->_convertPhoneFormat($entry[ $field_ids['mobile'] ]);
 
             // MOBILE LABEL
             $mobile_label_text = array(
@@ -213,6 +221,7 @@ Class Wp_Print_Preview_Helper
         $image->setImageColorspace(Imagick::COLORSPACE_SRGB);
         $image->setImageUnits(Imagick::RESOLUTION_PIXELSPERINCH);
         $image->setResolution(600,600);
+        $image->setImageResolution(300, 300);
 
         $image->setImageFormat('png');
 
@@ -227,6 +236,65 @@ Class Wp_Print_Preview_Helper
         $image->writeImage(plugin_dir_path(__FILE__).'../public/newimage.png');
 
         return $image->getFilename();
+    }
+
+    /**
+     * Grabs field IDs dynamically based on field label names.
+     * @return array - array of field ids
+     */
+    private function _retrieveFieldIds() {
+        // grab Business Card GF Form object
+        $form = GFAPI::get_form(4);
+
+        // iterate through all field objects in Form
+        foreach($form['fields'] as $field)
+        {
+            // use labels as keys to dynmically retrieve field ids
+            switch($field['label'])
+            {
+                case 'Job Title':
+                    $job_title_id = $field['id'];
+                    break;
+                case 'Name':
+                    foreach($field['inputs'] as $subfield)
+                    {
+                        if ($subfield['label'] === 'First') {
+                            $firstname_id =  $subfield['id'];
+                        } elseif ($subfield['label'] === 'Last') {
+                            $lastname_id = $subfield['id'];
+                        }
+                    }
+                    break;
+                case 'Email':
+                    foreach($field['inputs'] as $subfield)
+                    {
+                        if ($subfield['label'] === 'Enter Email') {
+                            $email_id =  $subfield['id'];
+                        }
+                    }
+                    break;
+                case 'Address':
+                    $address_id = $field['id'];
+                    break;
+                case 'Phone':
+                    $phone_id = $field['id'];
+                    break;
+                case 'Mobile':
+                    $moble_id = $field['id'];
+                    break;
+            }
+
+        }
+
+        return array(
+            'job_title' => $job_title_id,
+            'first_name' => $firstname_id,
+            'last_name' => $lastname_id,
+            'email' => $email_id,
+            'address' => $address_id,
+            'phone' => $phone_id,
+            'mobile' => $moble_id
+        );
     }
 
     /**
@@ -253,9 +321,9 @@ Class Wp_Print_Preview_Helper
         return $draw;
     }
 
-    // convert format (XXX)XXX-XXXX to XXX-XXX-XXXX
-
     /**
+     * convert format (XXX)XXX-XXXX to XXX-XXX-XXXX
+     *
      * @param $str
      * @return string
      */
