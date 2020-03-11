@@ -75,14 +75,14 @@ Class Wp_Print_Preview_Helper
         $address = $entry[ $field_ids['address'] ];
         $phone = $this->_convertPhoneFormat($entry[ $field_ids['phone'] ]);
 
-//        echo "<pre>";
-//        var_dump($field_ids);
-//        echo "\n--------------------------\n";
-//        var_dump(GFAPI::get_field(4, 8));
-//        echo "\n--------------------------\n";
-//        var_dump(GFAPI::get_form(4));
-////        var_dump($entry);
-//        echo "</pre>";
+        echo "<pre>";
+        var_dump($field_ids);
+        echo "\n--------------------------\n";
+        var_dump(GFAPI::get_field(4, 8));
+        echo "\n--------------------------\n";
+        var_dump(GFAPI::get_form(4));
+        var_dump($entry);
+        echo "</pre>";
 
         // indentation for text
         $x_indentation = 98;
@@ -250,12 +250,12 @@ Class Wp_Print_Preview_Helper
         foreach($form['fields'] as $field)
         {
             // use labels as keys to dynmically retrieve field ids
-            switch($field['label'])
+            switch($field['adminLabel'])
             {
-                case 'Job Title':
+                case 'job_title':
                     $job_title_id = $field['id'];
                     break;
-                case 'Name':
+                case 'name':
                     foreach($field['inputs'] as $subfield)
                     {
                         if ($subfield['label'] === 'First') {
@@ -265,7 +265,7 @@ Class Wp_Print_Preview_Helper
                         }
                     }
                     break;
-                case 'Email':
+                case 'email':
                     foreach($field['inputs'] as $subfield)
                     {
                         if ($subfield['label'] === 'Enter Email') {
@@ -273,13 +273,13 @@ Class Wp_Print_Preview_Helper
                         }
                     }
                     break;
-                case 'Address':
+                case 'address':
                     $address_id = $field['id'];
                     break;
-                case 'Phone':
+                case 'phone':
                     $phone_id = $field['id'];
                     break;
-                case 'Mobile':
+                case 'mobile':
                     $moble_id = $field['id'];
                     break;
             }
