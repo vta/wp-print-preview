@@ -71,18 +71,19 @@ Class Wp_Print_Preview_Helper
         $first_name = $entry[ $field_ids['first_name'] ];
         $last_name = $entry[ $field_ids['last_name']];
         $full_name = $first_name . ' ' . $last_name;
+        $department = $entry[ $field_ids['department'] ];
         $email = $entry[ $field_ids['email'] ];
         $address = $entry[ $field_ids['address'] ];
         $phone = $this->_convertPhoneFormat($entry[ $field_ids['phone'] ]);
 
-        echo "<pre>";
-        var_dump($field_ids);
-        echo "\n--------------------------\n";
-        var_dump(GFAPI::get_field(4, 8));
-        echo "\n--------------------------\n";
-        var_dump(GFAPI::get_form(4));
-        var_dump($entry);
-        echo "</pre>";
+//        echo "<pre>";
+//        var_dump($field_ids);
+//        echo "\n--------------------------\n";
+//        var_dump(GFAPI::get_field(4, 8));
+//        echo "\n--------------------------\n";
+//        var_dump(GFAPI::get_form(4));
+//        var_dump($entry);
+//        echo "</pre>";
 
         // indentation for text
         $x_indentation = 98;
@@ -114,7 +115,7 @@ Class Wp_Print_Preview_Helper
             'color' => $DARK_BLUE,
             'stroke_width' => $STROKE_WIDTH,
             'font_size' => 9,
-            'kerning' => $CHAR_SPACE,
+            'kerning' => ($CHAR_SPACE - 1.1),
             'annotation' => array('x' => $x_indentation, 'y' => 560, 'text' => $full_name)
         );
         // JOB TITLE
@@ -125,6 +126,15 @@ Class Wp_Print_Preview_Helper
             'font_size' => 7.5,
             'kerning' => $CHAR_SPACE,
             'annotation' => array('x' => $x_indentation, 'y' => 630, 'text' => $job_title)
+        );
+        // DEPARTMENT
+        $department_text = array(
+            'font' => plugin_dir_path(__FILE__) . '/MuseoSans_300.otf',
+            'color' => $DARK_GRAY,
+            'stroke_width' => $STROKE_WIDTH,
+            'font_size' => 7.5,
+            'kerning' => $CHAR_SPACE,
+            'annotation' => array('x' => $x_indentation, 'y' => 750, 'text' => $department)
         );
         // ADDRESS
         $address_text = array(
@@ -151,7 +161,7 @@ Class Wp_Print_Preview_Helper
             'stroke_width' => $STROKE_WIDTH,
             'font_size' => 7.5,
             'kerning' => $CHAR_SPACE,
-            'annotation' => array('x' => $x_indentation + 200, 'y' => 920, 'text' => $email)
+            'annotation' => array('x' => $x_indentation + 188, 'y' => 920, 'text' => $email)
         );
         // PHONE LABEL
         $phone_label_text = array(
@@ -176,6 +186,7 @@ Class Wp_Print_Preview_Helper
         $text_params_arr = array(
             $slogan_text,
             $name_text,
+            $department_text,
             $job_title_text,
             $address_text,
             $email_label_text, $email_text,
@@ -210,6 +221,35 @@ Class Wp_Print_Preview_Helper
             // add to array
             array_push($text_params_arr, $mobile_label_text, $mobile_text);
 
+        }
+
+        // CONDITIONALLY ADD FAX FIELD IF EXISTS
+        if ( !empty($entry[ $field_ids['fax'] ]) ) {
+
+            // grab fax from entry & convert format
+            $fax = $this->_convertPhoneFormat($entry[ $field_ids['fax'] ]);
+
+            // FAX LABEL
+            $fax_label_text = array(
+                'font' => plugin_dir_path(__FILE__) . '/MuseoSans_300.otf',
+                'color' => $DARK_GRAY,
+                'stroke_width' => $STROKE_WIDTH,
+                'font_size' => 7.5,
+                'kerning' => $CHAR_SPACE,
+                'annotation' => array('x' => $x_indentation, 'y' => 1088, 'text' => 'Fax')
+            );
+            // FAX
+            $fax_text = array(
+                'font' => plugin_dir_path(__FILE__) . '/MuseoSans_300.otf',
+                'color' => $LIGHT_BLUE,
+                'stroke_width' => $STROKE_WIDTH,
+                'font_size' => 7.5,
+                'kerning' => $CHAR_SPACE,
+                'annotation' => array('x' => $x_indentation + 122, 'y' => 1088, 'text' => $fax)
+            );
+
+            // add to array
+            array_push($text_params_arr, $fax_label_text, $fax_text);
         }
 
 //        $overlay = new \Imagick();
@@ -265,6 +305,9 @@ Class Wp_Print_Preview_Helper
                         }
                     }
                     break;
+                case 'department':
+                    $department_id = $field['id'];
+                    break;
                 case 'email':
                     foreach($field['inputs'] as $subfield)
                     {
@@ -282,6 +325,9 @@ Class Wp_Print_Preview_Helper
                 case 'mobile':
                     $moble_id = $field['id'];
                     break;
+                case 'fax':
+                    $fax_id = $field['id'];
+                    break;
             }
 
         }
@@ -290,10 +336,12 @@ Class Wp_Print_Preview_Helper
             'job_title' => $job_title_id,
             'first_name' => $firstname_id,
             'last_name' => $lastname_id,
+            'department' => $department_id,
             'email' => $email_id,
             'address' => $address_id,
             'phone' => $phone_id,
-            'mobile' => $moble_id
+            'mobile' => $moble_id,
+            'fax' => $fax_id
         );
     }
 
