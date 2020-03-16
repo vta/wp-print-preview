@@ -35,12 +35,33 @@ description="false" ajax="true"]`
 Back in Gravity Forms, select Business Cards to edit the form. Under each field, click the dropdown arrow to expand
 available options. Under **Advanced**, check the box next to "Allow field to be populated dynamically".
 
-In the order that the fields appear in the form, the paramter names are:
+In the order that the fields appear in the form, the parameter names are:
 - job_title
 - first_name
 - last_name     (edited in the same field as first_name)
+- department
 - email
 - address
+- phone
+- email
+- fax
+
+Once all of the fields are submitted, be sure to hit **Update** on the right hand side to save new field modifications.
+
+### Dynamic Field Value Retrieval
+**IMPORTANT**
+Similar to previous instructions, please add the below values to the "_Admin Label_" field. Field IDs can vary from
+ development and production variables, so to counteract this issue, field values rely on Admin Labels as keys.
+ 
+ In the order that the fields appear in the form, the parameter names are:
+ - job_title
+ - name (only 1 value for both First Name and Last Name)
+ - department
+ - email
+ - address
+ - phone
+ - email
+ - fax
 
 Once all of the above steps are set up correctly, the plugin should function.
 
