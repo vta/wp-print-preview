@@ -36,7 +36,12 @@ Class Wp_Print_Preview_Helper
                 <a href='/wp-login.php?'>Login</a>
                 <a href='/'>Back to Home</a>
             ";
-            exit();
+            /**
+             * @todo clean-up
+             * @see https://www.php.net/manual/en/function.return.php
+             * @jpham93 - this code is never reached after the above **return** is sent...
+             * exit();
+             **/
         }
 
     }
@@ -75,6 +80,9 @@ Class Wp_Print_Preview_Helper
         $email = $entry[ $field_ids['email'] ];
         $address = $entry[ $field_ids['address'] ];
         $phone = $this->_convertPhoneFormat($entry[ $field_ids['phone'] ]);
+
+
+// @todo clean-up the debugging and development statements
 
 //        echo "<pre>";
 //        var_dump($field_ids);
