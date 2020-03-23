@@ -41,26 +41,6 @@ Class Wp_Print_Preview_Helper
 
     }
 
-    /**
-     * @todo - removed from public hooks - we should discuss merits versus GF built-in calls
-     * Callback to redirect to business-card-edit. Contains
-     */
-    public function business_card_edit_redirect()
-    {
-        if ( isset($_POST['edit']) ) {
-            // grab entry_id and its respective field/values
-            $entry_id = $_GET['entry_id'];
-            $entry = GFAPI::get_entry($entry_id);
-            $job_title = $entry[1];
-            $first_name = $entry['2.3'];
-            $last_name = $entry['2.6'];
-            $email = $entry[3];
-            $address = $entry[4];
-
-            wp_redirect('/business-card-edit/?entry_id=' . $entry_id);
-        }
-    }
-
     public function business_card_proof($entry)
     {
         // retrieve array of IDs
@@ -75,15 +55,6 @@ Class Wp_Print_Preview_Helper
         $email = $entry[ $field_ids['email'] ];
         $address = $entry[ $field_ids['address'] ];
         $phone = $this->_convertPhoneFormat($entry[ $field_ids['phone'] ]);
-
-//        echo "<pre>";
-//        var_dump($field_ids);
-//        echo "\n--------------------------\n";
-//        var_dump(GFAPI::get_field(4, 8));
-//        echo "\n--------------------------\n";
-//        var_dump(GFAPI::get_form(4));
-//        var_dump($entry);
-//        echo "</pre>";
 
         // indentation for text
         $x_indentation = 98;
@@ -252,10 +223,6 @@ Class Wp_Print_Preview_Helper
             array_push($text_params_arr, $fax_label_text, $fax_text);
         }
 
-//        $overlay = new \Imagick();
-//        $overlay->newImage(300*3.5,300*2,new ImagickPixel('transparent'));
-//        $overlay->drawImage($draw);
-
         $image = new \Imagick();
         $image->readImage(plugin_dir_path(__FILE__).'../public/template.png');
         $image->setImageColorspace(Imagick::COLORSPACE_SRGB);
@@ -272,7 +239,6 @@ Class Wp_Print_Preview_Helper
 
         $image->setFilename('newimage');
 
-//        $image->compositeImage($overlay, Imagick::COMPOSITE_BLEND, 50, 50,Imagick::CHANNEL_ALPHA);
         $image->writeImage(plugin_dir_path(__FILE__).'../public/newimage.png');
 
         return $image->getFilename();
@@ -289,7 +255,7 @@ Class Wp_Print_Preview_Helper
         // iterate through all field objects in Form
         foreach($form['fields'] as $field)
         {
-            // use labels as keys to dynmically retrieve field ids
+            // use labels as keys to dynamically retrieve field ids
             switch($field['adminLabel'])
             {
                 case 'job_title':
