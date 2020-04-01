@@ -132,6 +132,7 @@ class Wp_Print_Preview_Public
         if ( isset($_GET['entry_id']) ) {
             $entry = GFAPI::get_entry($_GET['entry_id']);
             $image = (new Wp_Print_Preview_Helper())->business_card_proof($entry);
+            $_SESSION['entry_id'] = $_GET['entry_id'];
         }
 
         /**
@@ -166,6 +167,8 @@ class Wp_Print_Preview_Public
                 </div>
             </form>
         ";
+
+        // ADD CODE TO CALL FILTERS FOR CART_ITEM_NAME AND
 
         // code...
     }

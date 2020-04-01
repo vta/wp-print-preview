@@ -43,6 +43,10 @@ Class Wp_Print_Preview_Helper
 
     public function business_card_proof($entry)
     {
+        // Store entry_id in SESSION
+        // i.e. /?add_to_cart=39 will have access to this entry_id upon "Add Order"
+        $_SESSION['entry_id'] = $entry['id'];
+
         // retrieve array of IDs
         $field_ids = $this->_retrieveFieldIds();
 
@@ -73,7 +77,7 @@ Class Wp_Print_Preview_Helper
         /** text draw params */
         // SLOGAN
         $slogan_text = array(
-            'font' => plugin_dir_path(__FILE__) . '/MuseoSans_300_Italic.otf',
+            'font' => plugin_dir_path(__DIR__) . '/public/assets/MuseoSans_300_Italic.otf',
             'color' => $LIGHT_BLUE,
             'stroke_width' => $STROKE_WIDTH,
             'font_size' => 6.5,
@@ -82,7 +86,7 @@ Class Wp_Print_Preview_Helper
         );
         // NAME
         $name_text = array(
-            'font' => plugin_dir_path(__FILE__) . '/MuseoSans_700.otf',
+            'font' => plugin_dir_path(__DIR__) . '/public/assets/MuseoSans_700.otf',
             'color' => $DARK_BLUE,
             'stroke_width' => $STROKE_WIDTH,
             'font_size' => 9,
@@ -91,7 +95,7 @@ Class Wp_Print_Preview_Helper
         );
         // JOB TITLE
         $job_title_text = array(
-            'font' => plugin_dir_path(__FILE__) . '/MuseoSans_300.otf',
+            'font' => plugin_dir_path(__DIR__) . '/public/assets/MuseoSans_300.otf',
             'color' => $DARK_GRAY,
             'stroke_width' => $STROKE_WIDTH,
             'font_size' => 7.5,
@@ -100,7 +104,7 @@ Class Wp_Print_Preview_Helper
         );
         // DEPARTMENT
         $department_text = array(
-            'font' => plugin_dir_path(__FILE__) . '/MuseoSans_300.otf',
+            'font' => plugin_dir_path(__DIR__) . '/public/assets/MuseoSans_300.otf',
             'color' => $DARK_GRAY,
             'stroke_width' => $STROKE_WIDTH,
             'font_size' => 7.5,
@@ -109,7 +113,7 @@ Class Wp_Print_Preview_Helper
         );
         // ADDRESS
         $address_text = array(
-            'font' => plugin_dir_path(__FILE__) . '/MuseoSans_300.otf',
+            'font' => plugin_dir_path(__DIR__) . '/public/assets/MuseoSans_300.otf',
             'color' => $DARK_GRAY,
             'stroke_width' => $STROKE_WIDTH,
             'font_size' => 7.5,
@@ -118,7 +122,7 @@ Class Wp_Print_Preview_Helper
         );
         // EMAIL LABEL
         $email_label_text = array(
-            'font' => plugin_dir_path(__FILE__) . '/MuseoSans_300.otf',
+            'font' => plugin_dir_path(__DIR__) . '/public/assets/MuseoSans_300.otf',
             'color' => $DARK_GRAY,
             'stroke_width' => $STROKE_WIDTH,
             'font_size' => 7.5,
@@ -127,7 +131,7 @@ Class Wp_Print_Preview_Helper
         );
         // EMAIL TEXT
         $email_text = array(
-            'font' => plugin_dir_path(__FILE__) . '/MuseoSans_300.otf',
+            'font' => plugin_dir_path(__DIR__) . '/public/assets/MuseoSans_300.otf',
             'color' => $LIGHT_BLUE,
             'stroke_width' => $STROKE_WIDTH,
             'font_size' => 7.5,
@@ -136,7 +140,7 @@ Class Wp_Print_Preview_Helper
         );
         // PHONE LABEL
         $phone_label_text = array(
-            'font' => plugin_dir_path(__FILE__) . '/MuseoSans_300.otf',
+            'font' => plugin_dir_path(__DIR__) . '/public/assets/MuseoSans_300.otf',
             'color' => $DARK_GRAY,
             'stroke_width' => $STROKE_WIDTH,
             'font_size' => 7.5,
@@ -145,7 +149,7 @@ Class Wp_Print_Preview_Helper
         );
         // PHONE
         $phone_text = array(
-            'font' => plugin_dir_path(__FILE__) . '/MuseoSans_300.otf',
+            'font' => plugin_dir_path(__DIR__) . '/public/assets/MuseoSans_300.otf',
             'color' => $LIGHT_BLUE,
             'stroke_width' => $STROKE_WIDTH,
             'font_size' => 7.5,
@@ -172,7 +176,7 @@ Class Wp_Print_Preview_Helper
 
             // MOBILE LABEL
             $mobile_label_text = array(
-                'font' => plugin_dir_path(__FILE__) . '/MuseoSans_300.otf',
+                'font' => plugin_dir_path(__DIR__) . '/public/assets/MuseoSans_300.otf',
                 'color' => $DARK_GRAY,
                 'stroke_width' => $STROKE_WIDTH,
                 'font_size' => 7.5,
@@ -181,7 +185,7 @@ Class Wp_Print_Preview_Helper
             );
             // MOBILE
             $mobile_text = array(
-                'font' => plugin_dir_path(__FILE__) . '/MuseoSans_300.otf',
+                'font' => plugin_dir_path(__DIR__) . '/public/assets/MuseoSans_300.otf',
                 'color' => $LIGHT_BLUE,
                 'stroke_width' => $STROKE_WIDTH,
                 'font_size' => 7.5,
@@ -202,7 +206,7 @@ Class Wp_Print_Preview_Helper
 
             // FAX LABEL
             $fax_label_text = array(
-                'font' => plugin_dir_path(__FILE__) . '/MuseoSans_300.otf',
+                'font' => plugin_dir_path(__DIR__) . '/public/assets/MuseoSans_300.otf',
                 'color' => $DARK_GRAY,
                 'stroke_width' => $STROKE_WIDTH,
                 'font_size' => 7.5,
@@ -211,7 +215,7 @@ Class Wp_Print_Preview_Helper
             );
             // FAX
             $fax_text = array(
-                'font' => plugin_dir_path(__FILE__) . '/MuseoSans_300.otf',
+                'font' => plugin_dir_path(__DIR__) . '/public/assets/MuseoSans_300.otf',
                 'color' => $LIGHT_BLUE,
                 'stroke_width' => $STROKE_WIDTH,
                 'font_size' => 7.5,
@@ -230,18 +234,33 @@ Class Wp_Print_Preview_Helper
         $image->setResolution(600,600);
         $image->setImageResolution(300, 300);
 
-        $image->setImageFormat('png');
+        $image->setImageFormat('pdf');
 
         foreach ( $text_params_arr as $text_params) {
             $draw = $this->_drawText($text_params);
             $image->drawImage($draw);
         }
 
-        $image->setFilename('newimage');
+        // Filename for the latest preview created
+        $temp_file = 'business_card_template';
 
-        $image->writeImage(plugin_dir_path(__FILE__).'../public/newimage.png');
+        // Form entry_id added to png preview
+        $entry_filename = 'business_card';
 
-        return $image->getFilename();
+        $image->setFilename($entry_filename);
+
+        // write latest file to entry
+        $image->writeImage(plugin_dir_path(__FILE__).'../public/' . $temp_file . '.png');
+
+        // write to WC Product
+        $image->writeImage(plugin_dir_path(__FILE__).'../public/' . $entry_filename . '.pdf');
+
+
+        // write Image to /wp-content/uploads/business_cards
+        $this->_copyToUploads();
+
+        // return to shortcode to preview bc proof
+        return $temp_file;
     }
 
     /**
@@ -345,6 +364,28 @@ Class Wp_Print_Preview_Helper
     {
         preg_match('/^\((\d{3})\) (\d{3})-(\d{4})$/', $str, $matches );
         return $matches[1] . '-' . $matches[2] . '-' . $matches[3];
+    }
+
+    /**
+     * uploading files programmatically in WordPress
+     * @see - https://artisansweb.net/upload-files-programmatically-wordpress/
+     */
+    private function _copyToUploads($file)
+    {
+        $upload_dir = wp_upload_dir();
+
+        if ( ! empty( $upload_dir['basedir'] ) ) {
+            $bc_dirname = $upload_dir['basedir'] . '/business_card';
+
+            //  create a new directory for business cards if it does not exist
+            if ( ! file_exists( $bc_dirname ) ) {
+                wp_mkdir_p( $bc_dirname );
+            }
+
+            $filename = wp_unique_filename( $bc_dirname, $_FILES['file']['name'] );
+            move_uploaded_file($file, $bc_dirname .'/'. $filename);
+            // save into database $upload_dir['baseurl'].'/product-images/'.$filename;
+        }
     }
 
 }
