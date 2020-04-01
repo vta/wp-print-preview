@@ -65,21 +65,6 @@ Class Wp_Print_Preview_Helper
         $address = $entry[ $field_ids['address'] ];
         $phone = $this->_convertPhoneFormat($entry[ $field_ids['phone'] ]);
 
-<<<<<<< HEAD
-=======
-
-// @todo clean-up the debugging and development statements
-
-//        echo "<pre>";
-//        var_dump($field_ids);
-//        echo "\n--------------------------\n";
-//        var_dump(GFAPI::get_field(4, 8));
-//        echo "\n--------------------------\n";
-//        var_dump(GFAPI::get_form(4));
-//        var_dump($entry);
-//        echo "</pre>";
-
->>>>>>> 260b572a87d4e7c2239ca388e56d27f53ae017bb
         // indentation for text
         $x_indentation = 98;
 
