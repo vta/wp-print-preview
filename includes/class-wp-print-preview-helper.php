@@ -80,15 +80,6 @@ Class Wp_Print_Preview_Helper
         $DARK_GRAY = '#4C4E56';
 
         /** text draw params */
-        // SLOGAN
-        $slogan_text = array(
-            'font' => plugin_dir_path(__DIR__) . '/public/assets/MuseoSans_300_Italic.otf',
-            'color' => $LIGHT_BLUE,
-            'stroke_width' => $STROKE_WIDTH,
-            'font_size' => 6.5,
-            'kerning' => $CHAR_SPACE,
-            'annotation' => array('x' => 1261, 'y' => 435, 'text' => 'Solutions that move you')
-        );
         // NAME
         $name_text = array(
             'font' => plugin_dir_path(__DIR__) . '/public/assets/MuseoSans_700.otf',
@@ -164,7 +155,6 @@ Class Wp_Print_Preview_Helper
 
         // combine text params into one array
         $text_params_arr = array(
-            $slogan_text,
             $name_text,
             $department_text,
             $job_title_text,
@@ -233,7 +223,7 @@ Class Wp_Print_Preview_Helper
         }
 
         $image = new \Imagick();
-        $image->readImage(plugin_dir_path(__FILE__).'../public/template.png');
+        $image->readImage(plugin_dir_path(__FILE__).'../public/blank.png');
         $image->setImageColorspace(Imagick::COLORSPACE_SRGB);
         $image->setImageUnits(Imagick::RESOLUTION_PIXELSPERINCH);
         $image->setResolution(600,600);
@@ -262,9 +252,9 @@ Class Wp_Print_Preview_Helper
 
 
         // write Image to /wp-content/uploads/business_cards
-        $this->_copyToUploads();
+//        $this->_copyToUploads();
 
-        // return to shortcode to preview bc proof
+        // return the img filename to shortcode
         return $temp_file;
     }
 
