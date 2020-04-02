@@ -223,7 +223,7 @@ Class Wp_Print_Preview_Helper
         }
 
         $image = new \Imagick();
-        $image->readImage(plugin_dir_path(__FILE__).'../public/blank.png');
+        $image->readImage(plugin_dir_path(__FILE__).'../public/assets/blank.png');
         $image->setImageColorspace(Imagick::COLORSPACE_SRGB);
         $image->setImageUnits(Imagick::RESOLUTION_PIXELSPERINCH);
         $image->setResolution(600,600);
@@ -239,20 +239,22 @@ Class Wp_Print_Preview_Helper
         // Filename for the latest preview created
         $temp_file = 'business_card_template';
 
-        // Form entry_id added to png preview
-        $entry_filename = 'business_card';
+        // Form entry_id added to PDF preview
+        $entry_filename = 'business_card_' . $entry['id'];
 
         $image->setFilename($entry_filename);
 
+        // assets/ directory path
+        $assets_dir = plugin_dir_path(__DIR__). 'public/assets/';
+
         // write latest file to entry
-        $image->writeImage(plugin_dir_path(__FILE__).'../public/' . $temp_file . '.png');
+        $image->writeImage($assets_dir . $temp_file . '.png');
 
         // write to WC Product
-        $image->writeImage(plugin_dir_path(__FILE__).'../public/' . $entry_filename . '.pdf');
-
+        $image->writeImage($assets_dir . $entry_filename . '.pdf');
 
         // write Image to /wp-content/uploads/business_cards
-//        $this->_copyToUploads();
+        $this->_copyToUploads($assets_dir, $entry_filename . '.pdf');
 
         // return the img filename to shortcode
         return $temp_file;
@@ -362,23 +364,25 @@ Class Wp_Print_Preview_Helper
     }
 
     /**
-     * uploading files programmatically in WordPress
+     * uploading files programmatically in to wp-content/uploads/
      * @see - https://artisansweb.net/upload-files-programmatically-wordpress/
      */
-    private function _copyToUploads($file)
+    private function _copyToUploads($assets_dir, $filename)
     {
         $upload_dir = wp_upload_dir();
 
+        // Check if base directory exists for uploads/
         if ( ! empty( $upload_dir['basedir'] ) ) {
-            $bc_dirname = $upload_dir['basedir'] . '/business_card';
+
+            $bc_dirname = $upload_dir['basedir'] . '/business_cards';
 
             //  create a new directory for business cards if it does not exist
-            if ( ! file_exists( $bc_dirname ) ) {
+            if ( !file_exists( $bc_dirname ) ) {
                 wp_mkdir_p( $bc_dirname );
             }
 
-            $filename = wp_unique_filename( $bc_dirname, $_FILES['file']['name'] );
-            move_uploaded_file($file, $bc_dirname .'/'. $filename);
+            // Move the file to wp-content/uploads
+            rename($assets_dir . $filename, /*$bc_dirname . */$upload_dir . '/' . $filename);
             // save into database $upload_dir['baseurl'].'/product-images/'.$filename;
         }
     }
