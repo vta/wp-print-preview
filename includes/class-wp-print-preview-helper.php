@@ -236,9 +236,6 @@ Class Wp_Print_Preview_Helper
             $image->drawImage($draw);
         }
 
-        // Filename for the latest preview created
-        $temp_file = 'business_card_template';
-
         // Form entry_id added to PDF preview
         $entry_filename = 'business_card_' . $entry['id'];
 
@@ -247,14 +244,21 @@ Class Wp_Print_Preview_Helper
         // assets/ directory path
         $assets_dir = plugin_dir_path(__DIR__). 'public/assets/';
 
-        // write latest file to entry
-        $image->writeImage($assets_dir . $temp_file . '.png');
-
         // write to WC Product
         $image->writeImage($assets_dir . $entry_filename . '.pdf');
 
         // write Image to /wp-content/uploads/business_cards
         $this->_copyToUploads($assets_dir, $entry_filename . '.pdf');
+
+        /** CREATE PNG FILE FOR PREVIEW */
+        // Switch format to PNG
+        $image->setImageFormat('png');
+
+        // Filename for temporary file Preview
+        $temp_file = 'business_card_template';
+
+        // write latest file to entry
+        $image->writeImage($assets_dir . $temp_file . '.png');
 
         // return the img filename to shortcode
         return $temp_file;
@@ -382,7 +386,7 @@ Class Wp_Print_Preview_Helper
             }
 
             // Move the file to wp-content/uploads
-            rename($assets_dir . $filename, /*$bc_dirname . */$upload_dir . '/' . $filename);
+            rename($assets_dir . $filename, $bc_dirname . '/' . $filename);
             // save into database $upload_dir['baseurl'].'/product-images/'.$filename;
         }
     }
