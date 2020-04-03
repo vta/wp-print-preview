@@ -1,11 +1,12 @@
 ###> IDE/Editors ###
 .idea
 *.iml
+.DS_Store
 ###< IDE/Editors ###
 #
 ###< temporary files ###
 public/newimage.png
 ###> temporary files ###
-public/business_card*
+public/assets/business_card*
 
 

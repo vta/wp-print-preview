@@ -155,15 +155,17 @@ class Wp_Print_Preview_Public
          */
 
         return "
-            <h3>Your order is being processed. Please allow 2-3 business days for the order to complete.</h3>
+            <h3 style='text-align: center;'>Business Card Proof</h3>
+            <p>Please review the proof to see if everything is correct. 
+            If it is, please click <b>Add Order</b> to add it to your cart.</p>
             
-            <img src='/wp-content/plugins/wp-print-preview/public/$image.png' />
+            <img src='/wp-content/plugins/wp-print-preview/public/assets/$image.png' />
 
             <!--have to pass event object manually-->
             <form method='post' id='confirm-bc'>
                 <!-- <button name='edit' value='edit'>Edit Order</button> -->
                 <div class='container d-flex justify-content-end'>
-                  <button class='btn btn-lg btn-danger' name='cancel' value='cancel'>Cancel Order</button>
+                  <button name='cancel' value='cancel'>Cancel Order</button>
                 </div>
             </form>
         ";
