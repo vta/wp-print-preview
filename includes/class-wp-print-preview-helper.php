@@ -245,10 +245,10 @@ Class Wp_Print_Preview_Helper
         $assets_dir = plugin_dir_path(__DIR__). 'public/assets/';
 
         // write to WC Product
-        $image->writeImage($assets_dir . $entry_filename . '.pdf');
+        // $image->writeImage($assets_dir . $entry_filename . '.pdf');
 
         // write Image to /wp-content/uploads/business_cards
-        $this->_copyToUploads($assets_dir, $entry_filename . '.pdf');
+        $this->_writeToUploads($image, $entry_filename . '.pdf');
 
         /** CREATE PNG FILE FOR PREVIEW */
         // Switch format to PNG
@@ -371,7 +371,7 @@ Class Wp_Print_Preview_Helper
      * uploading files programmatically in to wp-content/uploads/
      * @see - https://artisansweb.net/upload-files-programmatically-wordpress/
      */
-    private function _copyToUploads($assets_dir, $filename)
+    private function _writeToUploads($image, $filename)
     {
         $upload_dir = wp_upload_dir();
 
@@ -385,8 +385,13 @@ Class Wp_Print_Preview_Helper
                 wp_mkdir_p( $bc_dirname );
             }
 
-            // Move the file to wp-content/uploads
-            rename($assets_dir . $filename, $bc_dirname . '/' . $filename);
+            /**
+             * Write the new file to wp-content/uploads via Image Magick
+             * 
+             * For Ubuntu servrs, please change uploads folder's group ownership
+             * @see - https://stackoverflow.com/questions/15716428/cannot-save-thumbnail-with-imagick
+             */
+            $image->writeImage($bc_dirname . '/' . $filename);
             // save into database $upload_dir['baseurl'].'/product-images/'.$filename;
         }
     }
