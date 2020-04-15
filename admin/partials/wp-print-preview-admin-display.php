@@ -8,8 +8,8 @@
  * @link       https://jamespham.io
  * @since      1.0.0
  *
- * @package    Demo_Print
- * @subpackage Demo_Print/admin/partials
+ * @package    Wp_Print_Print
+ * @subpackage Wp_Print_Print/admin/partials
  */
 ?>
 

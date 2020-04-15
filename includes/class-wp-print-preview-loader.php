@@ -6,8 +6,8 @@
  * @link       https://jamespham.io
  * @since      1.0.0
  *
- * @package    Demo_Print
- * @subpackage Demo_Print/includes
+ * @package    Wp_Print_Preview
+ * @subpackage Wp_Print_Preview/includes
  */
 
 /**
@@ -17,11 +17,11 @@
  * the plugin, and register them with the WordPress API. Call the
  * run function to execute the list of actions and filters.
  *
- * @package    Demo_Print
- * @subpackage Demo_Print/includes
+ * @package    Wp_Print_Preview
+ * @subpackage Wp_Print_Preview/includes
  * @author     James Pham <jamespham93@yahoo.com>
  */
-class Demo_Print_Loader {
+class Wp_Print_Preview_Loader {
 
 	/**
 	 * The array of actions registered with WordPress.
@@ -41,6 +41,15 @@ class Demo_Print_Loader {
 	 */
 	protected $filters;
 
+    /**
+     * Array of shortcodes registered with WordPress
+     *
+     * @since    1.0.0
+     * @access   protected
+     * @var
+     */
+	protected $shortcodes;
+
 	/**
 	 * Initialize the collections used to maintain the actions and filters.
 	 *
@@ -50,7 +59,7 @@ class Demo_Print_Loader {
 
 		$this->actions = array();
 		$this->filters = array();
-
+        $this->shortcodes = array();
 	}
 
 	/**
@@ -109,7 +118,22 @@ class Demo_Print_Loader {
 
 	}
 
-	/**
+    /**
+     * Add a new shortcode to the collection to be registered with WordPress
+     *
+     * @param string $tag The name of the new shortcode.
+     * @param object $component A reference to the instance of the object on which the shortcode is defined.
+     * @param string $callback The name of the function that defines the shortcode.
+     * @param int $priority
+     * @param int $accepted_args
+     * @since     1.0.1
+     */
+
+    public function add_shortcode( $tag, $component, $callback, $priority = 10, $accepted_args = 2 ) {
+        $this->shortcodes = $this->add( $this->shortcodes, $tag, $component, $callback, $priority, $accepted_args );
+    }
+
+    /**
 	 * Register the filters and actions with WordPress.
 	 *
 	 * @since    1.0.0
@@ -124,6 +148,12 @@ class Demo_Print_Loader {
 			add_action( $hook['hook'], array( $hook['component'], $hook['callback'] ), $hook['priority'], $hook['accepted_args'] );
 		}
 
+        foreach ( $this->shortcodes as $hook ) {
+            add_shortcode(  $hook['hook'], array( $hook['component'], $hook['callback'] ), $hook['priority'], $hook['accepted_args'] );
+        }
+
 	}
+
+
 
 }

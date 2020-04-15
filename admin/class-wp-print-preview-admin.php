@@ -6,8 +6,8 @@
  * @link       https://jamespham.io
  * @since      1.0.0
  *
- * @package    Demo_Print
- * @subpackage Demo_Print/admin
+ * @package    Wp_Print_Preview
+ * @subpackage Wp_Print_Preview/admin
  */
 
 /**
@@ -16,11 +16,11 @@
  * Defines the plugin name, version, and two examples hooks for how to
  * enqueue the admin-specific stylesheet and JavaScript.
  *
- * @package    Demo_Print
- * @subpackage Demo_Print/admin
+ * @package    Wp_Print_Preview
+ * @subpackage Wp_Print_Preview/admin
  * @author     James Pham <jamespham93@yahoo.com>
  */
-class Demo_Print_Admin {
+class Wp_Print_Preview_Admin {
 
 	/**
 	 * The ID of this plugin.
@@ -65,15 +65,15 @@ class Demo_Print_Admin {
 		 * This function is provided for demonstration purposes only.
 		 *
 		 * An instance of this class should be passed to the run() function
-		 * defined in Demo_Print_Loader as all of the hooks are defined
+		 * defined in Wp_Print_Preview_Loader as all of the hooks are defined
 		 * in that particular class.
 		 *
-		 * The Demo_Print_Loader will then create the relationship
+		 * The Wp_Print_Preview_Loader will then create the relationship
 		 * between the defined hooks and the functions defined in this
 		 * class.
 		 */
 
-		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/demo-print-admin.css', array(), $this->version, 'all' );
+		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/wp-print-preview-admin.css', array(), $this->version, 'all' );
 
 	}
 
@@ -88,15 +88,15 @@ class Demo_Print_Admin {
 		 * This function is provided for demonstration purposes only.
 		 *
 		 * An instance of this class should be passed to the run() function
-		 * defined in Demo_Print_Loader as all of the hooks are defined
+		 * defined in Wp_Print_Preview_Loader as all of the hooks are defined
 		 * in that particular class.
 		 *
-		 * The Demo_Print_Loader will then create the relationship
+		 * The Wp_Print_Preview_Loader will then create the relationship
 		 * between the defined hooks and the functions defined in this
 		 * class.
 		 */
 
-		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/demo-print-admin.js', array( 'jquery' ), $this->version, false );
+		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/wp-print-preview-admin.js', array( 'jquery' ), $this->version, false );
 
 	}
 

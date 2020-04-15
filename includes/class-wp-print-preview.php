@@ -1,5 +1,7 @@
 <?php
 
+include_once(plugin_dir_path( __DIR__ ) . '/includes/class-wp-print-preview-helper.php');
+
 /**
  * The file that defines the core plugin class
  *
@@ -9,8 +11,8 @@
  * @link       https://jamespham.io
  * @since      1.0.0
  *
- * @package    Demo_Print
- * @subpackage Demo_Print/includes
+ * @package    Wp_Print_Print
+ * @subpackage Wp_Print_Print/includes
  */
 
 /**
@@ -23,11 +25,11 @@
  * version of the plugin.
  *
  * @since      1.0.0
- * @package    Demo_Print
- * @subpackage Demo_Print/includes
+ * @package    Wp_Print_Preview
+ * @subpackage Wp_Print_Preview/includes
  * @author     James Pham <jamespham93@yahoo.com>
  */
-class Demo_Print {
+class Wp_Print_Preview {
 
 	/**
 	 * The loader that's responsible for maintaining and registering all hooks that power
@@ -35,7 +37,7 @@ class Demo_Print {
 	 *
 	 * @since    1.0.0
 	 * @access   protected
-	 * @var      Demo_Print_Loader    $loader    Maintains and registers all hooks for the plugin.
+	 * @var      Wp_Print_Preview_Loader    $loader    Maintains and registers all hooks for the plugin.
 	 */
 	protected $loader;
 
@@ -67,17 +69,18 @@ class Demo_Print {
 	 * @since    1.0.0
 	 */
 	public function __construct() {
-		if ( defined( 'DEMO_PRINT_VERSION' ) ) {
-			$this->version = DEMO_PRINT_VERSION;
+		if ( defined( 'WP_PRINT_PREVIEW_VERSION' ) ) {
+			$this->version = WP_PRINT_PREVIEW_VERSION;
 		} else {
 			$this->version = '1.0.0';
 		}
-		$this->plugin_name = 'demo-print';
+		$this->plugin_name = 'wp-print-preview';
 
 		$this->load_dependencies();
 		$this->set_locale();
 		$this->define_admin_hooks();
 		$this->define_public_hooks();
+		$this->get_loader();
 
 	}
 
@@ -86,10 +89,10 @@ class Demo_Print {
 	 *
 	 * Include the following files that make up the plugin:
 	 *
-	 * - Demo_Print_Loader. Orchestrates the hooks of the plugin.
-	 * - Demo_Print_i18n. Defines internationalization functionality.
-	 * - Demo_Print_Admin. Defines all hooks for the admin area.
-	 * - Demo_Print_Public. Defines all hooks for the public side of the site.
+	 * - Wp_Print_Preview_Loader. Orchestrates the hooks of the plugin.
+	 * - Wp_Print_Preview_i18n. Defines internationalization functionality.
+	 * - Wp_Print_Preview_Admin. Defines all hooks for the admin area.
+	 * - Wp_Print_Preview_Public. Defines all hooks for the public side of the site.
 	 *
 	 * Create an instance of the loader which will be used to register the hooks
 	 * with WordPress.
@@ -103,33 +106,33 @@ class Demo_Print {
 		 * The class responsible for orchestrating the actions and filters of the
 		 * core plugin.
 		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-demo-print-loader.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-wp-print-preview-loader.php';
 
 		/**
 		 * The class responsible for defining internationalization functionality
 		 * of the plugin.
 		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-demo-print-i18n.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-wp-print-preview-i18n.php';
 
 		/**
 		 * The class responsible for defining all actions that occur in the admin area.
 		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-demo-print-admin.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-wp-print-preview-admin.php';
 
 		/**
 		 * The class responsible for defining all actions that occur in the public-facing
 		 * side of the site.
 		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-demo-print-public.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-wp-print-preview-public.php';
 
-		$this->loader = new Demo_Print_Loader();
+		$this->loader = new Wp_Print_Preview_Loader();
 
 	}
 
 	/**
 	 * Define the locale for this plugin for internationalization.
 	 *
-	 * Uses the Demo_Print_i18n class in order to set the domain and to register the hook
+	 * Uses the Wp_Print_Preview_i18n class in order to set the domain and to register the hook
 	 * with WordPress.
 	 *
 	 * @since    1.0.0
@@ -137,7 +140,7 @@ class Demo_Print {
 	 */
 	private function set_locale() {
 
-		$plugin_i18n = new Demo_Print_i18n();
+		$plugin_i18n = new Wp_Print_Preview_i18n();
 
 		$this->loader->add_action( 'plugins_loaded', $plugin_i18n, 'load_plugin_textdomain' );
 
@@ -152,7 +155,7 @@ class Demo_Print {
 	 */
 	private function define_admin_hooks() {
 
-		$plugin_admin = new Demo_Print_Admin( $this->get_plugin_name(), $this->get_version() );
+		$plugin_admin = new Wp_Print_Preview_Admin( $this->get_plugin_name(), $this->get_version() );
 
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
@@ -168,11 +171,13 @@ class Demo_Print {
 	 */
 	private function define_public_hooks() {
 
-		$plugin_public = new Demo_Print_Public( $this->get_plugin_name(), $this->get_version() );
+		$plugin_public = new Wp_Print_Preview_Public( $this->get_plugin_name(), $this->get_version() );
 
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
-
+//		$this->loader->add_action( 'wp_loaded', $plugin_public, 'Wp_Print_Preview_Helper::business_card_edit_redirect');
+		$this->loader->add_shortcode( 'business-card-preview', $plugin_public, "Wp_Print_Preview_Public::business_card_preview_shortcode", $priority = 10, $accepted_args = 2 );
+		$this->loader->add_shortcode('business-card-edit', $plugin_public, 'Wp_Print_Preview_Public::business_card_edit_shortcode',  $priority = 10, $accepted_args = 2);
 	}
 
 	/**
@@ -199,7 +204,7 @@ class Demo_Print {
 	 * The reference to the class that orchestrates the hooks with the plugin.
 	 *
 	 * @since     1.0.0
-	 * @return    Demo_Print_Loader    Orchestrates the hooks of the plugin.
+	 * @return    Wp_Print_Preview_Loader    Orchestrates the hooks of the plugin.
 	 */
 	public function get_loader() {
 		return $this->loader;

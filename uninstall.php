@@ -22,7 +22,7 @@
  * @link       https://jamespham.io
  * @since      1.0.0
  *
- * @package    Demo_Print
+ * @package    Wp_Print_Preview
  */
 
 // If uninstall not called from WordPress, then exit.
