@@ -159,13 +159,13 @@ class Wp_Print_Preview_Public
             <p>Please review the proof to see if everything is correct. 
             If it is, please click <b>Add Order</b> to add it to your cart.</p>
             
-            <img src='/wp-content/plugins/wp-print-preview/public/assets/$image.png' />
+            <img class='bc-preview-image' src='/wp-content/plugins/wp-print-preview/public/assets/$image.png' />
 
             <!--have to pass event object manually-->
             <form method='post' id='confirm-bc'>
                 <!-- <button name='edit' value='edit'>Edit Order</button> -->
-                <div class='container d-flex justify-content-end'>
-                  <button name='cancel' value='cancel'>Cancel Order</button>
+                <div class='bc-preview-button-container'>
+                  <button name='cancel' value='cancel' class='bc-preview-cancel'>Cancel</button>
                 </div>
             </form>
         ";
