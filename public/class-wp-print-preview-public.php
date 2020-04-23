@@ -144,8 +144,12 @@ class Wp_Print_Preview_Public
             // @TODO - have buttons redirect to home or create new business card
             GFAPI::delete_entry($entry['id']);
             return "
-                <h3>Your order has been cancelled. The Copy Center team will be notified immediately.</h3>
-                <a href='/'>Back to Home</a>
+                <h3>Your business card order has been canceled.</h3>
+                <a style='display:inline-block; text-align: right' href='/'>Back to Home</a>
+                
+                <style>
+                  #post-157 > div.post-inner.thin > div > p {display: none !important;}
+                </style>
             ";
         }
 
