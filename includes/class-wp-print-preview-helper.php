@@ -237,7 +237,7 @@ Class Wp_Print_Preview_Helper
         }
 
         // Form entry_id added to PDF preview
-        $entry_filename = 'business_card_' . $entry['id'];
+        $entry_filename = 'bizcard_' .  $first_name . '_' . $last_name . '_entry_'  . $entry['id'];
 
         $image->setFilename($entry_filename);
 
