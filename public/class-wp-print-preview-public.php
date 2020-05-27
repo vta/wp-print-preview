@@ -132,25 +132,42 @@ class Wp_Print_Preview_Public
         if ( isset($_GET['entry_id']) ) {
             $entry = GFAPI::get_entry($_GET['entry_id']);
             $image = (new Wp_Print_Preview_Helper())->business_card_proof($entry);
+            // STORE IN PREVIEW PAGE TO USE FOR REDIRECT LATER
             $_SESSION['entry_id'] = $_GET['entry_id'];
         }
 
         /**
          * @todo - Decide upon a better 'Confirmation/Cancellation' process, perhaps built-in GF methods or prior to this execution?
          */
-        if ( isset($_POST['cancel']) ) {
-            // @TODO - confirm (alert) user if they are sure they want to delete
-            // @TODO - on confirm, delete message and display delete message
-            // @TODO - have buttons redirect to home or create new business card
+        if ( isset($_POST['back']) ) {
+            $entry = GFAPI::get_entry($_SESSION['entry_id']);
+
+            $due_date = $entry['13'];
+            $job_title = $entry['1'];
+            $firstname = $entry['2.3'];
+            $lastname = $entry['2.6'];
+            $department = $entry['9'];
+            $email = $entry['3'];
+            $address = $entry['5'];
+            $phone = $entry['6'];
+            $mobile = $entry['7'];
+            $fax = $entry['8'];
+            $quantity = $entry['10'];
+
+            $redirect_url = '/business-card-printing/?due_date=' . $due_date . '&job_title=' . $job_title . '&firstname=' . $firstname .
+                '&lastname=' . $lastname . '&department=' . $department . '&email=' . $email . '&address=' . $address .
+                '&phone=' . $phone . '&mobile=' . $mobile . '&fax=' . $fax . '&quantity=' . $quantity;
+
+            $redirect_url = str_replace(' ', '+', $redirect_url);
+
+            // Redirect user to the form
             GFAPI::delete_entry($entry['id']);
             return "
-                <h3>Your business card order has been canceled.</h3>
-                <a style='display:inline-block; text-align: right' href='/'>Back to Home</a>
-                
-                <style>
-                  #post-157 > div.post-inner.thin > div > p {display: none !important;}
-                </style>
-            ";
+                <script>
+                    window.location.href='" . $redirect_url . "';
+                    $(`#gform_target_page_number_4`).val(3);
+                    $(`#gform_4`).trigger('submit', [true]);
+                </script>";
         }
 
         /**
@@ -160,8 +177,7 @@ class Wp_Print_Preview_Public
 
         return "
             <h3 style='text-align: center;'>Business Card Proof</h3>
-            <p>Please review the proof to see if everything is correct. 
-            If it is, please click <b>Add Order</b> to add it to your cart.</p>
+            <p style='text-align: center;'>Here is a digital proof of your business card. To return the form, please click \"Back\"</p>
             
             <img class='bc-preview-image' src='/wp-content/plugins/wp-print-preview/public/assets/$image.png' />
 
@@ -169,7 +185,7 @@ class Wp_Print_Preview_Public
             <form method='post' id='confirm-bc'>
                 <!-- <button name='edit' value='edit'>Edit Order</button> -->
                 <div class='bc-preview-button-container'>
-                  <button name='cancel' value='cancel' class='bc-preview-cancel'>Cancel</button>
+                  <button name='back' value='back' class='bc-preview-back'>Back</button>
                 </div>
             </form>
         ";
