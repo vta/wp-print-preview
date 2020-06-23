@@ -124,22 +124,36 @@ class Wp_Print_Preview_Public
             $atts
         );
 
-        // verify current user matches entry user
-        (new Wp_Print_Preview_Helper)->check_entry_ownership();
-
         // retrieve input values
         // $entry_id provided by query param
         if ( isset($_GET['entry_id']) ) {
+
             $entry = GFAPI::get_entry($_GET['entry_id']);
             $image = (new Wp_Print_Preview_Helper())->business_card_proof($entry);
+
             // STORE IN PREVIEW PAGE TO USE FOR REDIRECT LATER
             $_SESSION['entry_id'] = $_GET['entry_id'];
+
+            // Check if entry creator matches current user
+            if ( get_current_user_id() != $entry['created_by'] ) {
+
+                return '
+                    <h2 class="bc-preview-unauthorized-header" style="text-align: center;">Unauthorized Access</h2>
+                    <p class="bc-preview-unauthorized-content">
+                      You are not allowed to view this page. Please navigate to the home page and start over or contact 
+                      support for more assistance. 
+                    </p>
+                    <a href="' . site_url() . '">Back to Home</a>
+                ';
+
+            }
         }
 
         /**
          * @todo - Decide upon a better 'Confirmation/Cancellation' process, perhaps built-in GF methods or prior to this execution?
          */
         if ( isset($_POST['back']) ) {
+
             $entry = GFAPI::get_entry($_SESSION['entry_id']);
 
             $due_date = $entry['13'];
@@ -171,7 +185,6 @@ class Wp_Print_Preview_Public
         }
 
         /**
-         * @todo - send entry form as we need to new imagick method for screen image return and print ready proof
          * helper->business_card(first,last,email,address,title, etc... - maybe array or object) - standardized - not overly flexible
          */
 
@@ -193,57 +206,6 @@ class Wp_Print_Preview_Public
         // ADD CODE TO CALL FILTERS FOR CART_ITEM_NAME AND
 
         // code...
-    }
-
-    /**
-     * Back-end logic to manipulate business card forms to edit instead
-     * of display.
-     *
-     * @param $atts
-     */
-    public function business_card_edit_shortcode($atts)
-    {
-        // WORKAROUND
-        // @TODO - find another way to prevent shortcode from firing within
-        if ( !isset($_GET['entry_id']) ) {
-            return;
-        }
-
-        // @TODO - method 1: have the GF shortcode grab the query param and populate values
-        // verify current user matches entry user
-        (new Wp_Print_Preview_Helper)->check_entry_ownership();
-
-        // DEBUGGING
-        $entry_id = $_GET['entry_id'];
-        $entry = GFAPI::get_entry($entry_id);
-        echo "<pre>";
-        print_r($entry);
-        echo "</pre>";
-
-        // @TODO - change submission action to EDIT current entry instead of adding new entry
-        // Used snippets from techslides.com
-        // @reference - http://techslides.com/editing-gravity-forms-entries-on-the-front-end
-        function pre_submission_edit($form)
-        {
-            $entry_id = $_GET['entry_id'];
-
-            // update entry fields with new post values
-            $entry = GFAPI::get_entry($entry_id);
-            $entry['id'] = $entry_id;
-            $entry[1] = $_POST[1];
-            $entry['2.3'] = $_POST['2.3'];
-            $entry['2.6'] = $_POST['2.6'];
-            $entry[3] = $_POST[3];
-            $entry[5] = $_POST[5];
-
-            // make changes to current entry
-            GFAPI::update_entry($entry);
-
-            // @TODO - attach additional POST variable to tag this submission as an edit
-            $_POST['edit_business_card'] = true;
-            $_POST['entry_id'] = $entry_id;
-
-        }
     }
 
 }
