@@ -1,8 +1,8 @@
 <?php
 
-Class Wp_Print_Preview_Helper
+class Wp_Print_Preview_Helper
 {
-    public function business_card_proof($entry)
+    public function business_card_proof( $entry )
     {
         // Store entry_id in SESSION
         // i.e. /?add_to_cart=39 will have access to this entry_id upon "Add Order"
@@ -12,14 +12,14 @@ Class Wp_Print_Preview_Helper
         $field_ids = $this->_retrieveFieldIds();
 
         // GF form input
-        $job_title = $entry[ $field_ids['job_title'] ];
-        $first_name = $entry[ $field_ids['first_name'] ];
-        $last_name = $entry[ $field_ids['last_name']];
+        $job_title = $entry[$field_ids['job_title']];
+        $first_name = $entry[$field_ids['first_name']];
+        $last_name = $entry[$field_ids['last_name']];
         $full_name = $first_name . ' ' . $last_name;
-        $department = $entry[ $field_ids['department'] ];
-        $email = $entry[ $field_ids['email'] ];
-        $address = $entry[ $field_ids['address'] ];
-        $phone = $this->_convertPhoneFormat($entry[ $field_ids['phone'] ]);
+        $department = $entry[$field_ids['department']];
+        $email = $entry[$field_ids['email']];
+        $address = $entry[$field_ids['address']];
+        $phone = $this->_convertPhoneFormat( $entry[$field_ids['phone']] );
 
         // indentation for text
         $x_indentation = 98;
@@ -38,75 +38,75 @@ Class Wp_Print_Preview_Helper
         /** text draw params */
         // NAME
         $name_text = array(
-            'font' => plugin_dir_path(__DIR__) . '/public/assets/MuseoSans_700.otf',
+            'font' => plugin_dir_path( __DIR__ ) . '/public/assets/MuseoSans_700.otf',
             'color' => $DARK_BLUE,
             'stroke_width' => $STROKE_WIDTH,
             'font_size' => 9,
             'kerning' => ($CHAR_SPACE - 1.1),
-            'annotation' => array('x' => $x_indentation, 'y' => 560, 'text' => $full_name)
+            'annotation' => array( 'x' => $x_indentation, 'y' => 560, 'text' => $full_name )
         );
         // JOB TITLE
         $job_title_text = array(
-            'font' => plugin_dir_path(__DIR__) . '/public/assets/MuseoSans_300.otf',
+            'font' => plugin_dir_path( __DIR__ ) . '/public/assets/MuseoSans_300.otf',
             'color' => $DARK_GRAY,
             'stroke_width' => $STROKE_WIDTH,
             'font_size' => 7.5,
             'kerning' => $CHAR_SPACE,
-            'annotation' => array('x' => $x_indentation, 'y' => 630, 'text' => $job_title)
+            'annotation' => array( 'x' => $x_indentation, 'y' => 630, 'text' => $job_title )
         );
         // DEPARTMENT
         $department_text = array(
-            'font' => plugin_dir_path(__DIR__) . '/public/assets/MuseoSans_300.otf',
+            'font' => plugin_dir_path( __DIR__ ) . '/public/assets/MuseoSans_300.otf',
             'color' => $DARK_GRAY,
             'stroke_width' => $STROKE_WIDTH,
             'font_size' => 7.5,
             'kerning' => $CHAR_SPACE,
-            'annotation' => array('x' => $x_indentation, 'y' => 750, 'text' => $department)
+            'annotation' => array( 'x' => $x_indentation, 'y' => 750, 'text' => $department )
         );
         // ADDRESS
         $address_text = array(
-            'font' => plugin_dir_path(__DIR__) . '/public/assets/MuseoSans_300.otf',
+            'font' => plugin_dir_path( __DIR__ ) . '/public/assets/MuseoSans_300.otf',
             'color' => $DARK_GRAY,
             'stroke_width' => $STROKE_WIDTH,
             'font_size' => 7.5,
             'kerning' => $CHAR_SPACE,
-            'annotation' => array('x' => $x_indentation, 'y' => 835, 'text' => $address)
+            'annotation' => array( 'x' => $x_indentation, 'y' => 835, 'text' => $address )
         );
         // EMAIL LABEL
         $email_label_text = array(
-            'font' => plugin_dir_path(__DIR__) . '/public/assets/MuseoSans_300.otf',
+            'font' => plugin_dir_path( __DIR__ ) . '/public/assets/MuseoSans_300.otf',
             'color' => $DARK_GRAY,
             'stroke_width' => $STROKE_WIDTH,
             'font_size' => 7.5,
             'kerning' => $CHAR_SPACE,
-            'annotation' => array('x' => $x_indentation, 'y' => 920, 'text' => 'Email')
+            'annotation' => array( 'x' => $x_indentation, 'y' => 920, 'text' => 'Email' )
         );
         // EMAIL TEXT
         $email_text = array(
-            'font' => plugin_dir_path(__DIR__) . '/public/assets/MuseoSans_300.otf',
+            'font' => plugin_dir_path( __DIR__ ) . '/public/assets/MuseoSans_300.otf',
             'color' => $LIGHT_BLUE,
             'stroke_width' => $STROKE_WIDTH,
             'font_size' => 7.5,
             'kerning' => $CHAR_SPACE,
-            'annotation' => array('x' => $x_indentation + 188, 'y' => 920, 'text' => $email)
+            'annotation' => array( 'x' => $x_indentation + 188, 'y' => 920, 'text' => $email )
         );
         // PHONE LABEL
         $phone_label_text = array(
-            'font' => plugin_dir_path(__DIR__) . '/public/assets/MuseoSans_300.otf',
+            'font' => plugin_dir_path( __DIR__ ) . '/public/assets/MuseoSans_300.otf',
             'color' => $DARK_GRAY,
             'stroke_width' => $STROKE_WIDTH,
             'font_size' => 7.5,
             'kerning' => $CHAR_SPACE,
-            'annotation' => array('x' => $x_indentation, 'y' => 1003, 'text' => 'Phone')
+            'annotation' => array( 'x' => $x_indentation, 'y' => 1003, 'text' => 'Phone' )
         );
         // PHONE
         $phone_text = array(
-            'font' => plugin_dir_path(__DIR__) . '/public/assets/MuseoSans_300.otf',
+            'font' => plugin_dir_path( __DIR__ ) . '/public/assets/MuseoSans_300.otf',
             'color' => $LIGHT_BLUE,
             'stroke_width' => $STROKE_WIDTH,
             'font_size' => 7.5,
             'kerning' => $CHAR_SPACE,
-            'annotation' => array('x' => $x_indentation + 220, 'y' => 1003, 'text' => $phone)
+            'annotation' => array( 'x' => $x_indentation + 220, 'y' => 1003, 'text' => $phone )
         );
 
         // combine text params into one array
@@ -120,101 +120,103 @@ Class Wp_Print_Preview_Helper
         );
 
         // CONDITIONALLY ADD MOBILE FIELD IF EXISTS
-        if ( !empty($entry[ $field_ids['mobile'] ]) ) {
+        if ( !empty( $entry[$field_ids['mobile']] ) ) {
 
             // grab mobile from entry & convert format
-            $mobile = $this->_convertPhoneFormat($entry[ $field_ids['mobile'] ]);
+            $mobile = $this->_convertPhoneFormat( $entry[$field_ids['mobile']] );
 
             // MOBILE LABEL
             $mobile_label_text = array(
-                'font' => plugin_dir_path(__DIR__) . '/public/assets/MuseoSans_300.otf',
+                'font' => plugin_dir_path( __DIR__ ) . '/public/assets/MuseoSans_300.otf',
                 'color' => $DARK_GRAY,
                 'stroke_width' => $STROKE_WIDTH,
                 'font_size' => 7.5,
                 'kerning' => $CHAR_SPACE,
-                'annotation' => array('x' => $x_indentation + 684, 'y' => 1003, 'text' => '| Mobile')
+                'annotation' => array( 'x' => $x_indentation + 684, 'y' => 1003, 'text' => '| Mobile' )
             );
             // MOBILE
             $mobile_text = array(
-                'font' => plugin_dir_path(__DIR__) . '/public/assets/MuseoSans_300.otf',
+                'font' => plugin_dir_path( __DIR__ ) . '/public/assets/MuseoSans_300.otf',
                 'color' => $LIGHT_BLUE,
                 'stroke_width' => $STROKE_WIDTH,
                 'font_size' => 7.5,
                 'kerning' => $CHAR_SPACE,
-                'annotation' => array('x' => $x_indentation + 951, 'y' => 1003, 'text' => $mobile)
+                'annotation' => array( 'x' => $x_indentation + 951, 'y' => 1003, 'text' => $mobile )
             );
 
             // add to array
-            array_push($text_params_arr, $mobile_label_text, $mobile_text);
+            array_push( $text_params_arr, $mobile_label_text, $mobile_text );
 
         }
 
         // CONDITIONALLY ADD FAX FIELD IF EXISTS
-        if ( !empty($entry[ $field_ids['fax'] ]) ) {
+        if ( !empty( $entry[$field_ids['fax']] ) ) {
 
             // grab fax from entry & convert format
-            $fax = $this->_convertPhoneFormat($entry[ $field_ids['fax'] ]);
+            $fax = $this->_convertPhoneFormat( $entry[$field_ids['fax']] );
 
             // FAX LABEL
             $fax_label_text = array(
-                'font' => plugin_dir_path(__DIR__) . '/public/assets/MuseoSans_300.otf',
+                'font' => plugin_dir_path( __DIR__ ) . '/public/assets/MuseoSans_300.otf',
                 'color' => $DARK_GRAY,
                 'stroke_width' => $STROKE_WIDTH,
                 'font_size' => 7.5,
                 'kerning' => $CHAR_SPACE,
-                'annotation' => array('x' => $x_indentation, 'y' => 1088, 'text' => 'Fax')
+                'annotation' => array( 'x' => $x_indentation, 'y' => 1088, 'text' => 'Fax' )
             );
             // FAX
             $fax_text = array(
-                'font' => plugin_dir_path(__DIR__) . '/public/assets/MuseoSans_300.otf',
+                'font' => plugin_dir_path( __DIR__ ) . '/public/assets/MuseoSans_300.otf',
                 'color' => $LIGHT_BLUE,
                 'stroke_width' => $STROKE_WIDTH,
                 'font_size' => 7.5,
                 'kerning' => $CHAR_SPACE,
-                'annotation' => array('x' => $x_indentation + 122, 'y' => 1088, 'text' => $fax)
+                'annotation' => array( 'x' => $x_indentation + 122, 'y' => 1088, 'text' => $fax )
             );
 
             // add to array
-            array_push($text_params_arr, $fax_label_text, $fax_text);
+            array_push( $text_params_arr, $fax_label_text, $fax_text );
         }
 
         $image = new \Imagick();
-        $image->readImage(plugin_dir_path(__FILE__).'../public/assets/blank.png');
-        $image->setImageColorspace(Imagick::COLORSPACE_SRGB);
-        $image->setImageUnits(Imagick::RESOLUTION_PIXELSPERINCH);
-        $image->setResolution(600,600);
-        $image->setImageResolution(300, 300);
+        $image->readImage( plugin_dir_path( __FILE__ ) . '../public/assets/blank.png' );
+        $image->setImageColorspace( Imagick::COLORSPACE_SRGB );
+        $image->setImageUnits( Imagick::RESOLUTION_PIXELSPERINCH );
+        $image->setResolution( 600, 600 );
+        $image->setImageResolution( 300, 300 );
 
-        $image->setImageFormat('pdf');
+        $image->setImageFormat( 'pdf' );
 
-        foreach ( $text_params_arr as $text_params) {
-            $draw = $this->_drawText($text_params);
-            $image->drawImage($draw);
+        foreach ( $text_params_arr as $text_params ) {
+
+            $draw = $this->_drawText( $text_params );
+            $image->drawImage( $draw );
+
         }
 
         // Form entry_id added to PDF preview
-        $entry_filename = 'bizcard_' .  $first_name . '_' . $last_name . '_entry_'  . $entry['id'];
+        $entry_filename = 'bizcard_' . $first_name . '_' . $last_name . '_entry_' . $entry['id'];
 
-        $image->setFilename($entry_filename);
+        $image->setFilename( $entry_filename );
 
         // assets/ directory path
-        $assets_dir = plugin_dir_path(__DIR__). 'public/assets/';
+        $assets_dir = plugin_dir_path( __DIR__ ) . 'public/assets/';
 
         // write to WC Product
         // $image->writeImage($assets_dir . $entry_filename . '.pdf');
 
         // write Image to /wp-content/uploads/business_cards
-        $this->_writeToUploads($image, $entry_filename . '.pdf');
+        $this->_writeToUploads( $image, $entry_filename . '.pdf' );
 
         /** CREATE PNG FILE FOR PREVIEW */
         // Switch format to PNG
-        $image->setImageFormat('png');
+        $image->setImageFormat( 'png' );
 
         // Filename for temporary file Preview
         $temp_file = 'business_card_template';
 
         // write latest file to entry
-        $image->writeImage($assets_dir . $temp_file . '.png');
+        $image->writeImage( $assets_dir . $temp_file . '.png' );
 
         // return the img filename to shortcode
         return $temp_file;
@@ -224,25 +226,23 @@ Class Wp_Print_Preview_Helper
      * Grabs field IDs dynamically based on field label names.
      * @return array - array of field ids
      */
-    private function _retrieveFieldIds() {
+    private function _retrieveFieldIds()
+    {
         // grab Business Card GF Form object
-        $form = GFAPI::get_form(4);
+        $form = GFAPI::get_form( 4 );
 
         // iterate through all field objects in Form
-        foreach($form['fields'] as $field)
-        {
+        foreach ( $form['fields'] as $field ) {
             // use labels as keys to dynamically retrieve field ids
-            switch($field['adminLabel'])
-            {
+            switch ( $field['adminLabel'] ) {
                 case 'job_title':
                     $job_title_id = $field['id'];
                     break;
                 case 'name':
-                    foreach($field['inputs'] as $subfield)
-                    {
-                        if ($subfield['label'] === 'First') {
-                            $firstname_id =  $subfield['id'];
-                        } elseif ($subfield['label'] === 'Last') {
+                    foreach ( $field['inputs'] as $subfield ) {
+                        if ( $subfield['label'] === 'First' ) {
+                            $firstname_id = $subfield['id'];
+                        } elseif ( $subfield['label'] === 'Last' ) {
                             $lastname_id = $subfield['id'];
                         }
                     }
@@ -251,10 +251,9 @@ Class Wp_Print_Preview_Helper
                     $department_id = $field['id'];
                     break;
                 case 'email':
-                    foreach($field['inputs'] as $subfield)
-                    {
-                        if ($subfield['label'] === 'Enter Email') {
-                            $email_id =  $subfield['id'];
+                    foreach ( $field['inputs'] as $subfield ) {
+                        if ( $subfield['label'] === 'Enter Email' ) {
+                            $email_id = $subfield['id'];
                         }
                     }
                     break;
@@ -291,22 +290,22 @@ Class Wp_Print_Preview_Helper
      * @param $params
      * @return ImagickDraw
      */
-    private function _drawText($params)
+    private function _drawText( $params )
     {
         $draw = new ImagickDraw();
 
-        $draw->setFont($params['font']);
-        $draw->setFillColor($params['color']);
-        $draw->setStrokeColor($params['color']);
-        $draw->setStrokeWidth($params['stroke_width']);
-        $draw->setFontSize($params['font_size']);
-        $draw->setTextKerning($params['kerning']);
+        $draw->setFont( $params['font'] );
+        $draw->setFillColor( $params['color'] );
+        $draw->setStrokeColor( $params['color'] );
+        $draw->setStrokeWidth( $params['stroke_width'] );
+        $draw->setFontSize( $params['font_size'] );
+        $draw->setTextKerning( $params['kerning'] );
 
         // positioning + text
         $x = $params['annotation']['x'];
         $y = $params['annotation']['y'];
         $text = $params['annotation']['text'];
-        $draw->annotation($x, $y, $text);
+        $draw->annotation( $x, $y, $text );
 
         return $draw;
     }
@@ -314,25 +313,27 @@ Class Wp_Print_Preview_Helper
     /**
      * convert format (XXX)XXX-XXXX to XXX-XXX-XXXX
      *
-     * @param $str
-     * @return string
+     * @param $str - raw string from phone field
+     * @return string - converted string format with missing dashes and removed parentheses
      */
-    private function _convertPhoneFormat($str)
+    private function _convertPhoneFormat( $str )
     {
-        preg_match('/^\((\d{3})\) (\d{3})-(\d{4})$/', $str, $matches );
+        preg_match( '/^\((\d{3})\) (\d{3})-(\d{4})$/', $str, $matches );
         return $matches[1] . '-' . $matches[2] . '-' . $matches[3];
     }
 
     /**
      * uploading files programmatically in to wp-content/uploads/
      * @see - https://artisansweb.net/upload-files-programmatically-wordpress/
+     * @param $image - Image Magick image object
+     * @param $filename - name of file to be saved as
      */
-    private function _writeToUploads($image, $filename)
+    private function _writeToUploads( $image, $filename )
     {
         $upload_dir = wp_upload_dir();
 
         // Check if base directory exists for uploads/
-        if ( ! empty( $upload_dir['basedir'] ) ) {
+        if ( !empty( $upload_dir['basedir'] ) ) {
 
             $bc_dirname = $upload_dir['basedir'] . '/business_cards';
 
@@ -343,13 +344,21 @@ Class Wp_Print_Preview_Helper
 
             /**
              * Write the new file to wp-content/uploads via Image Magick
-             * 
+             *
              * For Ubuntu servrs, please change uploads folder's group ownership
              * @see - https://stackoverflow.com/questions/15716428/cannot-save-thumbnail-with-imagick
              */
-            $image->writeImage($bc_dirname . '/' . $filename);
+            $image->writeImage( $bc_dirname . '/' . $filename );
             // save into database $upload_dir['baseurl'].'/product-images/'.$filename;
         }
     }
 
+    /**
+     * @param $image - Image Magick oject (Business Card)
+     * @param $filename - name of file to be saved as
+     */
+    public function create25Up( $image, $filename )
+    {
+
+    }
 }
