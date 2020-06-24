@@ -381,6 +381,13 @@ class Wp_Print_Preview_Helper
         // Create raw 17.5" x 10" 25 up (before adding padding to the edges for 18" x 12" centering)
         $montage = $stack->montageImage( new ImagickDraw(), '5x5', '2100x1200', 0, 0);
 
+        // create padding to center 25-up on 18" x 12" (Note: 300px = 1 in.)
+        $horizontalPadding = 300;           // 0.5 in.
+        $verticalPadding = 1200;            // 2 in.
+        $offsetX = $horizontalPadding / 2;  // 0.25 in.
+        $offsetY = $verticalPadding / 2;    // 2 in.
+        $montage->extentImage( 10800, 7200, -$offsetX, -$offsetY );
+
         $this->_writeToUploads( $montage, $new_filename );
     }
 }
