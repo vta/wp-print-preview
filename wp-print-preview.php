@@ -9,14 +9,14 @@
  * that starts the plugin.
  *
  * @link              https://jamespham.io
- * @since             1.0.0
+ * @since             1.1.0
  * @package           Wp_Print_Preview
  *
  * @wordpress-plugin
  * Plugin Name:       WP Print Preview
- * Plugin URI:        http://wp-wordpress/wp-print-preview
+ * Plugin URI:        https://github.com/vta/wp-print-preview
  * Description:       A WordPress print preview plugin to preview and output PNG file of a business card.
- * Version:           1.0.0
+ * Version:           1.1.0
  * Author:            James Pham
  * Author URI:        https://jamespham.io
  * License:           GPL-2.0+
