@@ -2,7 +2,13 @@
 
 class Wp_Print_Preview_Helper
 {
-    public function business_card_proof( $entry )
+    /**
+     * @param $entry - Gravity Forms entry object
+     * @param $create25up - flag to indicate to create 25-up PDF (not required in preview)
+     * @return string
+     * @throws ImagickException
+     */
+    public function business_card_proof( $entry, $create25up )
     {
         // Store entry_id in SESSION
         // i.e. /?add_to_cart=39 will have access to this entry_id upon "Add Order"
@@ -208,8 +214,10 @@ class Wp_Print_Preview_Helper
         // write Image to /wp-content/uploads/business_cards
         $this->_writeToUploads( $image, $entry_filename . '.pdf' );
 
-        // create 25 up output on 12 x 18
-        $this->create25Up( $image, $entry_filename );
+        // create 25 up output on 12 x 18 if flag is set
+        if ( $create25up ) {
+            $this->_create25Up( $image, $entry_filename );
+        }
 
         /** CREATE PNG FILE FOR PREVIEW */
         // Switch format to PNG
@@ -361,7 +369,7 @@ class Wp_Print_Preview_Helper
      * @param $image - Image Magick object (Business Card)
      * @param $filename - name of file to be saved as
      */
-    public function create25Up( $image, $filename )
+    private function _create25Up( $image, $filename )
     {
         // new filename for 25-up PDF
         $new_filename = $filename . '_25_up.pdf';
