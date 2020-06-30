@@ -65,4 +65,10 @@ Similar to previous instructions, please add the below values to the "_Admin Lab
 
 Once all of the above steps are set up correctly, the plugin should function.
 
+## Updates
+
+### v1.1.0 (6/24/2020)
+Added a new private method to `includes/class-wp-print-helper.php`. The plugin now supports an output of 300 DPI image of a 25-up PDF
+on a 12" x 18" stock. To activate this output, a new flag has been added to the `business_card_proof()` method as an argument. 
+
 Cheers! :beer:

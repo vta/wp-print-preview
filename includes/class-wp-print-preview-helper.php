@@ -2,7 +2,13 @@
 
 class Wp_Print_Preview_Helper
 {
-    public function business_card_proof( $entry )
+    /**
+     * @param $entry - Gravity Forms entry object
+     * @param $create25up - flag to indicate to create 25-up PDF (not required in preview)
+     * @return string
+     * @throws ImagickException
+     */
+    public function business_card_proof( $entry, $create25up )
     {
         // Store entry_id in SESSION
         // i.e. /?add_to_cart=39 will have access to this entry_id upon "Add Order"
@@ -208,6 +214,11 @@ class Wp_Print_Preview_Helper
         // write Image to /wp-content/uploads/business_cards
         $this->_writeToUploads( $image, $entry_filename . '.pdf' );
 
+        // create 25 up output on 12 x 18 if flag is set
+        if ( $create25up ) {
+            $this->_create25Up( $image, $entry_filename );
+        }
+
         /** CREATE PNG FILE FOR PREVIEW */
         // Switch format to PNG
         $image->setImageFormat( 'png' );
@@ -215,7 +226,7 @@ class Wp_Print_Preview_Helper
         // Filename for temporary file Preview
         $temp_file = 'business_card_template';
 
-        // write latest file to entry
+        // write latest file to entry for preview
         $image->writeImage( $assets_dir . $temp_file . '.png' );
 
         // return the img filename to shortcode
@@ -345,7 +356,7 @@ class Wp_Print_Preview_Helper
             /**
              * Write the new file to wp-content/uploads via Image Magick
              *
-             * For Ubuntu servrs, please change uploads folder's group ownership
+             * For Ubuntu servers, please change uploads folder's group ownership
              * @see - https://stackoverflow.com/questions/15716428/cannot-save-thumbnail-with-imagick
              */
             $image->writeImage( $bc_dirname . '/' . $filename );
@@ -354,11 +365,37 @@ class Wp_Print_Preview_Helper
     }
 
     /**
-     * @param $image - Image Magick oject (Business Card)
+     * Creates and writes a 25 up Business Card printout on a 12 x 18 stock
+     * @param $image - Image Magick object (Business Card)
      * @param $filename - name of file to be saved as
      */
-    public function create25Up( $image, $filename )
+    private function _create25Up( $image, $filename )
     {
+        // new filename for 25-up PDF
+        $new_filename = $filename . '_25_up.pdf';
 
+        // create Stack of Images (i.e. 5x5)
+        $stack = new Imagick();
+
+        // create 25 images in the stack at 300 DPI
+        for ( $i = 0; $i < 25; $i++ )
+        {
+            $stack->addImage( $image );
+            $stack->setImageColorspace( Imagick::COLORSPACE_SRGB );
+            $stack->setImageUnits( Imagick::RESOLUTION_PIXELSPERINCH );
+            $stack->setResolution( 600, 600 );
+            $stack->setImageResolution( 300, 300 );
+        }
+        // Create raw 17.5" x 10" 25 up (before adding padding to the edges for 18" x 12" centering)
+        $montage = $stack->montageImage( new ImagickDraw(), '5x5', '2100x1200', 0, 0);
+
+        // create padding to center 25-up on 18" x 12" (Note: 300px = 1 in.)
+        $horizontalPadding = 300;           // 0.5 in.
+        $verticalPadding = 1200;            // 2 in.
+        $offsetX = $horizontalPadding / 2;  // 0.25 in.
+        $offsetY = $verticalPadding / 2;    // 2 in.
+        $montage->extentImage( 10800, 7200, -$offsetX, -$offsetY );
+
+        $this->_writeToUploads( $montage, $new_filename );
     }
 }

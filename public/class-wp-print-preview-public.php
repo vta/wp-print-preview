@@ -129,7 +129,7 @@ class Wp_Print_Preview_Public
         if ( isset($_GET['entry_id']) ) {
 
             $entry = GFAPI::get_entry($_GET['entry_id']);
-            $image = (new Wp_Print_Preview_Helper())->business_card_proof($entry);
+            $image = (new Wp_Print_Preview_Helper())->business_card_proof( $entry, false );
 
             // STORE IN PREVIEW PAGE TO USE FOR REDIRECT LATER
             $_SESSION['entry_id'] = $_GET['entry_id'];
