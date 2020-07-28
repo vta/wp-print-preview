@@ -212,7 +212,7 @@ class Wp_Print_Preview_Helper
         // $image->writeImage($assets_dir . $entry_filename . '.pdf');
 
         // write Image to /wp-content/uploads/business_cards
-        $this->_writeToUploads( $image, $entry_filename . '.pdf' );
+//        $this->_writeToUploads( $image, $entry_filename . '.pdf' );
 
         // create 25 up output on 12 x 18 if flag is set
         if ( $create25up ) {
@@ -228,6 +228,27 @@ class Wp_Print_Preview_Helper
 
         // write latest file to entry for preview
         $image->writeImage( $assets_dir . $temp_file . '.png' );
+
+        /**
+         * temp workaround to replace the above. Used the command line to write PDF file
+         * from temp_file
+         */
+        $source = $assets_dir . $temp_file . '.png';
+        $uploads_dir = wp_upload_dir();
+        $target = $uploads_dir['basedir'] . '/business_cards/' . $entry_filename . '.pdf';
+        $target = str_replace ( ' ', '_', $target );
+
+        error_log($source);
+        error_log($target);
+        error_log('magick convert ' . $source . ' ' . $target);
+        $output = [];
+        $res = 0;
+//        exec( 'which magick' . ' 2>&1', $output, $res );
+        exec( '/usr/local/bin/magick convert ' . $source . ' ' . $target . ' 2>&1', $output, $res );
+//        $res = exec( 'magick convert ' . $source . ' ' . $target . ' 2>&1' );
+
+        error_log( json_encode( $output, JSON_PRETTY_PRINT ) );
+        error_log( $res );
 
         // return the img filename to shortcode
         return $temp_file;
