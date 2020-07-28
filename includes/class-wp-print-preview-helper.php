@@ -238,17 +238,17 @@ class Wp_Print_Preview_Helper
         $target = $uploads_dir['basedir'] . '/business_cards/' . $entry_filename . '.pdf';
         $target = str_replace ( ' ', '_', $target );
 
-        error_log($source);
-        error_log($target);
-        error_log('magick convert ' . $source . ' ' . $target);
+        // output & exit code for command line
         $output = [];
         $res = 0;
-//        exec( 'which magick' . ' 2>&1', $output, $res );
-        exec( '/usr/local/bin/magick convert ' . $source . ' ' . $target . ' 2>&1', $output, $res );
-//        $res = exec( 'magick convert ' . $source . ' ' . $target . ' 2>&1' );
+        // define PATH
+        putenv('PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin');
+        // run magick command to run
+        exec( 'magick convert ' . $source . ' ' . $target . ' 2>&1', $output, $res );
 
-        error_log( json_encode( $output, JSON_PRETTY_PRINT ) );
-        error_log( $res );
+        if ( $res > 0 ) {
+            error_log( json_encode( $output, JSON_PRETTY_PRINT ) );
+        }
 
         // return the img filename to shortcode
         return $temp_file;
