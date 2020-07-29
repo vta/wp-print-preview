@@ -247,7 +247,7 @@ class Wp_Print_Preview_Helper
             // define PATH
             putenv( 'PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' );
             // run magick command to run
-            exec( 'magick convert ' . $source . ' ' . $target . ' 2>&1', $output, $res );
+            exec( 'magick convert ' . $source . ' -resize 50% quality 300 ' . $target . ' 2>&1', $output, $res );
 
             if ( $res > 0 ) {
                 error_log( json_encode( $output, JSON_PRETTY_PRINT ) );
