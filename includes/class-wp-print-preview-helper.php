@@ -397,30 +397,49 @@ class Wp_Print_Preview_Helper
     private function _create25Up( $image, $filename )
     {
         // new filename for 25-up PDF
-        $new_filename = $filename . '_25_up.pdf';
+//        $new_filename = $filename . '_25_up.pdf';
+//
+//        // create Stack of Images (i.e. 5x5)
+//        $stack = new Imagick();
+//
+//        // create 25 images in the stack at 300 DPI
+//        for ( $i = 0; $i < 25; $i++ )
+//        {
+//            $stack->addImage( $image );
+//            $stack->setImageColorspace( Imagick::COLORSPACE_SRGB );
+//            $stack->setImageUnits( Imagick::RESOLUTION_PIXELSPERINCH );
+//            $stack->setResolution( 600, 600 );
+//            $stack->setImageResolution( 300, 300 );
+//        }
+//        // Create raw 17.5" x 10" 25 up (before adding padding to the edges for 18" x 12" centering)
+//        $montage = $stack->montageImage( new ImagickDraw(), '5x5', '2100x1200', 0, 0);
+//
+//        // create padding to center 25-up on 18" x 12" (Note: 300px = 1 in.)
+//        $horizontalPadding = 300;           // 0.5 in.
+//        $verticalPadding = 1200;            // 2 in.
+//        $offsetX = $horizontalPadding / 2;  // 0.25 in.
+//        $offsetY = $verticalPadding / 2;    // 2 in.
+//        $montage->extentImage( 10800, 7200, -$offsetX, -$offsetY );
+//
+//        $this->_writeToUploads( $montage, $new_filename );
+        /**
+         * temp workaround to replace the above. Used the command line to write PDF file
+         * from temp_file
+         */
+        $uploads_dir = wp_upload_dir();
+        $source = $uploads_dir['basedir'] . '/business_cards/' . $filename . '.pdf';
+        $target = $uploads_dir['basedir'] . '/business_cards/' . $filename . '_25_up.pdf';
 
-        // create Stack of Images (i.e. 5x5)
-        $stack = new Imagick();
+        // output & exit code for command line
+        $output = [];
+        $res = 0;
+        // PATH should already be defined from single PDF output.
+        // run magick command to process 25-up image
+        exec( 'magick montage ' . $source . ' -duplicate 24 -tile 5x5 -geometry 2100x1200+0+0  '
+            . $target . ' 2>&1', $output, $res );
 
-        // create 25 images in the stack at 300 DPI
-        for ( $i = 0; $i < 25; $i++ )
-        {
-            $stack->addImage( $image );
-            $stack->setImageColorspace( Imagick::COLORSPACE_SRGB );
-            $stack->setImageUnits( Imagick::RESOLUTION_PIXELSPERINCH );
-            $stack->setResolution( 600, 600 );
-            $stack->setImageResolution( 300, 300 );
+        if ( $res > 0 ) {
+            error_log( json_encode( $output, JSON_PRETTY_PRINT ) );
         }
-        // Create raw 17.5" x 10" 25 up (before adding padding to the edges for 18" x 12" centering)
-        $montage = $stack->montageImage( new ImagickDraw(), '5x5', '2100x1200', 0, 0);
-
-        // create padding to center 25-up on 18" x 12" (Note: 300px = 1 in.)
-        $horizontalPadding = 300;           // 0.5 in.
-        $verticalPadding = 1200;            // 2 in.
-        $offsetX = $horizontalPadding / 2;  // 0.25 in.
-        $offsetY = $verticalPadding / 2;    // 2 in.
-        $montage->extentImage( 10800, 7200, -$offsetX, -$offsetY );
-
-        $this->_writeToUploads( $montage, $new_filename );
     }
 }
