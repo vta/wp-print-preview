@@ -8,7 +8,7 @@ class Wp_Print_Preview_Helper
      * @return string
      * @throws ImagickException
      */
-    public function business_card_proof( $entry, $create25up )
+    public function business_card_proof( $entry, $create25up, $isPreview )
     {
         // Store entry_id in SESSION
         // i.e. /?add_to_cart=39 will have access to this entry_id upon "Add Order"
@@ -212,7 +212,7 @@ class Wp_Print_Preview_Helper
         // $image->writeImage($assets_dir . $entry_filename . '.pdf');
 
         // write Image to /wp-content/uploads/business_cards
-        $this->_writeToUploads( $image, $entry_filename . '.pdf' );
+//        $this->_writeToUploads( $image, $entry_filename . '.pdf' );
 
         // create 25 up output on 12 x 18 if flag is set
         if ( $create25up ) {
@@ -228,6 +228,31 @@ class Wp_Print_Preview_Helper
 
         // write latest file to entry for preview
         $image->writeImage( $assets_dir . $temp_file . '.png' );
+
+        // only write PDF if it is not preview
+        if ( ! $isPreview )
+        {
+            /**
+             * temp workaround to replace the above. Used the command line to write PDF file
+             * from temp_file
+             */
+            $source = $assets_dir . $temp_file . '.png';
+            $uploads_dir = wp_upload_dir();
+            $target = $uploads_dir['basedir'] . '/business_cards/' . $entry_filename . '.pdf';
+            $target = str_replace( ' ', '_', $target );
+
+            // output & exit code for command line
+            $output = [];
+            $res = 0;
+            // define PATH
+            putenv( 'PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' );
+            // run magick command to run
+            exec( 'magick convert ' . $source . ' ' . $target . ' 2>&1', $output, $res );
+
+            if ( $res > 0 ) {
+                error_log( json_encode( $output, JSON_PRETTY_PRINT ) );
+            }
+        }
 
         // return the img filename to shortcode
         return $temp_file;
