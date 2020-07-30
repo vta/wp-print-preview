@@ -214,11 +214,6 @@ class Wp_Print_Preview_Helper
         // write Image to /wp-content/uploads/business_cards
 //        $this->_writeToUploads( $image, $entry_filename . '.pdf' );
 
-        // create 25 up output on 12 x 18 if flag is set
-        if ( $create25up ) {
-            $this->_create25Up( $image, $entry_filename );
-        }
-
         /** CREATE PNG FILE FOR PREVIEW */
         // Switch format to PNG
         $image->setImageFormat( 'png' );
@@ -251,6 +246,11 @@ class Wp_Print_Preview_Helper
 
             if ( $res > 0 ) {
                 error_log( json_encode( $output, JSON_PRETTY_PRINT ) );
+            }
+
+            // create 25 up output on 12 x 18 if flag is set
+            if ( $create25up ) {
+                $this->_create25Up( $image, $entry_filename );
             }
         }
 
@@ -392,7 +392,7 @@ class Wp_Print_Preview_Helper
     /**
      * Creates and writes a 25 up Business Card printout on a 12 x 18 stock
      * @param $image - Image Magick object (Business Card)
-     * @param $filename - name of file to be saved as
+     * @param $filename - filename of business card PDF
      */
     private function _create25Up( $image, $filename )
     {
@@ -423,23 +423,49 @@ class Wp_Print_Preview_Helper
 //
 //        $this->_writeToUploads( $montage, $new_filename );
         /**
-         * temp workaround to replace the above. Used the command line to write PDF file
-         * from temp_file
+         * temp workaround to replace the above. Used the command line to use temp PNG file
+         * to create another temporary 25-up PNG to preserve resolution. Then we can convert and
+         * resize w/ 300 DPI and establish border for 12x18 layout from temp_file.
          */
+        $assets_dir = plugin_dir_path( __DIR__ ) . 'public/assets/';
+        $temp_file = 'business_card_template';
+
+        // Used to create temp 25-up PNG image to retain resolution
+        $base_png = $assets_dir . $temp_file . '.png';
+
         $uploads_dir = wp_upload_dir();
-        $source = $uploads_dir['basedir'] . '/business_cards/' . $filename . '.pdf';
-        $target = $uploads_dir['basedir'] . '/business_cards/' . $filename . '_25_up.pdf';
+
+        // Create targets for temp 25-up PNG and final 25-up PDF output
+        $temp_25_png = $uploads_dir['basedir'] . '/business_cards/' . $filename . '_25_up.png';
+        $final_25_pdf = $uploads_dir['basedir'] . '/business_cards/' . $filename . '_25_up.pdf';
 
         // output & exit code for command line
         $output = [];
         $res = 0;
-        // PATH should already be defined from single PDF output.
-        // run magick command to process 25-up image
-        exec( 'magick montage ' . $source . ' -duplicate 24 -tile 5x5 -geometry 2100x1200+0+0  '
-            . $target . ' 2>&1', $output, $res );
 
+        /**
+         * RUN COMMAND (1 command to catch exception as soon as it occurs)
+         * Commands in order – separated by lines
+         * 1. Create 25-up with PNG to retain resolution
+         * 2. Convert to PDF and add border.
+         * 3. Remove temp 25-up PNG from business_cards directory
+         */
+        // define PATH
+        putenv( 'PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' );
+        exec(
+            'magick montage ' . $base_png . ' -mode concatenate -duplicate 24 -tile 5x5 ' . $temp_25_png . ' && ' .
+            'magick convert ' . $temp_25_png . ' -density 600 -bordercolor white -border 150x600 ' . $final_25_pdf . ' && ' .
+            'rm ' . $temp_25_png,
+            $output,
+            $res
+        );
+
+        // exit with error code if command unsuccessful
         if ( $res > 0 ) {
-            error_log( json_encode( $output, JSON_PRETTY_PRINT ) );
+            error_log( 'Error Code: ' . $res . "\n" . json_encode( $output, JSON_PRETTY_PRINT ) );
+            var_dump( $output );
+            var_dump( $res );
+            exit( $res );
         }
     }
 }
