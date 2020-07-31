@@ -242,7 +242,7 @@ class Wp_Print_Preview_Helper
             // define PATH
             putenv( 'PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' );
             // run magick command to run
-            exec( 'magick convert ' . $source . ' -resize 50% quality 300 ' . $target . ' 2>&1', $output, $res );
+            exec( 'magick convert ' . $source . ' -resize 50% ' . $target . ' 2>&1', $output, $res );
 
             if ( $res > 0 ) {
                 error_log( json_encode( $output, JSON_PRETTY_PRINT ) );
@@ -453,9 +453,9 @@ class Wp_Print_Preview_Helper
         // define PATH
         putenv( 'PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' );
         exec(
-            'magick montage ' . $base_png . ' -mode concatenate -duplicate 24 -tile 5x5 ' . $temp_25_png . ' && ' .
+            '(magick montage ' . $base_png . ' -mode concatenate -duplicate 24 -tile 5x5 ' . $temp_25_png . ' && ' .
             'magick convert ' . $temp_25_png . ' -density 600 -bordercolor white -border 150x600 ' . $final_25_pdf . ' && ' .
-            'rm ' . $temp_25_png,
+            'rm ' . $temp_25_png . ' 2>&1) > /dev/null 2>/dev/null &',
             $output,
             $res
         );
