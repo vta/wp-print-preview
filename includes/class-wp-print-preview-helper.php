@@ -214,11 +214,6 @@ class Wp_Print_Preview_Helper
         // write Image to /wp-content/uploads/business_cards
 //        $this->_writeToUploads( $image, $entry_filename . '.pdf' );
 
-        // create 25 up output on 12 x 18 if flag is set
-        if ( $create25up ) {
-            $this->_create25Up( $image, $entry_filename );
-        }
-
         /** CREATE PNG FILE FOR PREVIEW */
         // Switch format to PNG
         $image->setImageFormat( 'png' );
@@ -247,10 +242,15 @@ class Wp_Print_Preview_Helper
             // define PATH
             putenv( 'PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' );
             // run magick command to run
-            exec( 'magick convert ' . $source . ' -resize 50% quality 300 ' . $target . ' 2>&1', $output, $res );
+            exec( 'magick convert ' . $source . ' -resize 50% ' . $target . ' 2>&1', $output, $res );
 
             if ( $res > 0 ) {
                 error_log( json_encode( $output, JSON_PRETTY_PRINT ) );
+            }
+
+            // create 25 up output on 12 x 18 if flag is set
+            if ( $create25up ) {
+                $this->_create25Up( $image, $entry_filename );
             }
         }
 
@@ -392,35 +392,80 @@ class Wp_Print_Preview_Helper
     /**
      * Creates and writes a 25 up Business Card printout on a 12 x 18 stock
      * @param $image - Image Magick object (Business Card)
-     * @param $filename - name of file to be saved as
+     * @param $filename - filename of business card PDF
      */
     private function _create25Up( $image, $filename )
     {
         // new filename for 25-up PDF
-        $new_filename = $filename . '_25_up.pdf';
+//        $new_filename = $filename . '_25_up.pdf';
+//
+//        // create Stack of Images (i.e. 5x5)
+//        $stack = new Imagick();
+//
+//        // create 25 images in the stack at 300 DPI
+//        for ( $i = 0; $i < 25; $i++ )
+//        {
+//            $stack->addImage( $image );
+//            $stack->setImageColorspace( Imagick::COLORSPACE_SRGB );
+//            $stack->setImageUnits( Imagick::RESOLUTION_PIXELSPERINCH );
+//            $stack->setResolution( 600, 600 );
+//            $stack->setImageResolution( 300, 300 );
+//        }
+//        // Create raw 17.5" x 10" 25 up (before adding padding to the edges for 18" x 12" centering)
+//        $montage = $stack->montageImage( new ImagickDraw(), '5x5', '2100x1200', 0, 0);
+//
+//        // create padding to center 25-up on 18" x 12" (Note: 300px = 1 in.)
+//        $horizontalPadding = 300;           // 0.5 in.
+//        $verticalPadding = 1200;            // 2 in.
+//        $offsetX = $horizontalPadding / 2;  // 0.25 in.
+//        $offsetY = $verticalPadding / 2;    // 2 in.
+//        $montage->extentImage( 10800, 7200, -$offsetX, -$offsetY );
+//
+//        $this->_writeToUploads( $montage, $new_filename );
+        /**
+         * temp workaround to replace the above. Used the command line to use temp PNG file
+         * to create another temporary 25-up PNG to preserve resolution. Then we can convert and
+         * resize w/ 300 DPI and establish border for 12x18 layout from temp_file.
+         */
+        $assets_dir = plugin_dir_path( __DIR__ ) . 'public/assets/';
+        $temp_file = 'business_card_template';
 
-        // create Stack of Images (i.e. 5x5)
-        $stack = new Imagick();
+        // Used to create temp 25-up PNG image to retain resolution
+        $base_png = $assets_dir . $temp_file . '.png';
 
-        // create 25 images in the stack at 300 DPI
-        for ( $i = 0; $i < 25; $i++ )
-        {
-            $stack->addImage( $image );
-            $stack->setImageColorspace( Imagick::COLORSPACE_SRGB );
-            $stack->setImageUnits( Imagick::RESOLUTION_PIXELSPERINCH );
-            $stack->setResolution( 600, 600 );
-            $stack->setImageResolution( 300, 300 );
+        $uploads_dir = wp_upload_dir();
+
+        // Create targets for temp 25-up PNG and final 25-up PDF output
+        $temp_25_png = $uploads_dir['basedir'] . '/business_cards/' . $filename . '_25_up.png';
+        $final_25_pdf = $uploads_dir['basedir'] . '/business_cards/' . $filename . '_25_up.pdf';
+
+        // output & exit code for command line
+        $output = [];
+        $res = 0;
+
+        /**
+         * RUN COMMAND (1 command to catch exception as soon as it occurs)
+         * Commands in order – separated by lines
+         * 1. Create 25-up with PNG to retain resolution
+         * 2. Convert to PDF and add border.
+         * 3. Remove temp 25-up PNG from business_cards directory
+         */
+        // define PATH
+        putenv( 'PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' );
+        exec(
+            '(magick montage ' . $base_png . ' -mode concatenate -duplicate 24 -tile 5x5 ' . $temp_25_png . ' && ' .
+            'magick convert ' . $temp_25_png . ' -density 600 -bordercolor white -border 150x600 ' . $final_25_pdf . ' && ' .
+            'rm ' . $temp_25_png . ' 2>&1) > /dev/null 2>/dev/null &',
+            $output,
+            $res
+        );
+
+        // exit with error code if command unsuccessful
+        if ( $res > 0 ) {
+            error_log( 'Error Code: ' . $res . "\n" . json_encode( $output, JSON_PRETTY_PRINT ) );
+            var_dump( $output );
+            var_dump( $res );
+            exit( $res );
         }
-        // Create raw 17.5" x 10" 25 up (before adding padding to the edges for 18" x 12" centering)
-        $montage = $stack->montageImage( new ImagickDraw(), '5x5', '2100x1200', 0, 0);
-
-        // create padding to center 25-up on 18" x 12" (Note: 300px = 1 in.)
-        $horizontalPadding = 300;           // 0.5 in.
-        $verticalPadding = 1200;            // 2 in.
-        $offsetX = $horizontalPadding / 2;  // 0.25 in.
-        $offsetY = $verticalPadding / 2;    // 2 in.
-        $montage->extentImage( 10800, 7200, -$offsetX, -$offsetY );
-
-        $this->_writeToUploads( $montage, $new_filename );
     }
 }

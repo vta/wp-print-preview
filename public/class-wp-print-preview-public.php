@@ -1,6 +1,6 @@
 <?php
 
-include_once(plugin_dir_path(__DIR__) . '/includes/class-wp-print-preview-helper.php');
+include_once( plugin_dir_path( __DIR__ ) . '/includes/class-wp-print-preview-helper.php' );
 
 /**
  * The public-facing functionality of the plugin.
@@ -50,7 +50,7 @@ class Wp_Print_Preview_Public
      * @param string $version The version of this plugin.
      * @since    1.0.0
      */
-    public function __construct($plugin_name, $version)
+    public function __construct( $plugin_name, $version )
     {
 
         $this->plugin_name = $plugin_name;
@@ -78,7 +78,7 @@ class Wp_Print_Preview_Public
          * class.
          */
 
-        wp_enqueue_style($this->plugin_name, plugin_dir_url(__FILE__) . 'css/wp-print-preview-public.css', array(), $this->version, 'all');
+        wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/wp-print-preview-public.css', array(), $this->version, 'all' );
 
     }
 
@@ -102,7 +102,7 @@ class Wp_Print_Preview_Public
          * class.
          */
 
-        wp_enqueue_script($this->plugin_name, plugin_dir_url(__FILE__) . 'js/wp-print-preview-public.js', array('jquery'), $this->version, false);
+        wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/wp-print-preview-public.js', array( 'jquery' ), $this->version, false );
 
     }
 
@@ -113,7 +113,7 @@ class Wp_Print_Preview_Public
      * @param $atts
      * @return string - HTML user front-end
      */
-    public function business_card_preview_shortcode($atts)
+    public function business_card_preview_shortcode( $atts )
     {
 
         $args = shortcode_atts(
@@ -126,10 +126,10 @@ class Wp_Print_Preview_Public
 
         // retrieve input values
         // $entry_id provided by query param
-        if ( isset($_GET['entry_id']) ) {
+        if ( isset( $_GET['entry_id'] ) ) {
 
-            $entry = GFAPI::get_entry($_GET['entry_id']);
-            $image = (new Wp_Print_Preview_Helper())->business_card_proof( $entry, false, true );
+            $entry = GFAPI::get_entry( $_GET['entry_id'] );
+            $image = ( new Wp_Print_Preview_Helper() )->business_card_proof( $entry, false, true );
 
             // STORE IN PREVIEW PAGE TO USE FOR REDIRECT LATER
             $_SESSION['entry_id'] = $_GET['entry_id'];
@@ -152,30 +152,33 @@ class Wp_Print_Preview_Public
         /**
          * @todo - Decide upon a better 'Confirmation/Cancellation' process, perhaps built-in GF methods or prior to this execution?
          */
-        if ( isset($_POST['back']) ) {
+        if ( isset( $_POST['back'] ) ) {
 
-            $entry = GFAPI::get_entry($_SESSION['entry_id']);
+            $entry = GFAPI::get_entry( $_SESSION['entry_id'] );
 
-            $due_date = $entry['13'];
-            $job_title = $entry['1'];
-            $firstname = $entry['2.3'];
-            $lastname = $entry['2.6'];
-            $department = $entry['9'];
-            $email = $entry['3'];
-            $address = $entry['5'];
-            $phone = $entry['6'];
-            $mobile = $entry['7'];
-            $fax = $entry['8'];
-            $quantity = $entry['10'];
+            $query_param_data = array(
+                'due_date'   => $entry['13'],
+                'job_title'  => $entry['1'],
+                'firstname'  => $entry['2.3'],
+                'lastname'   => $entry['2.6'],
+                'department' => $entry['9'],
+                'email'      => $entry['3'],
+                'address'    => $entry['5'],
+                'phone'      => $entry['6'],
+                'mobile'     => $entry['7'],
+                'fax'        => $entry['8'],
+                'quantity'   => $entry['10']
+            );
 
-            $redirect_url = '/business-card-printing/?due_date=' . $due_date . '&job_title=' . $job_title . '&firstname=' . $firstname .
-                '&lastname=' . $lastname . '&department=' . $department . '&email=' . $email . '&address=' . $address .
-                '&phone=' . $phone . '&mobile=' . $mobile . '&fax=' . $fax . '&quantity=' . $quantity;
+            // builds our query parameters and escapes any special URI encoded characters
+            $redirect_url = '/business-card-printing/?' . http_build_query( $query_param_data );
 
-            $redirect_url = str_replace(' ', '+', $redirect_url);
+            // Replace special query parameter characters
+            $redirect_url = str_replace( ' ', '+', $redirect_url );
+
 
             // Redirect user to the form
-            GFAPI::delete_entry($entry['id']);
+            GFAPI::delete_entry( $entry['id'] );
             return "
                 <script>
                     window.location.href='" . $redirect_url . "';
