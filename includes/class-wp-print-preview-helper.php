@@ -200,8 +200,12 @@ class Wp_Print_Preview_Helper
 
         }
 
-        // Form entry_id added to PDF preview
-        $entry_filename = 'bizcard_' . $first_name . '_' . $last_name . '_entry_' . $entry['id'];
+        // Account for special characters when generating the filename
+        $entry_filename = str_replace(
+            [' ', ',', '?', '/', '"', '\'', '(', ')', '[', ']', '{', '}', '!', '&', '#', '@', '$', '%', '*', '|', '^', '\\'],
+            '_',
+            'bizcard_' . $first_name . '_' . $last_name . '_entry_' . $entry['id']
+        );
 
         $image->setFilename( $entry_filename );
 
