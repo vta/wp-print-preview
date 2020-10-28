@@ -1,0 +1,16 @@
+{
+    "name": "vta/wp-print-preview",
+    "description": "A plugin to transform VTA business card orders via Gravity Forms into a dynamic image preview. Withthe help of Imagick, the plugin will produce an image file that will be processed by the Copy Center team to print the actual business cards. The user will also have the option to edit or delete submitted business card forms (not an included feature of Gravity forms).",
+    "type": "wordpress-plugin",
+    "require": {
+        "phpoffice/phpspreadsheet": "^1.15"
+    },
+    "license": "GNU General Public License v2.0",
+    "authors": [
+        {
+            "name": "bijanmmarkes",
+            "email": "bijanmmarkes@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable"
+}
