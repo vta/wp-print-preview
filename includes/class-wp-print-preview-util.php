@@ -2,7 +2,11 @@
 /**
  * Include the Vendor autoload file for Composer.
  */
-require 'vendor/autoload.php';
+if ( is_readable( dirname(__FILE__, 2) . '/vendor/autoload.php' ) ) {
+    require dirname(__FILE__, 2) . '/vendor/autoload.php';
+} else {
+    exit("Error loading composer packages in: " . dirname(__FILE__, 2) . '/vendor/autoload.php' );
+}
 
 /**
  * Include the neccesary PhpSpreadsheet Classes.
