@@ -1,17 +1,20 @@
 <?php
-
+/**
+ * Include the Vendor autoload file for Composer.
+ */
 require 'vendor/autoload.php';
 
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
+/**
+ * Include the neccesary PhpSpreadsheet Classes.
+ */
 use PhpOffice\PhpSpreadsheet\IOFactory;
-
+use PhpOffice\PhpSpreadsheet\Worksheet\Row;
+/**
+ * Class Wp_Print_Preview_Util
+ * Author: Bijan Markes <bijan.markes@vta.org> <https://github.com/bijanmmarkes>
+ */
 class Wp_Print_Preview_Util {
     public $excel_parser;
-
-    public function __construct()
-    {
-
-    }
     /**
      * @param $file_name
      * @return Excel_Helper
@@ -24,11 +27,9 @@ class Wp_Print_Preview_Util {
         } catch(Exception $error) {
             throw new Exception("Error constructing Excel Parser: " . $error->getMessage() . ", Line number: " . $error->getLine());
         }
-
        return $this->excel_parser;
     }
 }
-
 /**
  * Class Excel_Helper
  * @param $file_name string
@@ -57,9 +58,9 @@ class Excel_Helper {
         if (isset($this->file_name) && strlen($this->file_name) > 3) {
             try {
                 /**
-                 * Create a generic reader that determines the filetype automatically using extensions/patterns.
+                 * Create a generic reader that determines the file type automatically using extensions/patterns.
                  */
-                $this->reader = PhpOffice\PhpSpreadsheet\IOFactory::createReaderForFile($this->file_name);
+                $this->reader = IOFactory::createReaderForFile($this->file_name);
                 /**
                  * Make sure the reader exists and is a valid object.
                  */
@@ -68,6 +69,7 @@ class Excel_Helper {
                      * Set the read to read only to prevent unwanted writing to the original file.
                      */
                     $this->reader->setReadDataOnly(true);
+                    return $this;
                 } else {
                     throw new Exception("Error with the reader.");
                 }
@@ -79,7 +81,7 @@ class Excel_Helper {
     /**
      * This parses the Excel spreadsheet and returns either a JSON or PHP (default) Array.
      * @param string $return_type | "PHP" | "JSON" - whether to return PHP or JSON (PHP Object vs JSON Object)
-     * @return false|string
+     * @return false|string|object
      * @throws Exception
      */
     public function parse_excel($return_type = "PHP") {
@@ -115,6 +117,9 @@ class Excel_Helper {
                 if ($return_type == 'PHP') {
                     return  $this->spreadsheet_object;
                 } else if ($return_type == 'JSON') {
+                    /**
+                     * Return the JSON string/object if specified. (Can be decoded to PHP Object from here)
+                     */
                     return json_encode($this->spreadsheet_object);
                 }
             } catch (Exception $error) {
@@ -125,8 +130,9 @@ class Excel_Helper {
             }
 
         }
+        return false;
     }
-    public function store_row(\PhpOffice\PhpSpreadsheet\Worksheet\Row $row) {
+    public function store_row(Row $row) {
         /**
          * Initialize the temporary row for storing each cell via the Iterator.
          */
@@ -151,6 +157,8 @@ class Excel_Helper {
         foreach ($cell_iterator as $cell) {
             /**
              * Create the column key based on the definitions and number of columns per row
+             * Uses the total number of columns(col_count) to get the proper dictionary definition(column_definitions)
+             * Uses the cell iterator to get the current index of the cell to match it with the proper Key. (first, last, etc.)
              */
             $column = $this->column_definitions[$col_count][$cell_iterator->getCurrentColumnIndex()];
             /**
