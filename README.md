@@ -65,6 +65,51 @@ Similar to previous instructions, please add the below values to the "_Admin Lab
 
 Once all of the above steps are set up correctly, the plugin should function.
 
+
+### Using the WP-Print-Preview-Util
+
+- File located in: `includes/class-wp-print=preview-util`
+
+
+##### Initializing and using the class
+
+- First initialize the main Class:
+```
+# $wppu = new Wp_Print_Preview_Util(); 
+```
+
+- Next run the create_excel_parser function to create the parser object.
+When creating the parser make sure to include the filename as it auto-detects
+the file type: (xls vs xlsx) - It also supports other file types 
+but is primarily configured to look for cells in excel sheets personalized to
+the mass-mailer expectations.
+
+```
+## Absolute path
+# $file_name = "includes/assets/6_column_example.xlsx";
+
+## Create the parser
+# $parser = $wppu->create_excel_parser($file_name);
+```
+
+- Run the parse_excel(response_type?) function with the optional response type.
+- ##### Allowed response types: String: "PHP" or "JSON" 
+- (If no response type is provided it will default to PHP)
+PHP will return a PHP Object/Array, while JSON will return a JSON encoded array.
+
+```
+# $response = $parser->parse_excel("JSON");
+
+# var_dump($response);
+```
+
+#### Testing with the PHP CLI (In the root directory):
+
+```
+php -r 'include "includes/class-wp-print-preview-util.php"; $wppu = new Wp_Print_Preview_Util(); $parser = $wppu->create_excel_parser("includes/assets/6_column_example.xlsx"); $response = $parser->parse_excel("PHP"); var_dump($response);'
+
+```
+
 ## Updates
 
 ### v1.1.0 (6/24/2020)
