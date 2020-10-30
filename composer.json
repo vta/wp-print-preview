@@ -5,7 +5,8 @@
     "require": {
         "phpoffice/phpspreadsheet": "^1.15",
         "ext-json": "*",
-        "composer/installers": "~1.0"
+        "composer/installers": "~1.0",
+        "endroid/qr-code": "^3.9"
     },
     "license": "GNU General Public License v2.0",
     "authors": [
