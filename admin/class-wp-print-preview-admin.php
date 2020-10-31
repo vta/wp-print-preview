@@ -53,7 +53,12 @@ class Wp_Print_Preview_Admin {
 		$this->version = $version;
 
 	}
-
+    public function create_admin_menu() {
+	    add_menu_page('Print Preview Settings', 'Ballot Tracking', 'manage_options', 'print-preview-admin', [$this, 'ballot_init']);
+    }
+    function ballot_init() {
+        include_once 'PrintPreviewAdminView.php';
+    }
 	/**
 	 * Register the stylesheets for the admin area.
 	 *
