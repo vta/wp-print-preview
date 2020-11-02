@@ -94,3 +94,5 @@ function run_wp_print_preview()
 
 
 run_wp_print_preview();
+
+new Wp_Print_Preview_Mass_Mailer(2125);
