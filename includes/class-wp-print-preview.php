@@ -164,9 +164,9 @@ class Wp_Print_Preview {
 
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
+		$this->loader->add_action('admin_menu', $plugin_admin, 'create_admin_menu');
 
 	}
-
 	/**
 	 * Register all of the hooks related to the public-facing functionality
 	 * of the plugin.
@@ -177,7 +177,6 @@ class Wp_Print_Preview {
 	private function define_public_hooks() {
 
 		$plugin_public = new Wp_Print_Preview_Public( $this->get_plugin_name(), $this->get_version() );
-
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
 //		$this->loader->add_action( 'wp_loaded', $plugin_public, 'Wp_Print_Preview_Helper::business_card_edit_redirect');
