@@ -2,3 +2,29 @@
  * All of the CSS for your admin-specific functionality should be
  * included in this file.
  */
+div.wp-print-ballot-container {
+    min-height: 720px;
+    width: 100%;
+    height: 100%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+div.wp-print-ballot-inner-table {
+
+}
+table.js-sort-table {
+    width: 100%;
+    height: 100%;
+    min-width: 720px;
+}
+
+table.js-sort-table th {
+    background: #23282d;
+    color: #EEEEEE;
+    flex-flow: column;
+}
+
+table.js-sort-table * {
+    border-color: #555D66;
+}

@@ -54,10 +54,14 @@ class Wp_Print_Preview_Admin {
 
 	}
     public function create_admin_menu() {
-	    add_menu_page('Print Preview Settings', 'Ballot Tracking', 'manage_options', 'print-preview-admin', [$this, 'ballot_init']);
+	    add_menu_page('Print Preview Settings', 'WP Print Preview', 'manage_options', 'print-preview-admin', [$this, 'admin_page_init']);
+	    add_submenu_page('print-preview-admin', 'VTA SS Ballots', 'Manage Ballots', 'manage_options', 'print-preview-ballot-admin', [$this, 'ballot_page_init']);
     }
-    function ballot_init() {
+    function admin_page_init() {
         include_once 'PrintPreviewAdminView.php';
+    }
+    function ballot_page_init() {
+        include_once 'PrintPreviewBallotAdminView.php';
     }
 	/**
 	 * Register the stylesheets for the admin area.
@@ -79,7 +83,6 @@ class Wp_Print_Preview_Admin {
 		 */
 
 		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/wp-print-preview-admin.css', array(), $this->version, 'all' );
-
 	}
 
 	/**
@@ -100,8 +103,8 @@ class Wp_Print_Preview_Admin {
 		 * between the defined hooks and the functions defined in this
 		 * class.
 		 */
-
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/wp-print-preview-admin.js', array( 'jquery' ), $this->version, false );
+		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/sort-table.min.js', array(), false, true);
 
 	}
 
