@@ -1,23 +1,25 @@
 <?php
-
+require_once "class-wp-print-preview-util.php";
 class Wp_Print_Preview_Mass_Mailer
 {
 
     private $entry;
     private $gf_form;
+    private $pp_util;
 
     /**
      * Wp_Print_Preview_Mass_Mailer constructor
      * @param $entry_id
      * @throws Exception
      */
-    function __construct( $entry_id )
+    function __construct()
     {
+        $this->pp_util = new Wp_Print_Preview_Util();
         // store Gravity Forms entry & form arrays as private member variable
         // (to be used in most public functions)
-        $this->entry = GFAPI::get_entry( $entry_id );
-        $this->gf_form = GFAPI::get_form( $this->entry['form_id'] );
-        $this->return_envelope_template();
+//        $this->entry = GFAPI::get_entry( $entry_id );
+//        $this->gf_form = GFAPI::get_form( $this->entry['form_id'] );
+//        $this->return_envelope_template();
     }
 
     /**
@@ -128,6 +130,16 @@ class Wp_Print_Preview_Mass_Mailer
             }
         }
         return $res;
+    }
+
+    public function mass_mailer_addresses( $form, $field, $uploaded_filename, $tmp_file_name, $file_path ) {
+        $parser = $this->pp_util->create_excel_parser($file_path);
+        $addresses = $parser->parse_excel("PHP");
+        error_log(print_r($addresses, true));
+        foreach ($addresses as $address) {
+
+        }
+
     }
 
 }
