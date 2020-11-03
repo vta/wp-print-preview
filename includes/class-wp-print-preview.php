@@ -177,12 +177,34 @@ class Wp_Print_Preview {
 	private function define_public_hooks() {
 
 		$plugin_public = new Wp_Print_Preview_Public( $this->get_plugin_name(), $this->get_version() );
+		$plugin_mass_mailer = new Wp_Print_Preview_Mass_Mailer();
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
 //		$this->loader->add_action( 'wp_loaded', $plugin_public, 'Wp_Print_Preview_Helper::business_card_edit_redirect');
 		$this->loader->add_shortcode( 'business-card-preview', $plugin_public, "Wp_Print_Preview_Public::business_card_preview_shortcode", $priority = 10, $accepted_args = 2 );
 		$this->loader->add_shortcode('business-card-edit', $plugin_public, 'Wp_Print_Preview_Public::business_card_edit_shortcode',  $priority = 10, $accepted_args = 2);
+
+		/**
+         * Get the form_id for the Mass Mailer form.
+         */
+		$mm_form_id = $this->get_form_id("Mass Mailer");
+		/**
+         * Create the action hook for the specific form.
+         */
+		$this->loader->add_action("gform_post_multifile_upload_{$mm_form_id}", $plugin_mass_mailer, 'mass_mailer_addresses', 10, 5);
 	}
+
+	private function get_form_id($title) {
+	    $matching_form = "";
+        $forms = GFAPI::get_forms();
+        foreach ($forms as $form) {
+            if ($form['title'] === $title) {
+                $matching_form = $form['id'];
+                break;
+            }
+        }
+        return $matching_form;
+    }
 
 	/**
 	 * Run the loader to execute all of the hooks with WordPress.
