@@ -129,12 +129,8 @@ class Wp_Print_Preview_Mass_Mailer
      * @return mixed       string       - field ID in string format
      * @throws Exception                - throws exception when field ID can't be found
      */
-<<<<<<< HEAD
     public function get_field_id( $form, $type, $admin_label )
     {
-=======
-    private function _return_address_extract() {
->>>>>>> 65e6a06... Final merge fixes.
         $res = null;
 
         // iterate through GF form fields
@@ -149,12 +145,11 @@ class Wp_Print_Preview_Mass_Mailer
 
         // if no field ID was retrieved, throw an exception
         if ( $res === null ) {
-            throw new Exception('Cannot find find admin label "' . $admin_label . '" for type "' . type . '".');
+            throw new Exception('Cannot find find admin label "' . $admin_label . '" for type "' . $type . '".');
         }
 
         return $res;
     }
-
     /**
      * Return Envelope File Path
      *
@@ -170,36 +165,16 @@ class Wp_Print_Preview_Mass_Mailer
         $atu_template = '../public/assets/9_VTA_ATU_TEMPLATE.pdf';
         $regular_template = '../public/assets/9_VTA_REG_TEMPLATE.pdf';
 
-<<<<<<< HEAD
         // assign the correct filepath based on return_address field value
         if ( $template_type === 'Regular' ) {
             $res = $regular_template;
         } elseif ( $template_type === 'ATU' ) {
-=======
-        // search through fields array in GF object
-        $fields_arr = $this->gf_form['fields'];
-        error_log(json_encode($fields_arr, JSON_PRETTY_PRINT));
-        $key = array_search(
-            'return_envelope_template',
-            array_column($fields_arr, 'adminLabel')
-        );
-
-        // extract corresponding field ID
-        $template_type_field_id = $fields_arr[$key]['id'];
-
-        // retrieve field value from entry
-        $return_address_value = $this->entry[$template_type_field_id];
-
-        // assign the correct filepath based on return_address field value
-        if ($return_address_value === 'Regular') {
-            $res = $regular_template;
-        } elseif ($return_address_value === 'ATU') {
->>>>>>> 65e6a06... Final merge fixes.
             $res = $atu_template;
         }
+
         return $res;
-<<<<<<< HEAD
     }
+
 
     /**
      * Return Envelope Preview AJAX handler
@@ -221,8 +196,6 @@ class Wp_Print_Preview_Mass_Mailer
         include plugin_dir_path( __DIR__ ) . 'public/partials/return-envelope-preview.php';
 
         exit;
-=======
->>>>>>> 65e6a06... Final merge fixes.
     }
 
     /**
@@ -292,20 +265,6 @@ class Wp_Print_Preview_Mass_Mailer
         }
 
     }
-    /**
-     * SETTER
-     *
-     * Set private class members outside of constructor.
-     * Make accessible outside of class scope.
-     * @param $property     - private member variable
-     * @param $value        - value
-     */
-    public function __set( $property, $value )
-    {
-        if ( property_exists( $this, $property ) ) {
-            $this->$property = $value;
-        }
-    }
     public function mass_mailer_addresses( $form, $field, $uploaded_filename, $tmp_file_name, $file_path ) {
         if ($field['adminLabel'] === 'addresses_file') {
             error_log('Addresses FILE');
@@ -313,10 +272,12 @@ class Wp_Print_Preview_Mass_Mailer
             $addresses = $parser->parse_excel("PHP");
             error_log(print_r($addresses, true));
             foreach ($addresses as $address) {
+
             }
         } else {
             error_log($field['adminLabel']);
         }
+
     }
     /**
      * @param $entry
@@ -329,6 +290,20 @@ class Wp_Print_Preview_Mass_Mailer
             error_log("Entry ID: --- {$entry['id']}");
         } else {
             throw new Exception("Entry ID not set.");
+        }
+    }
+    /**
+     * SETTER
+     *
+     * Set private class members outside of constructor.
+     * Make accessible outside of class scope.
+     * @param $property     - private member variable
+     * @param $value        - value
+     */
+    public function __set( $property, $value )
+    {
+        if ( property_exists( $this, $property ) ) {
+            $this->$property = $value;
         }
     }
 }
