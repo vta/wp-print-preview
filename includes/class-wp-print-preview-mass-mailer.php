@@ -1,11 +1,13 @@
 <?php
 require_once "class-wp-print-preview-util.php";
+require_once "class-wp-print-preview-imagick.php";
 class Wp_Print_Preview_Mass_Mailer
 {
 
     private $entry;
     private $gf_form;
     private $pp_util;
+    private $imagick;
 
     /**
      * Wp_Print_Preview_Mass_Mailer constructor
@@ -15,6 +17,7 @@ class Wp_Print_Preview_Mass_Mailer
     function __construct()
     {
         $this->pp_util = new Wp_Print_Preview_Util();
+        $this->imagick = new Wp_Print_Preview_Imagick();
         // store Gravity Forms entry & form arrays as private member variable
         // (to be used in most public functions)
 //        $this->entry = GFAPI::get_entry( $entry_id );
@@ -26,40 +29,37 @@ class Wp_Print_Preview_Mass_Mailer
      * Return Address Template
      *
      * stamps return address in the correct location on the #9 Return Envelope.
+     * @param $entry_id
      */
-    public function return_envelope_template()
+    public function return_envelope_template( $entry_id )
     {
-        // ADDRESS STRING
-        $return_address_text = $this->_return_address_extract();
+        $this->__set( 'entry', GFAPI::get_entry( $entry_id ) );
+        $this->__set( 'gf_form', GFAPI::get_form( $this->entry['form_id'] ) );
 
-        // COLOR CONSTANTS
-        $BLACK = '#000000';
-
-        // character spacing
-        $CHAR_SPACE = 0.3;
-
-        // stroke width
-        $STROKE_WIDTH = 0.7;
-
-        // SPACING BETWEEN WORD
-        $WORD_SPACING = 0.9;
-
-        // LINE HEIGHT
-        $LINE_HEIGHT = 4.7;
-
-        // COORDINATES TO DRAW TEXT
-        $X = 1038;
-        $Y = 598;
+        $BLACK = '#000000';         // COLOR CONSTANT
+        $CHAR_SPACE = 0.3;          // character spacing
+        $FONT_SIZE = 10.5;          // FONT SIZE
+        $STROKE_WIDTH = 0.7;        // FONT WEIGHT
+        $WORD_SPACING = 0.9;        // SPACING BETWEEN WORD
+        $LINE_HEIGHT = 4.7;         // LINE HEIGHT
+        // ANNOTATIONS
+        $X = 1038;                  // X COORD FOR TEXT
+        $Y = 598;                   // Y COORD FOR TEXT
+        $return_address_text = $this->_return_address_extract(); // ADDRESS STRING
+        $ANNOTATION = array(
+            'x' => $X,
+            'y' => $Y,
+            'text' => $return_address_text
+        );
 
         /** text draw params */
-        // ADDRESS
         $address_text = array(
             'font'         => plugin_dir_path( __DIR__ ) . '/public/assets/MuseoSans_300.otf',
             'color'        => $BLACK,
             'stroke_width' => $STROKE_WIDTH,
             'font_size'    => 10.5,
             'kerning'      => $CHAR_SPACE,
-            'annotation'   => array( 'x' => $X, 'y' => $Y, 'text' => $return_address_text ),
+            'annotation'   => $ANNOTATION,
             'line_height'  => $LINE_HEIGHT,
             'word_spacing' => $WORD_SPACING
         );
@@ -83,7 +83,7 @@ class Wp_Print_Preview_Mass_Mailer
             $image->setImageColorspace( Imagick::COLORSPACE_SRGB );
             $image->setImageUnits( Imagick::RESOLUTION_PIXELSPERINCH );
             $image->setImageFormat( 'pdf' );
-            $draw = $this->_draw_text( $address_text );
+            $draw = $this->imagick->draw_text( $address_text );
             $image->drawImage( $draw );
             $image->writeImage( plugin_dir_path( __FILE__ ) . '/test_file.pdf' );
 
@@ -96,41 +96,6 @@ class Wp_Print_Preview_Mass_Mailer
             error_log( json_encode( ( array ) $e, JSON_PRETTY_PRINT ) );
             die();
         }
-    }
-
-    /**
-     * Image Magick method for drawing the address text on then envelope
-     * @param $params
-     * @return ImagickDraw
-     */
-    private function _draw_text( $params )
-    {
-        $draw = new ImagickDraw();
-
-        $draw->setFont( $params['font'] );
-        $draw->setFillColor( $params['color'] );
-        $draw->setStrokeColor( $params['color'] );
-        $draw->setStrokeWidth( $params['stroke_width'] );
-        $draw->setFontSize( $params['font_size'] );
-        $draw->setTextKerning( $params['kerning'] );
-
-        // positioning + text
-        $x = $params['annotation']['x'];
-        $y = $params['annotation']['y'];
-        $text = $params['annotation']['text'];
-
-        // for multiline height text (i.e. textarea values)
-        if ( isset( $params['line_height'] ) ) {
-            $draw->setTextInterLineSpacing( $params['line_height'] );
-        }
-
-        if ( isset( $params['char_spacing'] ) ) {
-            $draw->setTextInterWordSpacing( $params['char_spacing'] );
-        }
-
-        $draw->annotation( $x, $y, $text );
-
-        return $draw;
     }
 
     /**
@@ -155,16 +120,6 @@ class Wp_Print_Preview_Mass_Mailer
         return $res;
     }
 
-    public function mass_mailer_addresses( $form, $field, $uploaded_filename, $tmp_file_name, $file_path )
-    {
-        $parser = $this->pp_util->create_excel_parser($file_path);
-        $addresses = $parser->parse_excel("PHP");
-        error_log(print_r($addresses, true));
-        foreach ($addresses as $address) {
-
-        }
-    }
-
     /**
      * Returns relative filepath for #9 envelope types. Will used template
      * file to produce final return envelope PDF.* @return string|null
@@ -178,6 +133,7 @@ class Wp_Print_Preview_Mass_Mailer
 
         // search through fields array in GF object
         $fields_arr = $this->gf_form['fields'];
+        error_log(json_encode($fields_arr, JSON_PRETTY_PRINT));
         $key = array_search(
             'return_envelope_template',
             array_column( $fields_arr, 'adminLabel' )
@@ -198,6 +154,29 @@ class Wp_Print_Preview_Mass_Mailer
 
         return $res;
 
+    }
+
+    public function mass_mailer_addresses( $form, $field, $uploaded_filename, $tmp_file_name, $file_path )
+    {
+        $parser = $this->pp_util->create_excel_parser($file_path);
+        $addresses = $parser->parse_excel("PHP");
+        error_log(print_r($addresses, true));
+        foreach ($addresses as $address) {
+
+        }
+    }
+
+    /**
+     * Set private class members outside of constructor.
+     * Make accessible outside of class scope.
+     * @param $property - private member variable
+     * @param $value - value
+     */
+    public function __set( $property, $value )
+    {
+        if ( property_exists( $this, $property ) ) {
+            $this->$property = $value;
+        }
     }
 
 }
