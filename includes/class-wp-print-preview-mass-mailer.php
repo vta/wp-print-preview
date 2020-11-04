@@ -129,8 +129,12 @@ class Wp_Print_Preview_Mass_Mailer
      * @return mixed       string       - field ID in string format
      * @throws Exception                - throws exception when field ID can't be found
      */
+<<<<<<< HEAD
     public function get_field_id( $form, $type, $admin_label )
     {
+=======
+    private function _return_address_extract() {
+>>>>>>> 65e6a06... Final merge fixes.
         $res = null;
 
         // iterate through GF form fields
@@ -166,14 +170,35 @@ class Wp_Print_Preview_Mass_Mailer
         $atu_template = '../public/assets/9_VTA_ATU_TEMPLATE.pdf';
         $regular_template = '../public/assets/9_VTA_REG_TEMPLATE.pdf';
 
+<<<<<<< HEAD
         // assign the correct filepath based on return_address field value
         if ( $template_type === 'Regular' ) {
             $res = $regular_template;
         } elseif ( $template_type === 'ATU' ) {
+=======
+        // search through fields array in GF object
+        $fields_arr = $this->gf_form['fields'];
+        error_log(json_encode($fields_arr, JSON_PRETTY_PRINT));
+        $key = array_search(
+            'return_envelope_template',
+            array_column($fields_arr, 'adminLabel')
+        );
+
+        // extract corresponding field ID
+        $template_type_field_id = $fields_arr[$key]['id'];
+
+        // retrieve field value from entry
+        $return_address_value = $this->entry[$template_type_field_id];
+
+        // assign the correct filepath based on return_address field value
+        if ($return_address_value === 'Regular') {
+            $res = $regular_template;
+        } elseif ($return_address_value === 'ATU') {
+>>>>>>> 65e6a06... Final merge fixes.
             $res = $atu_template;
         }
-
         return $res;
+<<<<<<< HEAD
     }
 
     /**
@@ -196,6 +221,8 @@ class Wp_Print_Preview_Mass_Mailer
         include plugin_dir_path( __DIR__ ) . 'public/partials/return-envelope-preview.php';
 
         exit;
+=======
+>>>>>>> 65e6a06... Final merge fixes.
     }
 
     /**
