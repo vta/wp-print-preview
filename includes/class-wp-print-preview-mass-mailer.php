@@ -6,15 +6,23 @@ class Wp_Print_Preview_Mass_Mailer
     private $entry;
     private $gf_form;
     private $pp_util;
+    private $entry_id;
 
     /**
      * Wp_Print_Preview_Mass_Mailer constructor
-     * @param $entry_id
      * @throws Exception
      */
     function __construct()
     {
-        $this->pp_util = new Wp_Print_Preview_Util();
+        try {
+            $this->pp_util = new Wp_Print_Preview_Util();
+        } catch (Exception $error) {
+            throw new Exception("Error Initializing Print Preview Util Class: \n Error Message: "
+                . $error->getMessage()
+                . "\n Line number: "
+                . $error->getLine());
+        }
+
         // store Gravity Forms entry & form arrays as private member variable
         // (to be used in most public functions)
 //        $this->entry = GFAPI::get_entry( $entry_id );
@@ -134,20 +142,31 @@ class Wp_Print_Preview_Mass_Mailer
 
     public function mass_mailer_addresses( $form, $field, $uploaded_filename, $tmp_file_name, $file_path ) {
         if ($field['adminLabel'] === 'addresses_file') {
+//            error_log(print_r($form, true));
             error_log('Addresses FILE');
             $parser = $this->pp_util->create_excel_parser($file_path);
             $addresses = $parser->parse_excel("PHP");
             error_log(print_r($addresses, true));
             foreach ($addresses as $address) {
-
             }
         } else {
             error_log($field['adminLabel']);
         }
 
     }
-    public function get_mass_mailer_entry_id($post_id, $entry, $form) {
-        error_log("Entry ID: --- {$entry['id']}");
+
+    /**
+     * @param $entry
+     * @param $form
+     * @throws Exception
+     */
+    public function get_mass_mailer_entry_id($entry, $form) {
+        if (isset($entry['id'])) {
+            $this->entry_id = $entry['id'];
+            error_log("Entry ID: --- {$entry['id']}");
+        } else {
+            throw new Exception("Entry ID not set.");
+        }
     }
 
 }
