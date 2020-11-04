@@ -33,24 +33,22 @@ class Wp_Print_Preview_Mass_Mailer
         // COLOR CONSTANTS
         $BLACK = '#000000';
 
-        // indentation for text
-        $x_indentation = 98;
-
         // character spacing
-        $CHAR_SPACE = 2.3;
+        $CHAR_SPACE = 0.4;
 
         // stroke width
-        $STROKE_WIDTH = 2;
+        $STROKE_WIDTH = 0.7;
 
         /** text draw params */
         // ADDRESS
         $address_text = array(
-            'font'         => plugin_dir_path( __DIR__ ) . '/public/assets/MuseoSans_700.otf',
+            'font'         => plugin_dir_path( __DIR__ ) . '/public/assets/MuseoSans_300.otf',
             'color'        => $BLACK,
             'stroke_width' => $STROKE_WIDTH,
-            'font_size'    => 9,
-            'kerning'      => ( $CHAR_SPACE - 1.1 ),
-            'annotation'   => array( 'x' => $x_indentation, 'y' => 560, 'text' => $return_address_text )
+            'font_size'    => 10,
+            'kerning'      => $CHAR_SPACE,
+            'annotation'   => array( 'x' => 345, 'y' => 199, 'text' => $return_address_text ),
+            'line_height'  => 2.4
         );
 
         // ENVELOPE TEMPLATE FILE
@@ -59,22 +57,23 @@ class Wp_Print_Preview_Mass_Mailer
         try {
             // CREATE THE CANVAS
             $image = new \Imagick();
+            $image->setResolution( 100, 100 );
             $image->readImage( plugin_dir_path( __FILE__ ) . $envelope_template );
             $image->setImageColorspace( Imagick::COLORSPACE_SRGB );
             $image->setImageUnits( Imagick::RESOLUTION_PIXELSPERINCH );
-            $image->setResolution( 300, 300 );
-//            $image->setImageResolution( 300, 300 );
             $image->setImageFormat( 'pdf' );
-
             $draw = $this->_draw_text( $address_text );
             $image->drawImage( $draw );
             $image->writeImage( plugin_dir_path( __FILE__ ) . '/test_file.pdf' );
 
         } catch ( Exception $e ) {
             // LOG ERROR IF WE CANNOT CREATE THE RETURN ENVELOPE
-            error_log( 'Could not generate return mail template.' );
-            error_log( json_encode( $e, JSON_PRETTY_PRINT ) );
-
+            $err_message = 'Could not generate return mail template.';
+            var_dump( $e );
+            echo $err_message;
+            error_log( $err_message );
+            error_log( json_encode( ( array ) $e, JSON_PRETTY_PRINT ) );
+            die();
         }
     }
 
@@ -98,6 +97,12 @@ class Wp_Print_Preview_Mass_Mailer
         $x = $params['annotation']['x'];
         $y = $params['annotation']['y'];
         $text = $params['annotation']['text'];
+
+        // for multiline height text (i.e. textarea values)
+        if ( isset( $params['line_height'] ) ) {
+            $draw->setTextInterLineSpacing( $params['line_height'] );
+        }
+
         $draw->annotation( $x, $y, $text );
 
         return $draw;
@@ -114,10 +119,12 @@ class Wp_Print_Preview_Mass_Mailer
         $res = null;
 
         // loop through and extract address field
-        foreach ( $this->gf_form['fields'] as $form_field ) {
-            // check if field matches for "Return Address"
+        foreach ( $this->gf_form['fields'] as $form_field )
+        {
+            // check if field matches for adminLabel "return_address", then return text
             if ( $form_field['type'] === 'textarea' && $form_field['adminLabel'] === 'return_address' ) {
-                $res = $return_address_field_id = $form_field['id'];
+                $res = $this->entry[$form_field['id']];
+                break;
             }
         }
         return $res;
