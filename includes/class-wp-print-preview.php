@@ -192,7 +192,8 @@ class Wp_Print_Preview {
          * Create the action hook for the specific form.
          */
 		$this->loader->add_action("gform_post_multifile_upload_{$mm_form_id}", $plugin_mass_mailer, 'mass_mailer_addresses', 10, 5);
-	}
+        $this->loader->add_action("gform_entry_created", $plugin_mass_mailer, 'get_mass_mailer_entry_id', 10, 2);
+    }
 
 	private function get_form_id($title) {
 	    $matching_form = "";
