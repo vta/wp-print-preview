@@ -144,7 +144,6 @@ class Wp_Print_Preview {
 	 * @access   private
 	 */
 	private function set_locale() {
-
 		$plugin_i18n = new Wp_Print_Preview_i18n();
 
 		$this->loader->add_action( 'plugins_loaded', $plugin_i18n, 'load_plugin_textdomain' );
@@ -201,8 +200,7 @@ class Wp_Print_Preview {
         $this->loader->add_action( 'woocommerce_checkout_create_order_line_item', $plugin_mass_mailer, 'Wp_Print_Preview_Mass_Mailer::generate_order_item_pdfs', 10, 4 );
 
 		$this->loader->add_action("gform_post_multifile_upload_{$mm_form_id}", $plugin_mass_mailer, 'mass_mailer_addresses', 10, 5);
-
-        $this->loader->add_action("gform_entry_created", $plugin_mass_mailer, 'get_mass_mailer_entry_id', 10, 2);
+		$this->loader->add_action("gform_entry_created", $plugin_mass_mailer, 'get_mass_mailer_entry_id', 10, 2);
     }
 
 
