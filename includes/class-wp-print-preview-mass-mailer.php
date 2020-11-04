@@ -126,13 +126,21 @@ class Wp_Print_Preview_Mass_Mailer
     }
 
     public function mass_mailer_addresses( $form, $field, $uploaded_filename, $tmp_file_name, $file_path ) {
-        $parser = $this->pp_util->create_excel_parser($file_path);
-        $addresses = $parser->parse_excel("PHP");
-        error_log(print_r($addresses, true));
-        foreach ($addresses as $address) {
+        if ($field['adminLabel'] === 'addresses_file') {
+            error_log('Addresses FILE');
+            $parser = $this->pp_util->create_excel_parser($file_path);
+            $addresses = $parser->parse_excel("PHP");
+            error_log(print_r($addresses, true));
+            foreach ($addresses as $address) {
 
+            }
+        } else {
+            error_log($field['adminLabel']);
         }
 
+    }
+    public function get_mass_mailer_entry_id($post_id, $entry, $form) {
+        error_log("Entry ID: --- {$entry['id']}");
     }
 
 }
