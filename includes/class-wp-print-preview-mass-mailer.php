@@ -167,8 +167,7 @@ class Wp_Print_Preview_Mass_Mailer
 
     /**
      * Returns relative filepath for #9 envelope types. Will used template
-     * file to produce final return envelope PDF.
-     * @return string|null
+     * file to produce final return envelope PDF.* @return string|null
      */
     private function _return_envelope_type()
     {
