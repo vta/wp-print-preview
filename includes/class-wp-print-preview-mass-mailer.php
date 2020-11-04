@@ -42,15 +42,17 @@ class Wp_Print_Preview_Mass_Mailer
         // stroke width
         $STROKE_WIDTH = 2;
 
-        /** text draw params */
-        // ADDRESS
+        error_log($return_address_text);
+
+        /** text draw parameters */
+        // RETURN ADDRESS
         $address_text = array(
             'font'         => plugin_dir_path( __DIR__ ) . '/public/assets/MuseoSans_700.otf',
             'color'        => $BLACK,
             'stroke_width' => $STROKE_WIDTH,
-            'font_size'    => 9,
+            'font_size'    => 20,
             'kerning'      => ( $CHAR_SPACE - 1.1 ),
-            'annotation'   => array( 'x' => $x_indentation, 'y' => 560, 'text' => $return_address_text )
+            'annotation'   => array( 'x' => 150, 'y' => 560, 'text' => $return_address_text )
         );
 
         // ENVELOPE TEMPLATE FILE
@@ -62,7 +64,8 @@ class Wp_Print_Preview_Mass_Mailer
             $image->readImage( plugin_dir_path( __FILE__ ) . $envelope_template );
             $image->setImageColorspace( Imagick::COLORSPACE_SRGB );
             $image->setImageUnits( Imagick::RESOLUTION_PIXELSPERINCH );
-            $image->setResolution( 300, 300 );
+            $image->setResolution( 100, 100 );
+            $image->sharpenimage(10, 5, 0);
 //            $image->setImageResolution( 300, 300 );
             $image->setImageFormat( 'pdf' );
 
@@ -106,18 +109,21 @@ class Wp_Print_Preview_Mass_Mailer
     /**
      * Extract Return Address
      *
-     * Used in Employee/Other mailers when user chooses
-     * @return string|null
+     * Used in Employee/Other mailers when user chooses.
+     * @return string|null - return address text
      */
     private function _return_address_extract()
     {
         $res = null;
 
         // loop through and extract address field
-        foreach ( $this->gf_form['fields'] as $form_field ) {
-            // check if field matches for "Return Address"
+        foreach ( $this->gf_form['fields'] as $form_field )
+        {
+            // check if field matches for "Return Address", extract value, & end loop
             if ( $form_field['type'] === 'textarea' && $form_field['adminLabel'] === 'return_address' ) {
-                $res = $return_address_field_id = $form_field['id'];
+                $field_id = $form_field['id'];
+                $res = $this->entry[$field_id];
+                break;
             }
         }
         return $res;
