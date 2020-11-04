@@ -194,7 +194,6 @@ class Wp_Print_Preview {
 		$this->loader->add_action("gform_entry_created", $plugin_mass_mailer, 'get_mass_mailer_entry_id', 10, 2);
     }
 
-
 	private function get_form_id($title) {
 	    $matching_form = "";
         $forms = GFAPI::get_forms();
