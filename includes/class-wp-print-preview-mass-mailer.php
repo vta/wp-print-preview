@@ -1,10 +1,13 @@
 <?php
+
 require_once "class-wp-print-preview-util.php";
 require_once "class-wp-print-preview-imagick.php";
+
 class Wp_Print_Preview_Mass_Mailer
 {
 
     private $entry;
+    private $entry_id;
     private $gf_form;
     private $pp_util;
     private $imagick;
@@ -262,17 +265,6 @@ class Wp_Print_Preview_Mass_Mailer
         }
 
     }
-
-    public function mass_mailer_addresses( $form, $field, $uploaded_filename, $tmp_file_name, $file_path )
-    {
-        $parser = $this->pp_util->create_excel_parser($file_path);
-        $addresses = $parser->parse_excel("PHP");
-        error_log(print_r($addresses, true));
-        foreach ($addresses as $address) {
-
-        }
-    }
-
     /**
      * SETTER
      *
@@ -287,6 +279,30 @@ class Wp_Print_Preview_Mass_Mailer
             $this->$property = $value;
         }
     }
-
+    public function mass_mailer_addresses( $form, $field, $uploaded_filename, $tmp_file_name, $file_path ) {
+        if ($field['adminLabel'] === 'addresses_file') {
+            error_log('Addresses FILE');
+            $parser = $this->pp_util->create_excel_parser($file_path);
+            $addresses = $parser->parse_excel("PHP");
+            error_log(print_r($addresses, true));
+            foreach ($addresses as $address) {
+            }
+        } else {
+            error_log($field['adminLabel']);
+        }
+    }
+    /**
+     * @param $entry
+     * @param $form
+     * @throws Exception
+     */
+    public function get_mass_mailer_entry_id($entry, $form) {
+        if (isset($entry['id'])) {
+            $this->entry_id = $entry['id'];
+            error_log("Entry ID: --- {$entry['id']}");
+        } else {
+            throw new Exception("Entry ID not set.");
+        }
+    }
 }
 
