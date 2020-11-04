@@ -138,7 +138,7 @@ class Wp_Print_Preview_Mass_Mailer
         error_log(json_encode($fields_arr, JSON_PRETTY_PRINT));
         $key = array_search(
             'return_envelope_template',
-            array_column($fields_arr, 'adminLabel')
+            array_column( $fields_arr, 'adminLabel' )
         );
 
         // extract corresponding field ID
@@ -148,12 +148,29 @@ class Wp_Print_Preview_Mass_Mailer
         $return_address_value = $this->entry[$template_type_field_id];
 
         // assign the correct filepath based on return_address field value
-        if ($return_address_value === 'Regular') {
+        if ( $return_address_value === 'Regular' ) {
             $res = $regular_template;
-        } elseif ($return_address_value === 'ATU') {
+        } elseif ( $return_address_value === 'ATU' ) {
             $res = $atu_template;
         }
+
         return $res;
+
+    }
+
+    public function mass_mailer_addresses( $form, $field, $uploaded_filename, $tmp_file_name, $file_path ) {
+        if ($field['adminLabel'] === 'addresses_file') {
+            error_log('Addresses FILE');
+            $parser = $this->pp_util->create_excel_parser($file_path);
+            $addresses = $parser->parse_excel("PHP");
+            error_log(print_r($addresses, true));
+            foreach ($addresses as $address) {
+
+            }
+        } else {
+            error_log($field['adminLabel']);
+        }
+
     }
     /**
      * Set private class members outside of constructor.
@@ -165,18 +182,6 @@ class Wp_Print_Preview_Mass_Mailer
     {
         if ( property_exists( $this, $property ) ) {
             $this->$property = $value;
-        }
-    }
-    public function mass_mailer_addresses( $form, $field, $uploaded_filename, $tmp_file_name, $file_path ) {
-        if ($field['adminLabel'] === 'addresses_file') {
-            error_log('Addresses FILE');
-            $parser = $this->pp_util->create_excel_parser($file_path);
-            $addresses = $parser->parse_excel("PHP");
-            error_log(print_r($addresses, true));
-            foreach ($addresses as $address) {
-            }
-        } else {
-            error_log($field['adminLabel']);
         }
     }
     /**
