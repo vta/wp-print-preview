@@ -36,10 +36,20 @@ class Wp_Print_Preview_Mass_Mailer
         $BLACK = '#000000';
 
         // character spacing
-        $CHAR_SPACE = 0.4;
+        $CHAR_SPACE = 0.3;
 
         // stroke width
         $STROKE_WIDTH = 0.7;
+
+        // SPACING BETWEEN WORD
+        $WORD_SPACING = 0.9;
+
+        // LINE HEIGHT
+        $LINE_HEIGHT = 4.7;
+
+        // COORDINATES TO DRAW TEXT
+        $X = 1038;
+        $Y = 598;
 
         /** text draw params */
         // ADDRESS
@@ -47,19 +57,28 @@ class Wp_Print_Preview_Mass_Mailer
             'font'         => plugin_dir_path( __DIR__ ) . '/public/assets/MuseoSans_300.otf',
             'color'        => $BLACK,
             'stroke_width' => $STROKE_WIDTH,
-            'font_size'    => 10,
+            'font_size'    => 10.5,
             'kerning'      => $CHAR_SPACE,
-            'annotation'   => array( 'x' => 345, 'y' => 199, 'text' => $return_address_text ),
-            'line_height'  => 2.4
+            'annotation'   => array( 'x' => $X, 'y' => $Y, 'text' => $return_address_text ),
+            'line_height'  => $LINE_HEIGHT,
+            'word_spacing' => $WORD_SPACING
         );
 
         // ENVELOPE TEMPLATE FILE
-        $envelope_template = '../public/assets/9_VTA_REG_GUIDE_TEMPLATE.png';
+        try {
+            $envelope_template = $this->_return_envelope_type();
+            if ( $envelope_template === null ) {
+                throw new Exception('Could not find value for "return_envelope_type".');
+            }
+        } catch (Exception $e) {
+            error_log( $e );
+            die();
+        }
 
         try {
             // CREATE THE CANVAS
             $image = new \Imagick();
-            $image->setResolution( 100, 100 );
+            $image->setResolution( 300, 300 );
             $image->readImage( plugin_dir_path( __FILE__ ) . $envelope_template );
             $image->setImageColorspace( Imagick::COLORSPACE_SRGB );
             $image->setImageUnits( Imagick::RESOLUTION_PIXELSPERINCH );
@@ -105,6 +124,10 @@ class Wp_Print_Preview_Mass_Mailer
             $draw->setTextInterLineSpacing( $params['line_height'] );
         }
 
+        if ( isset( $params['char_spacing'] ) ) {
+            $draw->setTextInterWordSpacing( $params['char_spacing'] );
+        }
+
         $draw->annotation( $x, $y, $text );
 
         return $draw;
@@ -132,13 +155,49 @@ class Wp_Print_Preview_Mass_Mailer
         return $res;
     }
 
-    public function mass_mailer_addresses( $form, $field, $uploaded_filename, $tmp_file_name, $file_path ) {
+    public function mass_mailer_addresses( $form, $field, $uploaded_filename, $tmp_file_name, $file_path )
+    {
         $parser = $this->pp_util->create_excel_parser($file_path);
         $addresses = $parser->parse_excel("PHP");
         error_log(print_r($addresses, true));
         foreach ($addresses as $address) {
 
         }
+    }
+
+    /**
+     * Returns relative filepath for #9 envelope types. Will used template
+     * file to produce final return envelope PDF.
+     * @return string|null
+     */
+    private function _return_envelope_type()
+    {
+        $res = null;
+
+        $atu_template = '../public/assets/9_VTA_ATU_TEMPLATE.pdf';
+        $regular_template = '../public/assets/9_VTA_REG_TEMPLATE.pdf';
+
+        // search through fields array in GF object
+        $fields_arr = $this->gf_form['fields'];
+        $key = array_search(
+            'return_envelope_template',
+            array_column( $fields_arr, 'adminLabel' )
+        );
+
+        // extract corresponding field ID
+        $template_type_field_id = $fields_arr[$key]['id'];
+
+        // retrieve field value from entry
+        $return_address_value = $this->entry[$template_type_field_id];
+
+        // assign the correct filepath based on return_address field value
+        if ( $return_address_value === 'Regular' ) {
+            $res = $regular_template;
+        } elseif ( $return_address_value === 'ATU' ) {
+            $res = $atu_template;
+        }
+
+        return $res;
 
     }
 
