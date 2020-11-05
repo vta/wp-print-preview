@@ -180,7 +180,6 @@ class Wp_Print_Preview {
 		$plugin_mass_mailer = new Wp_Print_Preview_Mass_Mailer();
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
-//		$this->loader->add_action( 'wp_loaded', $plugin_public, 'Wp_Print_Preview_Helper::business_card_edit_redirect');
 		$this->loader->add_shortcode( 'business-card-preview', $plugin_public, "Wp_Print_Preview_Public::business_card_preview_shortcode", $priority = 10, $accepted_args = 2 );
 		$this->loader->add_shortcode('business-card-edit', $plugin_public, 'Wp_Print_Preview_Public::business_card_edit_shortcode',  $priority = 10, $accepted_args = 2);
 
@@ -191,7 +190,13 @@ class Wp_Print_Preview {
 		/**
          * Create the action hook for the specific form.
          */
-		$this->loader->add_action("gform_post_multifile_upload_{$mm_form_id}", $plugin_mass_mailer, 'mass_mailer_addresses', 10, 5);
+//		$this->loader->add_action("gform_post_multifile_upload_{$mm_form_id}", $plugin_mass_mailer, 'mass_mailer_addresses', 10, 5);
+
+        // form validation (remove for return envelope previewer)
+        $this->loader->add_action( 'gform_validation', $plugin_mass_mailer, 'Wp_Print_Preview_Mass_Mailer::preview_override_validation');
+
+        // form submission hook
+        $this->loader->add_action('gform_after_submission', $plugin_mass_mailer, 'Wp_Print_Preview_Mass_Mailer::mm_form_submission' );
 	}
 
 	private function get_form_id($title) {

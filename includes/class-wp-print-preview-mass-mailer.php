@@ -24,9 +24,8 @@ class Wp_Print_Preview_Mass_Mailer
      *
      * stamps return address in the correct location on the #9 Return Envelope.
      * @param $entry_id     int     - entry_id of GF entry
-     * @param $is_preview   boolean - determine if file will be written as a preview or to the uploads folder
      */
-    public function return_envelope_template( $entry_id, $is_preview )
+    public function return_envelope_template( $entry_id )
     {
         $this->__set( 'entry', GFAPI::get_entry( $entry_id ) );
         $this->__set( 'gf_form', GFAPI::get_form( $this->entry['form_id'] ) );
@@ -86,7 +85,7 @@ class Wp_Print_Preview_Mass_Mailer
             $image->readImage( plugin_dir_path( __FILE__ ) . $envelope_template );
             $image->setImageColorspace( Imagick::COLORSPACE_SRGB );
             $image->setImageUnits( Imagick::RESOLUTION_PIXELSPERINCH );
-            $image_format = $is_preview ? 'png' : 'pdf';
+            $image_format = $this->_is_preview() ? 'png' : 'pdf';
             $image->setImageFormat( $image_format );
 
             // draws text onto canvas
@@ -94,11 +93,11 @@ class Wp_Print_Preview_Mass_Mailer
             $image->drawImage( $draw );
 
             // write to uploads if not preview
-            if ( !$is_preview ) {
+            if ( ! $this->_is_preview() ) {
                 $this->imagick->_write_to_uploads( $image, 'mass_mailer', $filename );
             } else {
                 // else write it assets for preview access
-                $image->writeImage( plugin_dir_path( __FILE__ ) . '../public/assets/mm_preview.png' );
+                $image->writeImage( plugin_dir_path( __FILE__ ) . '../public/assets/mm_return_env_preview.png' );
             }
 
         } catch ( Exception $e ) {
@@ -134,7 +133,13 @@ class Wp_Print_Preview_Mass_Mailer
         return $res;
     }
 
-
+    /**
+     * Job Name
+     *
+     * Returns the job name of the mass mailer
+        }
+     * @return string|null
+     */
     private function _job_name()
     {
         $res = null;
@@ -152,6 +157,8 @@ class Wp_Print_Preview_Mass_Mailer
     }
 
     /**
+     * Return Envelope File Path
+     *
      * Returns relative filepath for #9 envelope types. Will used template
      * file to produce final return envelope PDF.* @return string|null
      */
@@ -185,6 +192,26 @@ class Wp_Print_Preview_Mass_Mailer
         return $res;
     }
 
+    /**
+     * Is Preview Check
+     *
+     * Used to check if we should use preview
+     * @return bool - preview flag
+     */
+    private function _is_preview()
+    {
+        foreach ( $this->gf_form['fields'] as $form_field )
+        {
+            // check if field matches for label "Preview Flag", then return text
+            if ( $form_field['type'] === 'hidden' && $form_field['label'] = 'Preview Flag' ) {
+                // if preview flag has been set to 1 via front-end (JS), then return true
+                if ($this->entry[$form_field['id']] == 1)
+                    return true;
+            }
+        }
+        return false;
+    }
+
     public function mass_mailer_addresses( $form, $field, $uploaded_filename, $tmp_file_name, $file_path )
     {
         $parser = $this->pp_util->create_excel_parser($file_path);
@@ -196,10 +223,59 @@ class Wp_Print_Preview_Mass_Mailer
     }
 
     /**
+     * Form Submission Hook callback
+     * Callback to be used in "gform_pre_submission" hook.
+     * Image methods should be called here.
+     * @param $entry    - GF entry object
+     * @param $form     - GF form object
+     */
+    public function mm_form_submission( $entry, $form )
+    {
+        // assign form & entry objects values to private variables (in case it has not been set yet)
+        isset( $this->entry ) && $this->__set( 'entry', $entry );
+        isset( $this->gf_form ) &&$this->__set( 'gf_form', $form );
+
+        // preview submission
+        if ( $this->_is_preview() )
+        {
+            // render temporary <img> HTML tag (mm_return_env_preview.png)
+        }
+        // remove
+        else
+        {
+            // continue (may not need this method here)
+        }
+    }
+
+    public function preview_override_validation( $validation_result )
+    {
+        // form object
+        $form = $validation_result['form'];
+
+
+
+        // check if we are in mass mailer form
+        foreach( $form['fields'] as $field )
+        {
+//            error_log(json_encode($field, JSON_PRETTY_PRINT));
+            if ( $field['label'] === 'Preview Flag')
+            {
+
+            }
+        }
+        error_log(json_encode($validation_result, JSON_PRETTY_PRINT));
+//         set the form validation to false
+//        $validation_result['is_valid'] = false;
+
+        return $validation_result;
+    }
+
+    /**
+     * SETTER
      * Set private class members outside of constructor.
      * Make accessible outside of class scope.
-     * @param $property - private member variable
-     * @param $value - value
+     * @param $property     - private member variable
+     * @param $value        - value
      */
     public function __set( $property, $value )
     {
@@ -209,3 +285,4 @@ class Wp_Print_Preview_Mass_Mailer
     }
 
 }
+
