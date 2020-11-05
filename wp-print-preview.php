@@ -25,6 +25,8 @@
  * Domain Path:       /languages
  */
 
+require('includes/class-wp-print-preview-mass-mailer.php');
+
 // If this file is called directly, abort.
 if (!defined('WPINC')) {
     die;
@@ -83,9 +85,6 @@ function run_wp_print_preview()
 
 }
 
-require_once('includes/class-wp-print-preview-mass-mailer.php');
-new Wp_Print_Preview_Mass_Mailer(1975);
-
 // SOLUTION TO PREVIEW PAGE: (CONFIRMATION STORES ENTRY EVEN IF USER DID NOT CONFIRM)
 // 1. STORE ENTRY INFORMATION IN LOCAL VARIABLE
 // 2. IMMEDIATELY DELETE ENTRY FROM ENTRIES
@@ -97,4 +96,4 @@ new Wp_Print_Preview_Mass_Mailer(1975);
 
 run_wp_print_preview();
 
-new Wp_Print_Preview_Mass_Mailer(2125);
+(new Wp_Print_Preview_Mass_Mailer)->return_envelope_template(1989);
