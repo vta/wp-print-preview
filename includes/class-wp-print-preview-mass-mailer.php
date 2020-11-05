@@ -11,18 +11,12 @@ class Wp_Print_Preview_Mass_Mailer
 
     /**
      * Wp_Print_Preview_Mass_Mailer constructor
-     * @param $entry_id
      * @throws Exception
      */
     function __construct()
     {
         $this->pp_util = new Wp_Print_Preview_Util();
         $this->imagick = new Wp_Print_Preview_Imagick();
-        // store Gravity Forms entry & form arrays as private member variable
-        // (to be used in most public functions)
-//        $this->entry = GFAPI::get_entry( $entry_id );
-//        $this->gf_form = GFAPI::get_form( $this->entry['form_id'] );
-//        $this->return_envelope_template();
     }
 
     /**
@@ -57,7 +51,7 @@ class Wp_Print_Preview_Mass_Mailer
             'font'         => plugin_dir_path( __DIR__ ) . '/public/assets/MuseoSans_300.otf',
             'color'        => $BLACK,
             'stroke_width' => $STROKE_WIDTH,
-            'font_size'    => 10.5,
+            'font_size'    => $FONT_SIZE,
             'kerning'      => $CHAR_SPACE,
             'annotation'   => $ANNOTATION,
             'line_height'  => $LINE_HEIGHT,
@@ -75,6 +69,13 @@ class Wp_Print_Preview_Mass_Mailer
             die();
         }
 
+        // CREATE FILENAME
+        $job_name = $this->_job_name();
+        // if there is no job name, use generic "mm"
+        empty( $job ) && $job_name = 'mm';
+        // filename = [entry_id]_[job_name].pdf && sanitize from illegal characters
+        $filename = $this->pp_util->sanitize_filename( $this->entry['id'] . '_' . $job_name . '.pdf' );
+
         try {
             // CREATE THE CANVAS
             $image = new \Imagick();
@@ -85,7 +86,7 @@ class Wp_Print_Preview_Mass_Mailer
             $image->setImageFormat( 'pdf' );
             $draw = $this->imagick->draw_text( $address_text );
             $image->drawImage( $draw );
-            $image->writeImage( plugin_dir_path( __FILE__ ) . '/test_file.pdf' );
+            $this->imagick->_write_to_uploads( $image, 'mass_mailer', $filename );
 
         } catch ( Exception $e ) {
             // LOG ERROR IF WE CANNOT CREATE THE RETURN ENVELOPE
@@ -120,6 +121,23 @@ class Wp_Print_Preview_Mass_Mailer
         return $res;
     }
 
+
+    private function _job_name()
+    {
+        $res = null;
+
+        foreach ( $this->gf_form['fields'] as $form_field )
+        {
+            // check if field matches for adminLabel "job_name", then return text
+            if ( $form_field['type'] === 'text' && $form_field['adminLabel'] === 'job_name' ) {
+                $res = $this->entry[$form_field['id']];
+                // sanitize the text to be used as a filename.
+                break;
+            }
+        }
+        return $res;
+    }
+
     /**
      * Returns relative filepath for #9 envelope types. Will used template
      * file to produce final return envelope PDF.* @return string|null
@@ -133,9 +151,8 @@ class Wp_Print_Preview_Mass_Mailer
 
         // search through fields array in GF object
         $fields_arr = $this->gf_form['fields'];
-        error_log(json_encode($fields_arr, JSON_PRETTY_PRINT));
         $key = array_search(
-            'return_envelope_template',
+            'return_envelope_type',
             array_column( $fields_arr, 'adminLabel' )
         );
 
@@ -153,7 +170,6 @@ class Wp_Print_Preview_Mass_Mailer
         }
 
         return $res;
-
     }
 
     public function mass_mailer_addresses( $form, $field, $uploaded_filename, $tmp_file_name, $file_path )

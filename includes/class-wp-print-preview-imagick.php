@@ -73,24 +73,26 @@ class Wp_Print_Preview_Imagick {
     }
 
     /**
-     * Upload I programmatically in to wp-content/uploads/
+     * Upload new image file to wp-content/uploads Will create a subfolder if it current does not
+     * exists.
+     *
      * @see - https://artisansweb.net/upload-files-programmatically-wordpress/
      * @param $image                - Imagick object
-     * @param $uploads_subfolder    - existing OR to be
-     * @param $filename
+     * @param $uploads_subdir       - existing folder OR new folder inside wp-content/uploads
+     * @param $filename             - filename
      */
-    private function _writeToUploads( $image, $uploads_subfolder, $filename )
+    public function _write_to_uploads( $image, $uploads_subdir, $filename )
     {
         $upload_dir = wp_upload_dir();
 
         // Check if base directory exists for uploads/
         if ( !empty( $upload_dir['basedir'] ) ) {
 
-            $bc_dirname = $upload_dir['basedir'] . '/business_cards';
+            $subdir = $upload_dir['basedir'] . '/' . $uploads_subdir;
 
             //  create a new directory for business cards if it does not exist
-            if ( !file_exists( $bc_dirname ) ) {
-                wp_mkdir_p( $bc_dirname );
+            if ( !file_exists( $subdir ) ) {
+                wp_mkdir_p( $subdir );
             }
 
             /**
@@ -99,7 +101,7 @@ class Wp_Print_Preview_Imagick {
              * For Ubuntu servers, please change uploads folder's group ownership
              * @see - https://stackoverflow.com/questions/15716428/cannot-save-thumbnail-with-imagick
              */
-            $image->writeImage( $bc_dirname . '/' . $filename );
+            $image->writeImage( $subdir . '/' . $filename );
         }
     }
 

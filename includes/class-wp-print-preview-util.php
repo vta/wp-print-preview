@@ -33,6 +33,20 @@ class Wp_Print_Preview_Util {
         }
        return $this->excel_parser;
     }
+
+    /**
+     * Removes all possible invalid filename characters
+     * @param $filename
+     * @return string|string[]|null
+     */
+    public function sanitize_filename( $filename )
+    {
+        // replace all white spaces with underscores
+        $removed_spaces = preg_replace( '/\s+/', '_', $filename  );
+
+        // if any characters are not alphanumeric, periods, dashes or underscores, remove
+        return preg_replace( '/[^\w_\.\-]/', '', $removed_spaces );
+    }
 }
 /**
  * Class Excel_Helper
