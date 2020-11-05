@@ -23,9 +23,10 @@ class Wp_Print_Preview_Mass_Mailer
      * Return Address Template
      *
      * stamps return address in the correct location on the #9 Return Envelope.
-     * @param $entry_id
+     * @param $entry_id     int     - entry_id of GF entry
+     * @param $is_preview   boolean - determine if file will be written as a preview or to the uploads folder
      */
-    public function return_envelope_template( $entry_id )
+    public function return_envelope_template( $entry_id, $is_preview )
     {
         $this->__set( 'entry', GFAPI::get_entry( $entry_id ) );
         $this->__set( 'gf_form', GFAPI::get_form( $this->entry['form_id'] ) );
@@ -79,14 +80,26 @@ class Wp_Print_Preview_Mass_Mailer
         try {
             // CREATE THE CANVAS
             $image = new \Imagick();
+
+            // set image properties
             $image->setResolution( 300, 300 );
             $image->readImage( plugin_dir_path( __FILE__ ) . $envelope_template );
             $image->setImageColorspace( Imagick::COLORSPACE_SRGB );
             $image->setImageUnits( Imagick::RESOLUTION_PIXELSPERINCH );
-            $image->setImageFormat( 'pdf' );
+            $image_format = $is_preview ? 'png' : 'pdf';
+            $image->setImageFormat( $image_format );
+
+            // draws text onto canvas
             $draw = $this->imagick->draw_text( $address_text );
             $image->drawImage( $draw );
-            $this->imagick->_write_to_uploads( $image, 'mass_mailer', $filename );
+
+            // write to uploads if not preview
+            if ( !$is_preview ) {
+                $this->imagick->_write_to_uploads( $image, 'mass_mailer', $filename );
+            } else {
+                // else write it assets for preview access
+                $image->writeImage( plugin_dir_path( __FILE__ ) . '../public/assets/mm_preview.png' );
+            }
 
         } catch ( Exception $e ) {
             // LOG ERROR IF WE CANNOT CREATE THE RETURN ENVELOPE
