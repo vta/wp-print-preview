@@ -247,27 +247,43 @@ class Wp_Print_Preview_Mass_Mailer
         }
     }
 
+    /**
+     * Callback for "gform_validation"
+     * @param $validation_result
+     * @return mixed
+     */
     public function preview_override_validation( $validation_result )
     {
         // form object
         $form = $validation_result['form'];
+        $preview_field = null;
 
+        // check if we aren't in Mass Mailer form, exit immediately!
+        if ( $form['title'] !== 'Mass Mailer' ) {
+            return $validation_result;
+        }
 
-
-        // check if we are in mass mailer form
+        // extract hidden field "Preview Flag"
         foreach( $form['fields'] as $field )
         {
-//            error_log(json_encode($field, JSON_PRETTY_PRINT));
             if ( $field['label'] === 'Preview Flag')
             {
-
+                $preview_field = $field;
+                break;
             }
         }
-        error_log(json_encode($validation_result, JSON_PRETTY_PRINT));
-//         set the form validation to false
-//        $validation_result['is_valid'] = false;
+        $preview_flag = rgpost( 'input_' . $preview_field['id'] );
+
+        // override validation and set to true if preview_flag ios on
+        if ( $preview_flag )
+            $validation_result['is_valid'] = true;
 
         return $validation_result;
+    }
+
+    public function handle_return_envelope_preview()
+    {
+        error_log(json_encode( $_POST,JSON_PRETTY_PRINT ));
     }
 
     /**

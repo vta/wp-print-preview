@@ -96,4 +96,4 @@ function run_wp_print_preview()
 
 run_wp_print_preview();
 
-(new Wp_Print_Preview_Mass_Mailer)->return_envelope_template(1989);
+(new Wp_Print_Preview_Mass_Mailer)->return_envelope_template(1979, true);
