@@ -95,5 +95,3 @@ function run_wp_print_preview()
 // USING SHORTCODE W/ WPPB TUTORIAL: https://github.com/JoeSz/WordPress-Plugin-Boilerplate-Tutorial/blob/master/plugin-name/tutorials/register_a_shortcode_in_plugin.php
 
 run_wp_print_preview();
-
-(new Wp_Print_Preview_Mass_Mailer)->return_envelope_template(1979, true);
