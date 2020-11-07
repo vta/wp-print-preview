@@ -230,7 +230,10 @@ class Wp_Print_Preview_Mass_Mailer
         // generate template first
         $this->return_envelope_template( $return_address, $template_type, $preview = true );
 
-        error_log( plugin_dir_path( __DIR__ ) . 'assets/mm_return_env_preview.png' );
+        // return HTML element (<img> w/ image source)
+        include plugin_dir_path( __DIR__ ) . 'public/partials/return-envelope-preview.php';
+
+        exit;
     }
 
     /**
