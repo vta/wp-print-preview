@@ -240,26 +240,29 @@ class Wp_Print_Preview_Mass_Mailer
      * Form Submission Hook callback
      *
      * Callback to be used in "gform_pre_submission" hook.
-     * Image methods should be called here.
+     * Save form object & entry object to be used to process images and attach to the cart
      * @param $entry    - GF entry object
      * @param $form     - GF form object
      */
     public function mm_form_submission( $entry, $form )
     {
         // assign form & entry objects values to private variables (in case it has not been set yet)
-        isset( $this->entry ) && $this->__set( 'entry', $entry );
-        isset( $this->gf_form ) &&$this->__set( 'gf_form', $form );
+        ! isset( $this->entry ) && $this->__set( 'entry', $entry );
+        ! isset( $this->gf_form ) && $this->__set( 'gf_form', $form );
 
-        // preview submission
-        if ( $this->_is_preview() )
-        {
-            // render temporary <img> HTML tag (mm_return_env_preview.png)
-        }
-        // remove
-        else
-        {
-            // continue (may not need this method here)
-        }
+        error_log('calling from mm_form_submission');
+    }
+
+    public function generate_order_item_pdfs( $item, $cart_item_key, $values, $order )
+    {
+        error_log('item');
+        error_log(json_encode($item ,JSON_PRETTY_PRINT));
+        error_log('cart_item_key');
+        error_log(json_encode($cart_item_key ,JSON_PRETTY_PRINT));
+        error_log('values');
+        error_log(json_encode($values ,JSON_PRETTY_PRINT));
+        error_log('order');
+        error_log(json_encode($order ,JSON_PRETTY_PRINT));
     }
 
     public function mass_mailer_addresses( $form, $field, $uploaded_filename, $tmp_file_name, $file_path )
