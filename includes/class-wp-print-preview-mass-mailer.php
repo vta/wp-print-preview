@@ -27,8 +27,9 @@ class Wp_Print_Preview_Mass_Mailer
      * @param $template_type            string      - envelope template type from user selection "Regular or ATU"
      * @param $is_preview               boolean     - determines if the method will produce a preview file or PDF
      * @param $job_name                 null|string - used as part of file name if is not preview
+     * @return string|null                          - file path if generated or null (for preview)
      */
-    public function return_envelope_template( $return_address_text, $template_type, $is_preview = false, $job_name = null)
+    public function create_return_envelope_template( $return_address_text, $template_type, $is_preview = false, $job_name = null)
     {
         $BLACK = '#000000';         // COLOR CONSTANT
         $CHAR_SPACE = 0.3;          // character spacing
@@ -61,7 +62,7 @@ class Wp_Print_Preview_Mass_Mailer
         try {
             $envelope_template = $this->_return_envelope_file_path( $template_type );
             if ( $envelope_template === null ) {
-                throw new Exception('Could not find value for "return_envelope_type".');
+                throw new Exception('Could not find value for "return_envelope_template".');
             }
         } catch (Exception $e) {
             error_log( $e );
@@ -94,11 +95,13 @@ class Wp_Print_Preview_Mass_Mailer
 
             // write to uploads if not preview
             if ( !  $is_preview ) {
-                $this->imagick->_write_to_uploads( $image, 'mass_mailer', $filename );
+                $file = $this->imagick->write_to_uploads( $image, 'mass_mailer', $filename );
             } else {
                 // else write it to assets for preview access
                 $image->writeImage( plugin_dir_path( __FILE__ ) . '../public/assets/mm_return_env_preview.png' );
             }
+
+            return isset( $file ) ? $file : null;
 
         } catch ( Exception $e ) {
             // LOG ERROR IF WE CANNOT CREATE THE RETURN ENVELOPE
@@ -144,7 +147,7 @@ class Wp_Print_Preview_Mass_Mailer
      * @param $entry        - GF entry object
      * @return string|null  - job name of the mass mailer
      */
-    private function job_name( $entry )
+    public function job_name( $entry )
     {
         $res = null;
 
@@ -171,7 +174,7 @@ class Wp_Print_Preview_Mass_Mailer
      * @param $entry        - GF entry object
      * @return string|null  - type of envelope to be used: "Regular" or "ATU"
      */
-    public function return_envelope_type( $entry )
+    public function return_envelope_template( $entry )
     {
         $res = null;
 
@@ -181,7 +184,7 @@ class Wp_Print_Preview_Mass_Mailer
         // loop through and extract address field
         foreach ( $form['fields'] as $form_field )
         {
-            if ( $form_field['type'] === 'radio' && $form_field['adminLabel'] === 'return_envelope_type' ) {
+            if ( $form_field['type'] === 'radio' && $form_field['adminLabel'] === 'return_envelope_template' ) {
                 $res = $entry[$form_field['id']];
                 break;
             }
@@ -228,7 +231,7 @@ class Wp_Print_Preview_Mass_Mailer
         $template_type = $_POST['template_type'];
 
         // generate template first
-        $this->return_envelope_template( $return_address, $template_type, $preview = true );
+        $this->create_return_envelope_template( $return_address, $template_type, $preview = true );
 
         // return HTML element (<img> w/ image source)
         include plugin_dir_path( __DIR__ ) . 'public/partials/return-envelope-preview.php';
@@ -255,14 +258,54 @@ class Wp_Print_Preview_Mass_Mailer
 
     public function generate_order_item_pdfs( $item, $cart_item_key, $values, $order )
     {
-        error_log('item');
-        error_log(json_encode($item ,JSON_PRETTY_PRINT));
-        error_log('cart_item_key');
-        error_log(json_encode($cart_item_key ,JSON_PRETTY_PRINT));
-        error_log('values');
-        error_log(json_encode($values ,JSON_PRETTY_PRINT));
-        error_log('order');
-        error_log(json_encode($order ,JSON_PRETTY_PRINT));
+        // similar to entry object but w/o entry info (has form values, form id, etc.)
+        $entry_values = $values['_gravity_form_lead'];
+        // extract form_id from cart item info
+        $form = GFAPI::get_form( $entry_values['form_id'] );
+
+        // extract require_return_env to check if user required a return envelop
+        /**
+         * @NOTE - extraction here does not use entry BECAUSE all values and form_id are
+         * stored within "_gravity_form_lead". So we will extract it manually within this field.
+         * ... Not very eloquent - ON2 operation
+         * @TODO - possibly change the extraction methods to return field_id instead of the value...
+         */
+        foreach ( $form['fields'] as $field )
+        {
+            error_log(json_encode($field, JSON_PRETTY_PRINT));
+            // if require_return_env is checked
+            if ( $field['adminLabel'] === 'require_return_env' && $entry_values[$field['id']] === 'Yes' )
+            {
+                // extract return address & envelope type
+                foreach ( $form['fields'] as $f )
+                {
+                    if ( $f['adminLabel'] === 'return_envelope_template' ) {
+                        $return_envelope_template = $entry_values[$f['id']];
+                    }
+
+                    if ( $f['adminLabel'] === 'return_address' ) {
+                        $return_address = $entry_values[$f['id']];
+                    }
+
+                    if ( $f['adminLabel'] === 'job_name') {
+                        $job_name = $entry_values[$f['id']];;
+                    }
+                }
+
+                // used the extracted return address, env type, and job name to create the file and attach it to the order item
+                $filepath = $this->create_return_envelope_template( $return_address, $return_envelope_template, false, $job_name );
+
+                error_log($filepath);
+
+                // attach hyperlink w/ filepath to the order item
+                $item->add_meta_data(
+                    __( 'return_address_envelope_download' ),
+                    '<a href="' . esc_url( $filepath ) . '" download>' . $job_name . ' - #9 Return Address Envelope</a>'
+                );
+
+            }
+        }
+
     }
 
     public function mass_mailer_addresses( $form, $field, $uploaded_filename, $tmp_file_name, $file_path )

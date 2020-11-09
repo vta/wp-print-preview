@@ -198,6 +198,8 @@ class Wp_Print_Preview {
 
         // form submission hook
         $this->loader->add_action('gform_after_submission', $plugin_mass_mailer, 'Wp_Print_Preview_Mass_Mailer::mm_form_submission', 10, 2 );
+        // add line item (hyperlink to image downloads) upon user checkout
+        $this->loader->add_action( 'woocommerce_checkout_create_order_line_item', $plugin_mass_mailer, 'Wp_Print_Preview_Mass_Mailer::generate_order_item_pdfs', 10, 4 );
 	}
 
 	private function get_form_id($title) {
