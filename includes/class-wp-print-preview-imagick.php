@@ -77,10 +77,10 @@ class Wp_Print_Preview_Imagick {
      * exists.
      *
      * @see - https://artisansweb.net/upload-files-programmatically-wordpress/
-     * @param $image - Imagick object
-     * @param $uploads_subdir - existing folder OR new folder inside wp-content/uploads
-     * @param $filename - filename
-     * @return string - path of the newly generated image file
+     * @param $image            - Imagick object
+     * @param $uploads_subdir   - existing folder OR new folder inside wp-content/uploads
+     * @param $filename         - filename
+     * @return string           - URL path of the newly generated image file (for download access)
      */
     public function write_to_uploads( $image, $uploads_subdir, $filename )
     {
@@ -96,15 +96,13 @@ class Wp_Print_Preview_Imagick {
                 wp_mkdir_p( $subdir );
             }
 
-            /**
-             * Write the new file to wp-content/uploads via Image Magick
-             *
-             * For Ubuntu servers, please change uploads folder's group ownership
-             * @see - https://stackoverflow.com/questions/15716428/cannot-save-thumbnail-with-imagick
-             */
+            // absolute filepath to the newly created image i.e. "/var/www/html/wp-content/uploads/mass_mailer/"
             $filepath = $subdir . '/' . $filename;
-            $image->writeImage( $subdir . '/' . $filename );
-            return $filepath;
+            $image->writeImage( $filepath );
+
+            // return the url pointing to the path above i.e. "https://documentservices.com/wp-content/uploads/mass_mailer/"
+            $url = $upload_dir['baseurl'] . '/' . $uploads_subdir . '/' . $filename;
+            return $url;
         }
     }
 

@@ -115,80 +115,36 @@ class Wp_Print_Preview_Mass_Mailer
     }
 
     /**
-     * Extract Return Address
+     * Get Field ID
      *
-     * Used in Employee/Other mailers when user chooses.
-     * @param $entry        - GF entry Ob ject
-     * @return string|null  - return address text
+     * Returns the field ID with the given from. This removes the need to pass an entry object
+     * especially since it is not available in "generate_order_item_pdfs" callback method.
+     * This method also consolidates the previously separate "get" methods.
+     * @param $form        GF Form Obj  - Gravity forms object. Contains field array.
+     * @param $type        string       - form field type (radio, text, textarea, etc.)
+     * @param $admin_label string       - User defined admin label
+     * @return mixed       string       - field ID in string format
+     * @throws Exception                - throws exception when field ID can't be found
      */
-    public function return_address( $entry )
+    public function get_field_id( $form, $type, $admin_label )
     {
         $res = null;
 
-        // GF Form object
-        $form = GFAPI::get_form( $entry['form_id'] );
-
-        // loop through and extract address field
-        foreach ( $form['fields'] as $form_field )
+        // iterate through GF form fields
+        foreach( $form['fields'] as $field )
         {
-            // check if field matches for adminLabel "return_address", then return text
-            if ( $form_field['type'] === 'textarea' && $form_field['adminLabel'] === 'return_address' ) {
-                $res = $entry[$form_field['id']];
+            // match the field type and admin label to retrieve the field ID
+            if ( $field['type'] === $type && $field['adminLabel'] === $admin_label ) {
+                $res = $field['id'];
                 break;
             }
         }
-        return $res;
-    }
 
-    /**
-     * Job Name
-     *
-     * Returns the job name of the mass mailer
-     * @param $entry        - GF entry object
-     * @return string|null  - job name of the mass mailer
-     */
-    public function job_name( $entry )
-    {
-        $res = null;
-
-        // GF Form object
-        $form = GFAPI::get_form( $entry['form_id'] );
-
-        // loop through and extract address field
-        foreach ( $form['fields'] as $form_field )
-        {
-            // check if field matches for adminLabel "job_name", then return text
-            if ( $form_field['type'] === 'text' && $form_field['adminLabel'] === 'job_name' ) {
-                $res = $entry[$form_field['id']];
-                break;
-            }
+        // if no field ID was retrieved, throw an exception
+        if ( $res === null ) {
+            throw new Exception('Cannot find find admin label "' . $admin_label . '" for type "' . type . '".');
         }
-        return $res;
-    }
 
-    /**
-     * Returns Return Envelope Type
-     *
-     * uses GF entry to extract return envelope type.
-     * @TODO - we may need to revise this in the future. This may apply to both outgoing and return envelopes
-     * @param $entry        - GF entry object
-     * @return string|null  - type of envelope to be used: "Regular" or "ATU"
-     */
-    public function return_envelope_template( $entry )
-    {
-        $res = null;
-
-        // GF Form object
-        $form = GFAPI::get_form( $entry['form_id'] );
-
-        // loop through and extract address field
-        foreach ( $form['fields'] as $form_field )
-        {
-            if ( $form_field['type'] === 'radio' && $form_field['adminLabel'] === 'return_envelope_template' ) {
-                $res = $entry[$form_field['id']];
-                break;
-            }
-        }
         return $res;
     }
 
@@ -256,54 +212,53 @@ class Wp_Print_Preview_Mass_Mailer
         error_log('calling from mm_form_submission');
     }
 
+    /**
+     * Generate Order Item PDFs
+     *
+     * Callback for "woocommerce_checkout_create_order_line_item" hook. Fires when the user checkouts their order.
+     * @param $item
+     * @param $cart_item_key
+     * @param $values
+     * @param $order
+     * @throws Exception
+     */
     public function generate_order_item_pdfs( $item, $cart_item_key, $values, $order )
     {
         // similar to entry object but w/o entry info (has form values, form id, etc.)
+        error_log(json_encode($values, JSON_PRETTY_PRINT));
         $entry_values = $values['_gravity_form_lead'];
+
         // extract form_id from cart item info
         $form = GFAPI::get_form( $entry_values['form_id'] );
 
-        // extract require_return_env to check if user required a return envelop
-        /**
-         * @NOTE - extraction here does not use entry BECAUSE all values and form_id are
-         * stored within "_gravity_form_lead". So we will extract it manually within this field.
-         * ... Not very eloquent - ON2 operation
-         * @TODO - possibly change the extraction methods to return field_id instead of the value...
-         */
-        foreach ( $form['fields'] as $field )
-        {
-            error_log(json_encode($field, JSON_PRETTY_PRINT));
-            // if require_return_env is checked
-            if ( $field['adminLabel'] === 'require_return_env' && $entry_values[$field['id']] === 'Yes' )
-            {
-                // extract return address & envelope type
-                foreach ( $form['fields'] as $f )
-                {
-                    if ( $f['adminLabel'] === 'return_envelope_template' ) {
-                        $return_envelope_template = $entry_values[$f['id']];
-                    }
+        // extract require_return_env to check if user required a return envelope
+        $require_return_env_id = $this->get_field_id( $form, 'radio', 'require_return_env' );
+        $require_return_env = $entry_values[$require_return_env_id];
 
-                    if ( $f['adminLabel'] === 'return_address' ) {
-                        $return_address = $entry_values[$f['id']];
-                    }
+        // if return env was required, the extract the field values and generate the PDF
+        if ( $require_return_env === 'Yes' ) {
 
-                    if ( $f['adminLabel'] === 'job_name') {
-                        $job_name = $entry_values[$f['id']];;
-                    }
-                }
+            // grab field IDs for the following values
+            $return_envelope_template_id = $this->get_field_id( $form, 'radio', 'return_envelope_template' );
+            $return_address_id = $this->get_field_id( $form, 'textarea', 'return_address' );
+            $job_name_id = $this->get_field_id( $form, 'text', 'job_name' );
 
-                // used the extracted return address, env type, and job name to create the file and attach it to the order item
-                $filepath = $this->create_return_envelope_template( $return_address, $return_envelope_template, false, $job_name );
+            // grab the field values with the field_id's
+            $return_envelope_template = $entry_values[$return_envelope_template_id];
+            $return_address = $entry_values[$return_address_id];
+            $job_name = $entry_values[$job_name_id];
 
-                error_log($filepath);
+            // used the extracted return address, env type, and job name to create the file and attach it to the order item
+            $filepath = $this->create_return_envelope_template( $return_address, $return_envelope_template, false, $job_name );
 
-                // attach hyperlink w/ filepath to the order item
-                $item->add_meta_data(
-                    __( 'return_address_envelope_download' ),
-                    '<a href="' . esc_url( $filepath ) . '" download>' . $job_name . ' - #9 Return Address Envelope</a>'
-                );
+            error_log($filepath);
 
-            }
+            // attach hyperlink w/ filepath to the order item
+            $item->add_meta_data(
+                __( 'Return Envelope Download' ),
+                '<a href="' . esc_url( $filepath ) . '" download>' . $job_name . ' - #9 Return Envelope</a>'
+            );
+
         }
 
     }
