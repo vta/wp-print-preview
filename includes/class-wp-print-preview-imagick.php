@@ -107,7 +107,6 @@ class Wp_Print_Preview_Imagick {
     }
     private function _writeToTmp( $image, $subfolder, $filename) {
 
-
     }
     /**
      * Wp_Print_Preview_Imagick constructor.

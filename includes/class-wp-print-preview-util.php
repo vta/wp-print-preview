@@ -194,7 +194,6 @@ class Excel_Helper {
         $this->spreadsheet_object[$row->getRowIndex()] = $temp_row;
     }
     public function delete_tmp_dir($dir) {
-
     }
     /**
      * @var array

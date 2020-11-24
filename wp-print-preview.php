@@ -98,6 +98,6 @@ function run_wp_print_preview()
 // @see https://wordpress.stackexchange.com/questions/140466/custom-shortcode-being-executed-when-saving-page-in-wp-admin
 // USING SHORTCODE W/ WPPB TUTORIAL: https://github.com/JoeSz/WordPress-Plugin-Boilerplate-Tutorial/blob/master/plugin-name/tutorials/register_a_shortcode_in_plugin.php
 
-//run_wp_print_preview();
+run_wp_print_preview();
 
 //(new Wp_Print_Preview_Mass_Mailer)->return_envelope_template(1989);

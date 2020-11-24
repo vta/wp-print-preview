@@ -1,5 +1,4 @@
 <?php
-
 require_once "class-wp-print-preview-util.php";
 require_once "class-wp-print-preview-imagick.php";
 
@@ -18,10 +17,6 @@ class Wp_Print_Preview_Mass_Mailer
      */
     function __construct()
     {
-
-        $this->pp_util = new Wp_Print_Preview_Util();
-        $this->imagick = new Wp_Print_Preview_Imagick();
-
         $this->imagick_helper = new Wp_Print_Preview_Imagick();
         $this->imagick = $this->imagick_helper->imagick;
         try {
@@ -465,7 +460,6 @@ class Size_9_Template {
         }
     }
 }
-
 /**
  * Class Size_10_Template
  */
