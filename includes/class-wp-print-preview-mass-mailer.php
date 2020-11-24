@@ -305,7 +305,7 @@ class Wp_Print_Preview_Mass_Mailer
 
             // attach hyperlink w/ filepath to the order item
             $item->add_meta_data(
-                __( 'Return Envelope Download' ),
+                ( 'Return Envelope Download' ),
                 '<a href="' . esc_url( $filepath ) . '" download>' . $job_name . ' - #9 Return Envelope</a>'
             );
 
