@@ -21,7 +21,7 @@
  * @author     James Pham <jamespham93@yahoo.com>
  */
 class Wp_Print_Preview_Imagick {
-
+    public $imagick;
     /**
      * @param $params - array (
      *      font                => string       // OTF file for font styling
@@ -105,5 +105,22 @@ class Wp_Print_Preview_Imagick {
             return $url;
         }
     }
+    private function _writeToTmp( $image, $subfolder, $filename) {
 
+
+    }
+    /**
+     * Wp_Print_Preview_Imagick constructor.
+     * @throws Exception
+     */
+    public function __construct() {
+        try {
+            $this->imagick = new \Imagick();
+        } catch (Exception $error) {
+            throw new Exception("Unable to initialize the Imagick Helper Class: {$error->getMessage()} : {$error->getLine()}");
+        }
+
+        return $this;
+    }
 }
+

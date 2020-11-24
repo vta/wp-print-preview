@@ -11,17 +11,55 @@ class Wp_Print_Preview_Mass_Mailer
     private $gf_form;
     private $pp_util;
     private $imagick;
-
+    private $imagick_helper;
     /**
      * Wp_Print_Preview_Mass_Mailer constructor
      * @throws Exception
      */
     function __construct()
     {
+
         $this->pp_util = new Wp_Print_Preview_Util();
         $this->imagick = new Wp_Print_Preview_Imagick();
+
+        $this->imagick_helper = new Wp_Print_Preview_Imagick();
+        $this->imagick = $this->imagick_helper->imagick;
+        try {
+            $this->pp_util = new Wp_Print_Preview_Util();
+        } catch (Exception $error) {
+            throw new Exception("Error Initializing Print Preview Util Class: \n Error Message: "
+                . $error->getMessage()
+                . "\n Line number: "
+                . $error->getLine());
+        }
+
+        // store Gravity Forms entry & form arrays as private member variable
+        // (to be used in most public functions)
+//        $this->entry = GFAPI::get_entry( $entry_id );
+//        $this->gf_form = GFAPI::get_form( $this->entry['form_id'] );
+//        $this->return_envelope_template();
+
     }
 
+    /**
+     * @param $entry_id | string
+     * @throws Exception
+     */
+    public function create_size_10_template($entry_id) {
+        if (isset($entry_id)) {
+            try {
+                $this->__set('entry', GFAPI::get_entry($entry_id));
+                $this->__set('gf_form', GFAPI::get_form($this->entry['form_id']));
+                $envelope_type = $this->_return_envelope_type();
+
+            } catch (Exception $error) {
+                throw new Exception("Error Creating a Size 10 Template: \n Error Message: "
+                    . $error->getMessage()
+                    . "\n Line number: "
+                    . $error->getLine());
+            }
+        }
+    }
     /**
      * Return Address Template
      *
@@ -82,8 +120,17 @@ class Wp_Print_Preview_Mass_Mailer
 
         try {
             // CREATE THE CANVAS
+
             $image = new \Imagick();
 
+            $this->imagick->setResolution(300, 300);
+            $this->imagick->readImage(plugin_dir_path(__FILE__) . $envelope_template);
+            $this->imagick->setImageColorspace(Imagick::COLORSPACE_SRGB);
+            $this->imagick->setImageUnits(Imagick::RESOLUTION_PIXELSPERINCH);
+            $this->imagick->setImageFormat('pdf');
+            $draw = $this->imagick->draw_text($address_text);
+            $this->imagick->drawImage($draw);
+            $this->imagick->writeImage(plugin_dir_path(__FILE__) . '/test_file.pdf');
             // set image properties
             $image->setResolution( 300, 300 );
             $image->readImage( plugin_dir_path( __FILE__ ) . $envelope_template );
@@ -270,8 +317,48 @@ class Wp_Print_Preview_Mass_Mailer
             error_log('Addresses FILE');
             $parser = $this->pp_util->create_excel_parser($file_path);
             $addresses = $parser->parse_excel("PHP");
-            error_log(print_r($addresses, true));
+//            error_log(print_r($addresses, true));
+            $address_index = 0;
             foreach ($addresses as $address) {
+
+                $address_text = "";
+                try {
+                    if (count($address) === 6) {
+                        $address_text = "
+                        {$address['first']} 
+                        {$address['last']} \n
+                        {$address['address']} \n
+                        {$address['city']},  {$address['state']},  {$address['zip']}
+                        ";
+                    } else if (count($address) === 5) {
+                        $address_text = "
+                        {$address['name']} \n
+                        {$address['address']} \n
+                        {$address['city']},  {$address['state']},  {$address['zip']}
+                        ";
+                    }
+                    // CREATE THE CANVAS
+                    $this->imagick->setResolution(300, 300);
+                    $this->imagick->readImage(plugin_dir_path(__FILE__) . '../public/assets/9_VTA_ATU_TEMPLATE.pdf');
+                    $this->imagick->setImageColorspace(Imagick::COLORSPACE_SRGB);
+                    $this->imagick->setImageUnits(Imagick::RESOLUTION_PIXELSPERINCH);
+                    $this->imagick->setImageFormat('pdf');
+                    $draw = $this->imagick_helper->draw_text($address_text);
+                    $this->imagick->drawImage($draw);
+                    $file_path = plugin_dir_path(__FILE__) . "/test_file-{$address_index}.pdf";
+                    $this->imagick->writeImage($file_path);
+                    error_log("File written to: {$file_path}");
+                    $address_index++;
+
+                } catch (Exception $error) {
+                    // LOG ERROR IF WE CANNOT CREATE THE RETURN ENVELOPE
+//                    $err_message = 'Could not generate return mail template.';
+//                    var_dump($e);
+//                    echo $err_message;
+                    error_log($error->getMessage());
+//                    error_log(json_encode(( array )$e, JSON_PRETTY_PRINT));
+                    die();
+                }
 
             }
         } else {
@@ -308,3 +395,107 @@ class Wp_Print_Preview_Mass_Mailer
     }
 }
 
+
+/**
+ * Class Default_Envelope_Styling
+ */
+class Default_Envelope_Styling {
+    public $COLOR = '#000000';       // COLOR CONSTANT
+    public $CHAR_SPACE = 0.3;          // character spacing
+    public $FONT_SIZE = 10.5;          // FONT SIZE
+    public $STROKE_WIDTH = 0.7;        // FONT WEIGHT
+    public $WORD_SPACING = 0.9;        // SPACING BETWEEN WORD
+    public $LINE_HEIGHT = 4.7;         // LINE HEIGHT
+    public $FONT_STYLE;
+    /**
+     * Default_Envelope_Styling constructor.
+     * @throws Exception
+     */
+    public function __construct()
+    {
+        try {
+            $this->FONT_STYLE = plugin_dir_path(__DIR__) . '/public/assets/MuseoSans_300.otf';
+            $text = array(
+                'font' => $this->FONT_STYLE,
+                'color' => $this->COLOR,
+                'stroke_width' => $this->STROKE_WIDTH,
+                'font_size' => $this->FONT_SIZE,
+                'kerning' => $this->CHAR_SPACE,
+                'line_height' => $this->LINE_HEIGHT,
+                'word_spacing' => $this->WORD_SPACING
+            );
+            return $text;
+        } catch (Exception $error) {
+            throw new Exception("Cannot create default envelope styling: {$error->getMessage()}");
+        }
+
+    }
+}
+
+/**
+ * Class Size_10_Template
+ */
+class Size_9_Template {
+    private $styling;
+    private $x;
+    private $y;
+    private $text;
+    private $annotation;
+    /**
+     * Size_10_Template constructor.
+     * @param $text
+     * @throws Exception
+     */
+    function __construct($text)
+    {
+        try {
+            $this->x = 1038;
+            $this->y = 598;
+            $this->text = $text;
+            $this->annotation = array(
+                'x' => $this->x,
+                'y' => $this->y,
+                'text' => $this->text
+            );
+            $this->styling = new Default_Envelope_Styling();
+            $this->styling['annotation'] = $this->annotation;
+            return $this->styling;
+        } catch (Exception $error) {
+            throw new Exception("Cannot create default envelope styling: {$error->getMessage()}");
+        }
+    }
+}
+
+/**
+ * Class Size_10_Template
+ */
+class Size_10_Template {
+    private $styling;
+    private $x;
+    private $y;
+    private $text;
+    private $annotation;
+    /**
+     * Size_10_Template constructor.
+     * @param $text
+     * @throws Exception
+     */
+    function __construct($text)
+    {
+        try {
+            $this->x = 1038;
+            $this->y = 598;
+            $this->text = $text;
+
+            $this->annotation = array(
+                'x' => $this->x,
+                'y' => $this->y,
+                'text' => $this->text
+            );
+            $this->styling = new Default_Envelope_Styling();
+            $this->styling['annotation'] = $this->annotation;
+        } catch (Exception $error) {
+            throw new Exception("Cannot create default envelope styling: {$error->getMessage()}");
+        }
+    }
+}

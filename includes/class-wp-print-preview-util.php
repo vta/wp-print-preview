@@ -193,6 +193,9 @@ class Excel_Helper {
          */
         $this->spreadsheet_object[$row->getRowIndex()] = $temp_row;
     }
+    public function delete_tmp_dir($dir) {
+
+    }
     /**
      * @var array
      * The parent is the number of columns total in the worksheet, ex: 5 is the mapping for a worksheet with 5 columns
