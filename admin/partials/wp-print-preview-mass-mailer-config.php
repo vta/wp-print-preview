@@ -12,15 +12,20 @@
  */
 ?>
 <h1 class="wpp-mm-heading">Mass Mailer Settings</h1>
-<form method="POST" onsubmit="saveReturnEnvelopeTemplate(event)">
+<form enctype="multipart/form-data" method="POST" onsubmit="saveReturnEnvelopeTemplate(event)">
 
     <!--  @todo - only image/* file types   -->
     <div>
         <label for="wpp-return-env-upload">
-            #9 Return Envelope Template
+            #9 Return Envelope Template Name
         </label>
-        <input type="text" name="wpp_test">
-<!--        &nbsp;<input type="file" id="wpp-return-env-upload" name="wpp_return_env_upload">-->
+        <input type="text" name="return_env_template_name">
+    </div>
+    <div>
+        <label for="wpp-return-env-upload">
+            #9 Return Envelope Template File Upload
+        </label>
+        <input type="file" id="wpp-return-env-upload" name="return_env_upload_file">
     </div>
 
     <?php submit_button(); ?>

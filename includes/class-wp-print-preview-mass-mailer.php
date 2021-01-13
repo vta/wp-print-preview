@@ -285,7 +285,9 @@ class Wp_Print_Preview_Mass_Mailer
     {
         // extract text and template type
         error_log( json_encode($_POST, JSON_PRETTY_PRINT) );
+        error_log( json_encode($_FILES, JSON_PRETTY_PRINT) );
         echo 'WORKED!';
+
         exit;
     }
 

@@ -12,6 +12,10 @@ const { ajaxUrl } = mmAdminSettings;
  */
 const saveReturnEnvelopeTemplate = async (e) => {
     e.preventDefault();
+    e.stopPropagation();
+
+    const file_data = jQuery('#wpp-return-env-upload').prop('files');
+    console.log(file_data);
 
     // Note: Must hardcode our custom AJAX action
     const data = {
@@ -30,9 +34,15 @@ const saveReturnEnvelopeTemplate = async (e) => {
         method:  'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
+            // required for passing files
+            // 'Content-Type': 'multipart/form-data'
         },
         body: payload
     });
 
-    // response returned. Return res payload via JSON if possible.
+
+    // // response refresh if successful.
+    // if (res.status === 200 ) {
+    //     window.location.reload();
+    // }
 }
