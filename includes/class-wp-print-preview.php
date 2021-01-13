@@ -196,8 +196,7 @@ class Wp_Print_Preview {
         $this->loader->add_action( 'wp_ajax_return_envelope_preview', $plugin_mass_mailer, 'Wp_Print_Preview_Mass_Mailer::handle_return_envelope_preview' );
         $this->loader->add_action( 'wp_ajax_nopriv_return_envelope_preview',  $plugin_mass_mailer, 'Wp_Print_Preview_Mass_Mailer::handle_return_envelope_preview' );
 
-        // custom AJAX hooks to handle settings UPDATE
-        $this->loader->add_action( 'wp_ajax_update_mass_mailer_settings', $plugin_mass_mailer, 'Wp_Print_Preview_Mass_Mailer::update_mass_mailer_settings' );
+        // custom AJAX hooks to handle settings UPDATE (no_priv to require NONCE authentication)
         $this->loader->add_action( 'wp_ajax_nopriv_update_mass_mailer_settings',  $plugin_mass_mailer, 'Wp_Print_Preview_Mass_Mailer::update_mass_mailer_settings' );
 
         // add line item (hyperlink to image downloads) upon user checkout

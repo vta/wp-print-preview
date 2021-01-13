@@ -12,7 +12,7 @@
  */
 ?>
 <h1 class="wpp-mm-heading">Mass Mailer Settings</h1>
-<form method="POST" action="options.php">
+<form method="POST" onsubmit="saveReturnEnvelopeTemplate(event)">
 
     <!--  @todo - only image/* file types   -->
     <div>
@@ -26,9 +26,3 @@
     <?php submit_button(); ?>
 
 </form>
-
-<script>
-    console.log(mmAdminSetting);
-    const url = mmAdminSetting
-    console.log(url);
-</script>

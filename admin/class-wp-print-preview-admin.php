@@ -120,6 +120,7 @@ class Wp_Print_Preview_Admin {
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/sort-table.min.js', array(), false, true);
 
         // send admin URL to allow for custom AJAX/hook call for Mass Mailer Settings
+        wp_enqueue_script( 'wpp-mm-settings-js', plugin_dir_url( __FILE__ ) . 'js/wpp-mm-config.js', array( 'jquery' ), $this->version, true );
         wp_localize_script(
             'wpp-mm-settings-js',
             'mmAdminSettings',

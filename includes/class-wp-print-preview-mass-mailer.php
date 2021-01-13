@@ -284,8 +284,8 @@ class Wp_Print_Preview_Mass_Mailer
     public function update_mass_mailer_settings()
     {
         // extract text and template type
-        $return_address = $_POST['wpp_test'];
-        error_log('$return_address ' . $return_address);
+        error_log( json_encode($_POST, JSON_PRETTY_PRINT) );
+        echo 'WORKED!';
         exit;
     }
 
