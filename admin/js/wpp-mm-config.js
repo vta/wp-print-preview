@@ -3,7 +3,7 @@
  * @author James Pham
  * @lastUpdated 1/13/2021
  */
-const { ajaxUrl, nonce } = mmAdminSettings;
+const { ajaxUrl } = mmAdminSettings;
 
 /**
  * Submission handler to update for saving Mass Mailer Configurations
@@ -30,7 +30,6 @@ const saveReturnEnvelopeTemplate = async (e) => {
         method:  'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
-            'X-WP-Nonce': nonce
         },
         body: payload
     });

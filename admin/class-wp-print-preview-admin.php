@@ -125,8 +125,7 @@ class Wp_Print_Preview_Admin {
             'wpp-mm-settings-js',
             'mmAdminSettings',
             array(
-                'ajaxUrl' => admin_url( 'admin-ajax.php' ),
-                'nonce' => wp_create_nonce( 'update_mass_mailer_settings-nonce' )
+                'ajaxUrl' => admin_url( 'admin-ajax.php' )
             )
         );
         wp_enqueue_script('wp-ajax-response');

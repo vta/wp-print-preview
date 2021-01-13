@@ -192,12 +192,11 @@ class Wp_Print_Preview {
          */
 //		$this->loader->add_action("gform_post_multifile_upload_{$mm_form_id}", $plugin_mass_mailer, 'mass_mailer_addresses', 10, 5);
 
-        // custom AJAX hooks to generate MM return envelope preview response
+        // custom AJAX hooks to generate MM return envelope preview response (excluding _nopriv_ only allows authenticated users)
         $this->loader->add_action( 'wp_ajax_return_envelope_preview', $plugin_mass_mailer, 'Wp_Print_Preview_Mass_Mailer::handle_return_envelope_preview' );
-        $this->loader->add_action( 'wp_ajax_nopriv_return_envelope_preview',  $plugin_mass_mailer, 'Wp_Print_Preview_Mass_Mailer::handle_return_envelope_preview' );
 
-        // custom AJAX hooks to handle settings UPDATE (no_priv to require NONCE authentication)
-        $this->loader->add_action( 'wp_ajax_nopriv_update_mass_mailer_settings',  $plugin_mass_mailer, 'Wp_Print_Preview_Mass_Mailer::update_mass_mailer_settings' );
+        // custom AJAX hooks to handle settings UPDATE (excluding _nopriv_ only allows authenticated users)
+        $this->loader->add_action( 'wp_ajax_update_mass_mailer_settings',  $plugin_mass_mailer, 'Wp_Print_Preview_Mass_Mailer::update_mass_mailer_settings' );
 
         // add line item (hyperlink to image downloads) upon user checkout
         $this->loader->add_action( 'woocommerce_checkout_create_order_line_item', $plugin_mass_mailer, 'Wp_Print_Preview_Mass_Mailer::generate_order_item_pdfs', 10, 4 );
