@@ -1,1 +1,1 @@
-<h2> Welcome to the WP Print Preview Admin Page </h2>
+<h1> Welcome to the WP Print Preview Admin Page </h1>

@@ -225,41 +225,41 @@ class Wp_Print_Preview_Mass_Mailer
     public function generate_order_item_pdfs( $item, $cart_item_key, $values, $order )
     {
         // similar to entry object but w/o entry info (has form values, form id, etc.)
-        error_log(json_encode($values, JSON_PRETTY_PRINT));
-        $entry_values = $values['_gravity_form_lead'];
-
-        // extract form_id from cart item info
-        $form = GFAPI::get_form( $entry_values['form_id'] );
-
-        // extract require_return_env to check if user required a return envelope
-        $require_return_env_id = $this->get_field_id( $form, 'radio', 'require_return_env' );
-        $require_return_env = $entry_values[$require_return_env_id];
-
-        // if return env was required, the extract the field values and generate the PDF
-        if ( $require_return_env === 'Yes' ) {
-
-            // grab field IDs for the following values
-            $return_envelope_template_id = $this->get_field_id( $form, 'radio', 'return_envelope_template' );
-            $return_address_id = $this->get_field_id( $form, 'textarea', 'return_address' );
-            $job_name_id = $this->get_field_id( $form, 'text', 'job_name' );
-
-            // grab the field values with the field_id's
-            $return_envelope_template = $entry_values[$return_envelope_template_id];
-            $return_address = $entry_values[$return_address_id];
-            $job_name = $entry_values[$job_name_id];
-
-            // used the extracted return address, env type, and job name to create the file and attach it to the order item
-            $filepath = $this->create_return_envelope_template( $return_address, $return_envelope_template, false, $job_name );
-
-            error_log($filepath);
-
-            // attach hyperlink w/ filepath to the order item
-            $item->add_meta_data(
-                __( 'Return Envelope Download' ),
-                '<a href="' . esc_url( $filepath ) . '" download>' . $job_name . ' - #9 Return Envelope</a>'
-            );
-
-        }
+//        error_log(json_encode($values, JSON_PRETTY_PRINT));
+//        $entry_values = $values['_gravity_form_lead'];
+//
+//        // extract form_id from cart item info
+//        $form = GFAPI::get_form( $entry_values['form_id'] );
+//
+//        // extract require_return_env to check if user required a return envelope
+//        $require_return_env_id = $this->get_field_id( $form, 'radio', 'require_return_env' );
+//        $require_return_env = $entry_values[$require_return_env_id];
+//
+//        // if return env was required, the extract the field values and generate the PDF
+//        if ( $require_return_env === 'Yes' ) {
+//
+//            // grab field IDs for the following values
+//            $return_envelope_template_id = $this->get_field_id( $form, 'radio', 'return_envelope_template' );
+//            $return_address_id = $this->get_field_id( $form, 'textarea', 'return_address' );
+//            $job_name_id = $this->get_field_id( $form, 'text', 'job_name' );
+//
+//            // grab the field values with the field_id's
+//            $return_envelope_template = $entry_values[$return_envelope_template_id];
+//            $return_address = $entry_values[$return_address_id];
+//            $job_name = $entry_values[$job_name_id];
+//
+//            // used the extracted return address, env type, and job name to create the file and attach it to the order item
+//            $filepath = $this->create_return_envelope_template( $return_address, $return_envelope_template, false, $job_name );
+//
+//            error_log($filepath);
+//
+//            // attach hyperlink w/ filepath to the order item
+//            $item->add_meta_data(
+//                __( 'Return Envelope Download' ),
+//                '<a href="' . esc_url( $filepath ) . '" download>' . $job_name . ' - #9 Return Envelope</a>'
+//            );
+//
+//        }
 
     }
 
@@ -271,6 +271,22 @@ class Wp_Print_Preview_Mass_Mailer
         foreach ($addresses as $address) {
 
         }
+    }
+
+
+    /**
+     * Mass Mailer Settings API
+     *
+     * Takes form data from custom AJAX call and converts data into return envelope preview.
+     * Pass form data to "return_envelope_template"
+     * @TODO - add exception handling
+     */
+    public function update_mass_mailer_settings()
+    {
+        // extract text and template type
+        $return_address = $_POST['wpp_test'];
+        error_log('$return_address ' . $return_address);
+        exit;
     }
 
     /**

@@ -54,8 +54,9 @@ class Wp_Print_Preview_Admin {
 
 	}
     public function create_admin_menu() {
-	    add_menu_page('Print Preview Settings', 'WP Print Preview', 'manage_options', 'print-preview-admin', [$this, 'admin_page_init']);
+	    add_menu_page('Print Preview Settings', 'WP Print Preview', 'manage_options', 'print-preview-admin', [$this, 'admin_page_init'], 'dashicons-printer');
 	    add_submenu_page('print-preview-admin', 'VTA SS Ballots', 'Manage Ballots', 'manage_options', 'print-preview-ballot-admin', [$this, 'ballot_page_init']);
+        add_submenu_page('print-preview-admin', 'Mass Mailer', 'Mass Mailer', 'manage_options', 'wp-print-preview-mass-mailer', [$this, 'mass_mailer_page_init']);
     }
     function admin_page_init() {
         include_once 'PrintPreviewAdminView.php';
@@ -63,6 +64,18 @@ class Wp_Print_Preview_Admin {
     function ballot_page_init() {
         include_once 'PrintPreviewBallotAdminView.php';
     }
+
+    /**
+     * Used to render Mass Mailer Config submenu page
+     *
+     * @since 2.0.0
+     */
+    function mass_mailer_page_init() {
+
+	    include_once 'partials/wp-print-preview-mass-mailer-config.php';
+
+    }
+
 	/**
 	 * Register the stylesheets for the admin area.
 	 *
@@ -105,6 +118,17 @@ class Wp_Print_Preview_Admin {
 		 */
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/wp-print-preview-admin.js', array( 'jquery' ), $this->version, false );
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/sort-table.min.js', array(), false, true);
+
+        // send admin URL to allow for custom AJAX/hook call for Mass Mailer Settings
+        wp_localize_script(
+            'wpp-mm-settings-js',
+            'mmAdminSettings',
+            array(
+                'ajaxUrl' => admin_url( 'admin-ajax.php' ),
+                'nonce' => wp_create_nonce( 'update_mass_mailer_settings-nonce' )
+            )
+        );
+        wp_enqueue_script('wp-ajax-response');
 
 	}
 
