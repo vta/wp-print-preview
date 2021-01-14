@@ -13,24 +13,37 @@
 ?>
 <h1 class="wpp-mm-heading">Mass Mailer Settings</h1>
 
-<?php echo do_shortcode('[gravityform id="9" ajax="true"]') ?>
+<form enctype="multipart/form-data" method="POST" onsubmit="saveReturnEnvelopeTemplate(event)">
 
-<!--<form enctype="multipart/form-data" method="POST" onsubmit="saveReturnEnvelopeTemplate(event)">-->
-<!---->
-        <!--  @todo - only image/* file types   -->
-<!--    <div>-->
-<!--        <label for="wpp-return-env-upload">-->
-<!--            #9 Return Envelope Template Name-->
-<!--        </label>-->
-<!--        <input type="text" name="return_env_template_name">-->
-<!--    </div>-->
-<!--    <div>-->
-<!--        <label for="wpp-return-env-upload">-->
-<!--            #9 Return Envelope Template File Upload-->
-<!--        </label>-->
-<!--        <input type="file" id="wpp-return-env-upload" name="return_env_upload_file">-->
-<!--    </div>-->
-<!---->
-<!--    --><?php //submit_button(); ?>
-<!---->
-<!--</form>-->
+    <?php
+    foreach ( GFAPI::get_forms() as $form ) {
+        error_log( json_encode( $form, JSON_PRETTY_PRINT ) );
+    }
+    ?>
+
+    <fieldset>
+        <legend>Admin Form Set Up</legend>
+
+        <p for="wpp-gf-">
+            To link a Gravity Forms form, please select from the below template
+        </p>
+
+        <label for="wpp-mm-gf-id-label">
+            Link to Existing Gravity Forms
+        </label>
+        <select name="wpp_mm_gf_id" id="wpp-mm-gf-id">
+            <?php foreach ( GFAPI::get_forms() as $form ) : ?>
+
+                <option value="<?php echo $form['id'] ?>">
+                    <?php printf('%s (Form ID: %s)', $form['title'], $form['id']) ?>
+                </option>
+
+            <?php endforeach; ?>
+        </select>
+    </fieldset>
+
+    <?php submit_button(); ?>
+
+</form>
+
+<?php echo do_shortcode('[gravityform id="9" ajax="true"]') ?>
