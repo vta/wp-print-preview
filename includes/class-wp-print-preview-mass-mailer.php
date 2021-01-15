@@ -273,40 +273,6 @@ class Wp_Print_Preview_Mass_Mailer
         }
     }
 
-
-    /**
-     * Mass Mailer Settings API
-     *
-     * Takes form data from custom AJAX call and converts data into return envelope preview.
-     * Pass form data to "return_envelope_template"
-     * @TODO - add exception handling. And perhaps move this into a separate admin class in the future.
-     */
-    public function update_mass_mailer_settings()
-    {
-        // extract text and template type
-        error_log( json_encode($_POST, JSON_PRETTY_PRINT) );
-        error_log( json_encode($_FILES, JSON_PRETTY_PRINT) );
-
-        // extract post variables
-        $template_name = $_POST['wpp_mm_template_name'];
-        $template_type = $_POST['wpp_mm_template_type'];
-
-        // Error check for missing input fields
-        if ( empty( $template_type ) || empty( $template_name ) ) {
-            // send back error message & error code (if possible)
-        }
-
-        // Error check for missing file upload
-        if ( empty( $_FILES['tmp_name'] ) ) {
-            // send back error message & error code (if possible)
-        }
-
-        // store as Custom Post for ease of access & use
-
-
-        exit;
-    }
-
     /**
      * SETTER
      *

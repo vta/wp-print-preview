@@ -133,4 +133,68 @@ class Wp_Print_Preview_Admin {
 
 	}
 
+    /**
+     * Mass Mailer Settings AJAX handler
+     *
+     * Takes form data from custom AJAX call and converts data into return envelope preview.
+     * Pass form data to "return_envelope_template"
+     * @TODO - add exception handling. And perhaps move this into a separate admin class in the future.
+     *
+     * @since 2.0.0
+     */
+    public function update_mass_mailer_settings()
+    {
+        // extract text and template type
+        error_log( json_encode($_POST, JSON_PRETTY_PRINT) );
+        error_log( json_encode($_FILES, JSON_PRETTY_PRINT) );
+
+        // extract post variables
+        $template_name = $_POST['wpp_mm_template_name'];
+        $template_type = $_POST['wpp_mm_template_type'];
+
+        // Error check for missing input fields
+        if ( empty( $template_type ) || empty( $template_name ) ) {
+            // send back error message & error code (if possible)
+        }
+
+        // Error check for missing file upload
+        if ( empty( $_FILES['tmp_name'] ) ) {
+            // send back error message & error code (if possible)
+        }
+
+        // store as Custom Post for ease of access & use
+
+        exit;
+    }
+
+    /**
+     * Mass Mailer Template Custom Post Type
+     *
+     * Establishes data structure for storing Mass Mailer Templates in our database. Leverages WordPress
+     * Custom Post Types API. These template records are created in our "Mass Mailer" admin submenu page and
+     * are used displayed as a custom Gravity Forms field.
+     */
+    public function init_mm_template_post_types()
+    {
+        $args = array(
+            // For full range of label controls, see TemplatesDownloadWidget.php for more information
+            'labels'              => 'Mass Mailer Template',
+            'description'         => 'Mass mailer templates used to create preview and images for Document Services\' mass mailing service.',
+            'public'              => false, // May have to change later if GF cannot render for customers
+            'hierarchical'        => false,
+            'show_ui'             => false,
+            'show_in_menu'        => false,
+            'show_in_nav_menus'   => false,
+            'show_in_admin_bar'   => false,
+            'can_export'          => true,
+            'has_archive'         => true,
+            'exclude_from_search' => true,
+            'publicly_queryable'  => false,
+//            'capability_type'     => 'post',  // not sure yet
+            'show_in_rest'        => true,
+        );
+
+        register_post_type( 'wpp_mass_mailer_template', $args );
+    }
+
 }

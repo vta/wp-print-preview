@@ -17,7 +17,7 @@
 <form id="wpp-template-form" enctype="multipart/form-data" method="POST" onsubmit="uploadTemplate(event)">
 
     <fieldset>
-        <legend>Admin Form Set Up</legend>
+        <legend>Mass Mailer Template Upload Form</legend>
 
         <div>
             <label for="wpp-mm-template-name">Template Name</label>

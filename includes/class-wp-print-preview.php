@@ -166,6 +166,12 @@ class Wp_Print_Preview {
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
 		$this->loader->add_action('admin_menu', $plugin_admin, 'create_admin_menu');
 
+        // custom AJAX hooks to handle settings UPDATE (excluding _nopriv_ only allows authenticated users)
+        $this->loader->add_action( 'wp_ajax_update_mass_mailer_settings',  $plugin_admin, 'update_mass_mailer_settings' );
+
+        // create custom post type to store Mass Mailer Template information
+        $this->loader->add_action( 'init', $plugin_admin, 'init_mm_template_post_types' );
+
 	}
 	/**
 	 * Register all of the hooks related to the public-facing functionality
@@ -194,9 +200,6 @@ class Wp_Print_Preview {
 
         // custom AJAX hooks to generate MM return envelope preview response (excluding _nopriv_ only allows authenticated users)
         $this->loader->add_action( 'wp_ajax_return_envelope_preview', $plugin_mass_mailer, 'Wp_Print_Preview_Mass_Mailer::handle_return_envelope_preview' );
-
-        // custom AJAX hooks to handle settings UPDATE (excluding _nopriv_ only allows authenticated users)
-        $this->loader->add_action( 'wp_ajax_update_mass_mailer_settings',  $plugin_mass_mailer, 'Wp_Print_Preview_Mass_Mailer::update_mass_mailer_settings' );
 
         // add line item (hyperlink to image downloads) upon user checkout
         $this->loader->add_action( 'woocommerce_checkout_create_order_line_item', $plugin_mass_mailer, 'Wp_Print_Preview_Mass_Mailer::generate_order_item_pdfs', 10, 4 );
