@@ -14,23 +14,23 @@
 ?>
 <h1 class="wpp-mm-heading">Mass Mailer Settings</h1>
 
-<form enctype="multipart/form-data" method="POST" onsubmit="uploadTemplate(event)">
+<form id="wpp-template-form" enctype="multipart/form-data" method="POST" onsubmit="uploadTemplate(event)">
 
     <fieldset>
         <legend>Admin Form Set Up</legend>
 
         <div>
-            <label for="wpp-template-name"></label>
-            <input type="text" id="wpp-template-name" name="wpp_template_name">
+            <label for="wpp-mm-template-name">Template Name</label>
+            <input type="text" id="wpp-mm-template-name" name="wpp_mm_template_name">
         </div>
 
         <div>
             <label for="wpp-mm-template-upload">Template Upload</label>
-            <input type="file" id="wpp-mm-template-upload" name="wpp_template_upload">
+            <input type="file" id="wpp-mm-template-upload" name="wpp_mm_template_upload">
         </div>
 
         <div>
-            <select name="wpp_template_type" id="wpp-template-type">
+            <select name="wpp_mm_template_type" id="wpp-mm-template-type">
                 <option value="bmp_lg">Bulk Mailer Permit #589 - 8.5" x 11"</option>
                 <option value="bmp_sm">Bulk Mailer Permit #589 - 5.66" x 11"</option>
                 <option value="em_10_std">Employee Mailer - #10 Standard</option>
