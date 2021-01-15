@@ -13,29 +13,26 @@
 ?>
 <h1 class="wpp-mm-heading">Mass Mailer Settings</h1>
 
-<form enctype="multipart/form-data" method="POST" onsubmit="saveReturnEnvelopeTemplate(event)">
-
-    <?php
-    foreach ( GFAPI::get_forms() as $form ) {
-        error_log( json_encode( $form, JSON_PRETTY_PRINT ) );
-    }
-    ?>
+<form enctype="multipart/form-data" method="POST" onsubmit="saveMMconfigForm(event)">
 
     <fieldset>
         <legend>Admin Form Set Up</legend>
 
-        <p for="wpp-gf-">
-            To link a Gravity Forms form, please select from the below template
+        <p class="wpp-mm-gf-instructions">
+            To link a Gravity Forms form, please select from the drop-down below. The pre-configured gravity forms will
+            be used to upload Mass Mailer templates & uploads.
         </p>
 
-        <label for="wpp-mm-gf-id-label">
+        <label for="wpp-mm-gf-id" class="wpp-mm-gf-label">
             Link to Existing Gravity Forms
         </label>
         <select name="wpp_mm_gf_id" id="wpp-mm-gf-id">
+            <option value="" disabled <?php if (!get_option('wpp_mm_gf_id')) echo 'selected'; ?>>Please select a form</option>
+
             <?php foreach ( GFAPI::get_forms() as $form ) : ?>
 
-                <option value="<?php echo $form['id'] ?>">
-                    <?php printf('%s (Form ID: %s)', $form['title'], $form['id']) ?>
+                <option value="<?php echo $form['id']; ?> <?php if (get_option('wpp_mm_gf_id') === intval($form['id'])) ?>">
+                    <?php printf('%s (Form ID: %s)', $form['title'], $form['id']); ?>
                 </option>
 
             <?php endforeach; ?>
@@ -46,4 +43,10 @@
 
 </form>
 
-<?php echo do_shortcode('[gravityform id="9" ajax="true"]') ?>
+<?php
+    // Check if it exists
+    if ( get_option('wpp_mm_gf_id') ) {
+        $gf_id = get_option( 'wpp_mm_gf_id' );
+        echo do_shortcode( sprintf('[gravityform id="%d" ajax="true"]', $gf_id ) );
+    }
+?>
