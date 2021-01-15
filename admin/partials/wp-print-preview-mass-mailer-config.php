@@ -9,100 +9,38 @@
  *
  * @package    Wp_Print_Print
  * @subpackage Wp_Print_Print/admin/partials
+ * @updated
  */
 ?>
 <h1 class="wpp-mm-heading">Mass Mailer Settings</h1>
 
-<form enctype="multipart/form-data" method="POST" onsubmit="saveMMconfigForm(event)">
+<form enctype="multipart/form-data" method="POST" onsubmit="uploadTemplate(event)">
 
     <fieldset>
         <legend>Admin Form Set Up</legend>
 
-        <p class="wpp-mm-gf-instructions">
-            To link a Gravity Forms form, please select from the drop-down below. The pre-configured gravity forms will
-            be used to upload Mass Mailer templates & uploads.
-        </p>
+        <div>
+            <label for="wpp-template-name"></label>
+            <input type="text" id="wpp-template-name" name="wpp_template_name">
+        </div>
 
-        <label for="wpp-mm-gf-id" class="wpp-mm-gf-label">
-            Link to Existing Gravity Forms
-        </label>
-        <select name="wpp_mm_gf_id" id="wpp-mm-gf-id">
-            <option value="" disabled <?php if (!get_option('wpp_mm_gf_id')) echo 'selected'; ?>>Please select a form</option>
+        <div>
+            <label for="wpp-mm-template-upload">Template Upload</label>
+            <input type="file" id="wpp-mm-template-upload" name="wpp_template_upload">
+        </div>
 
-            <?php foreach ( GFAPI::get_forms() as $form ) : ?>
-
-                <option value="<?php echo $form['id']; ?>" <?php if ( get_option('wpp_mm_gf_id') == $form['id'] ) echo 'selected'; ?>>
-                    <?php printf('%s (Form ID: %s)', $form['title'], $form['id']); ?>
-                </option>
-
-            <?php endforeach; ?>
-        </select>
+        <div>
+            <select name="wpp_template_type" id="wpp-template-type">
+                <option value="bmp_lg">Bulk Mailer Permit #589 - 8.5" x 11"</option>
+                <option value="bmp_sm">Bulk Mailer Permit #589 - 5.66" x 11"</option>
+                <option value="em_10_std">Employee Mailer - #10 Standard</option>
+                <option value="em_10_priv">Employee Mailer - #10 Privacy</option>
+                <option value="em_6_3_4">Employee Mailer - 6.5" x 9.5"</option>
+                <option value="return_9">Return Template #9</option>
+            </select>
+        </div>
     </fieldset>
 
     <?php submit_button(); ?>
 
 </form>
-
-<?php
-    $gf_id_setting = get_option('wpp_mm_gf_id');
-
-    // Check setting exists
-    if ( $gf_id_setting ) {
-        // render gravity forms shortcode to frontend
-        echo do_shortcode( sprintf('[gravityform id="%d" ajax="true"]', $gf_id_setting ) );
-
-        // retrieve entries
-        $entries = GFAPI::get_entries( $gf_id_setting );
-
-        // if entries exist, render in table
-        error_log( json_encode( $entries, JSON_PRETTY_PRINT ) );
-
-        // if entries exist, display in a table
-        if ( ! empty( $entries ) ) : ?>
-
-            <table>
-                <thead>
-                    <tr>
-                        <th>
-                            Entry ID
-                        </th>
-                        <th>
-                            Template Name (Option Name)
-                        </th>
-                        <th>
-                            Envelope Type
-                        </th>
-                        <th>
-                            Template File
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php
-
-
-                        foreach( $entries as $entry ) {
-                    ?>
-
-                        <tr>
-                            <td>
-                                <?php echo $entry['']; ?>
-                            </td>
-                            <td>
-                                <?php echo $entry['']; ?>
-                            </td>
-                            <td>
-                                <?php echo $entry['']; ?>
-                            </td>
-                            <td>
-                                <?php echo $entry['']; ?>
-                            </td>
-                        </tr>
-
-                    <?php } ?>
-                </tbody>
-            </table>
-
-        <?php endif;
-    }
-?>

@@ -286,13 +286,7 @@ class Wp_Print_Preview_Mass_Mailer
         // extract text and template type
         error_log( json_encode($_POST, JSON_PRETTY_PRINT) );
 
-        // if Gravity Forms ID is set this with the WordPress Options API
-        if ( isset( $_POST['gf_id'] ) & ! empty( $_POST['gf_id'] ) ) {
 
-            $gf_id = intval( $_POST['gf_id'] );
-           update_option('wpp_mm_gf_id', $gf_id );
-
-        }
 
         exit;
     }
