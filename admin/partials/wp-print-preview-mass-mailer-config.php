@@ -44,9 +44,65 @@
 </form>
 
 <?php
-    // Check if it exists
-    if ( get_option('wpp_mm_gf_id') ) {
-        $gf_id = get_option( 'wpp_mm_gf_id' );
-        echo do_shortcode( sprintf('[gravityform id="%d" ajax="true"]', $gf_id ) );
+    $gf_id_setting = get_option('wpp_mm_gf_id');
+
+    // Check setting exists
+    if ( $gf_id_setting ) {
+        // render gravity forms shortcode to frontend
+        echo do_shortcode( sprintf('[gravityform id="%d" ajax="true"]', $gf_id_setting ) );
+
+        // retrieve entries
+        $entries = GFAPI::get_entries( $gf_id_setting );
+
+        // if entries exist, render in table
+        error_log( json_encode( $entries, JSON_PRETTY_PRINT ) );
+
+        // if entries exist, display in a table
+        if ( ! empty( $entries ) ) : ?>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>
+                            Entry ID
+                        </th>
+                        <th>
+                            Template Name (Option Name)
+                        </th>
+                        <th>
+                            Envelope Type
+                        </th>
+                        <th>
+                            Template File
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+
+
+                        foreach( $entries as $entry ) {
+                    ?>
+
+                        <tr>
+                            <td>
+                                <?php echo $entry['']; ?>
+                            </td>
+                            <td>
+                                <?php echo $entry['']; ?>
+                            </td>
+                            <td>
+                                <?php echo $entry['']; ?>
+                            </td>
+                            <td>
+                                <?php echo $entry['']; ?>
+                            </td>
+                        </tr>
+
+                    <?php } ?>
+                </tbody>
+            </table>
+
+        <?php endif;
     }
 ?>
