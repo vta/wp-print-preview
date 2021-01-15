@@ -31,7 +31,7 @@
 
             <?php foreach ( GFAPI::get_forms() as $form ) : ?>
 
-                <option value="<?php echo $form['id']; ?> <?php if (get_option('wpp_mm_gf_id') === intval($form['id'])) ?>">
+                <option value="<?php echo $form['id']; ?>" <?php if ( get_option('wpp_mm_gf_id') == $form['id'] ) echo 'selected'; ?>>
                     <?php printf('%s (Form ID: %s)', $form['title'], $form['id']); ?>
                 </option>
 
