@@ -155,16 +155,80 @@ class Wp_Print_Preview_Admin {
         // Error check for missing input fields
         if ( empty( $template_type ) || empty( $template_name ) ) {
             // send back error message & error code (if possible)
+            exit;
         }
 
         // Error check for missing file upload
         if ( empty( $_FILES['tmp_name'] ) ) {
             // send back error message & error code (if possible)
+            exit;
         }
 
-        // store as Custom Post for ease of access & use
+        // Extract from tmp & copy over to wp-content/uploads/wp-print-preview
+
+
+        // format as an array an serialize as JSON
+        $post_content = array
+        (
+            'wpp_mm_template_name' => $template_name,
+            'wpp_mm_template_type' => $template_type,
+            'wpp_mm_template_file' => array
+            (
+                'filepath' => '',
+                'type'     => '',
+                'size'     => '',
+            )
+        );
+
+        /**
+         * store as Custom Post for ease of access & use
+         */
+        $postarr = array(
+            'post_type' => 'wpp_mm_template',
+            'post_content' => json_encode( $post_content )
+        );
+        wp_insert_post( $postarr );
 
         exit;
+    }
+
+
+    private function _upload_mm_template_files($tempfile, $filename)
+    {
+        $upload_dir = wp_upload_dir();
+
+        // Check if base directory exists for uploads/
+        if ( ! empty( $upload_dir['basedir'] ) ) {
+
+            $wpp_dir = $upload_dir['basedir'] . '/wp-print-preview';
+
+            //  create a plugin dir /wp-print-preview if it does not exist
+            if ( ! file_exists( $wpp_dir ) ) {
+                wp_mkdir_p( $wpp_dir );
+            }
+
+            $mm_template_dir = $wpp_dir . '/mm-templates';
+
+            //  create a plugin dir /wp-print-preview/mm-templates if it does not exist
+            if ( ! file_exists( $mm_template_dir ) ) {
+                wp_mkdir_p( $mm_template_dir );
+            }
+
+            $fullpath = $mm_template_dir . '/' . $filename;
+
+            // to avoid overwriting, append 1 to name until $fullpath is unique
+            while ( file_exists( $fullpath ) ) {
+                
+            }
+
+            // absolute filepath to the newly created image i.e. "/var/www/html/wp-content/uploads/mass_mailer/"
+            $filepath = $subdir . '/' . $filename;
+            $image->writeImage( $filepath );
+
+            // return the url pointing to the path above i.e. "https://documentservices.com/wp-content/uploads/mass_mailer/"
+            $url = $upload_dir['baseurl'] . '/' . $uploads_subdir . '/' . $filename;
+            return $url;
+        }
     }
 
     /**
@@ -192,9 +256,9 @@ class Wp_Print_Preview_Admin {
             'publicly_queryable'  => false,
 //            'capability_type'     => 'post',  // not sure yet
             'show_in_rest'        => true,
-        );
+         );
 
-        register_post_type( 'wpp_mass_mailer_template', $args );
+        register_post_type( 'wpp_mm_template', $args );
     }
 
 }
