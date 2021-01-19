@@ -155,7 +155,7 @@ class Wp_Print_Preview {
 	 * Register all of the hooks related to the admin area functionality
 	 * of the plugin.
 	 *
-	 * @since    1.0.0
+	 * @since    2.0.0
 	 * @access   private
 	 */
 	private function define_admin_hooks() {

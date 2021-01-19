@@ -51,6 +51,9 @@ class Wp_Print_Preview_Admin_Mass_Mailer {
             exit;
         }
 
+        // copy tmp file to wp-content/uploads/wp-print-preview/mm-templates/[category]/
+        $this->_upload_mm_template_files(  )
+
         //        // format as an array an serialize as JSON
         //        $post_content = array
         //        (
@@ -81,10 +84,11 @@ class Wp_Print_Preview_Admin_Mass_Mailer {
      *
      * Used to upload
      * @param $tempfile
+     * @param $template_category
      * @param $filename
      * @return string|null
      */
-    private function _upload_mm_template_files( $tempfile, $filename )
+    private function _upload_mm_template_files( $tempfile, $template_category, $filename )
     {
         $upload_dir = wp_upload_dir();
 
@@ -93,32 +97,36 @@ class Wp_Print_Preview_Admin_Mass_Mailer {
 
             $wpp_dir = $upload_dir['basedir'] . '/wp-print-preview';
 
-            //  create a plugin dir /wp-print-preview if it does not exist
+            //  create a plugin dir /wp-print-preview/ if it does not exist
             if ( ! file_exists( $wpp_dir ) ) {
                 wp_mkdir_p( $wpp_dir );
             }
 
             $mm_template_dir = $wpp_dir . '/mm-templates';
 
-            //  create a plugin dir /wp-print-preview/mm-templates if it does not exist
+            //  create a plugin dir /wp-print-preview/mm-templates/ if it does not exist
             if ( ! file_exists( $mm_template_dir ) ) {
                 wp_mkdir_p( $mm_template_dir );
             }
 
-            $fullpath = $mm_template_dir . '/' . $filename;
+            $template_category_dir = $mm_template_dir . '/' . $template_category;
+
+            // create a subdir to organize by template category=
+            if ( ! file_exists( $template_category_dir ) ) {
+                wp_mkdir_p( $template_category_dir );
+            }
+
+            $fullpath = $template_category_dir . '/' . $filename;
 
             // to avoid overwriting, append 1 to name until $fullpath is unique
             while ( file_exists( $fullpath ) ) {
-
+                preg_replace( '/(\.\w+$)/', '${1}1', $fullpath );
             }
 
-            // absolute filepath to the newly created image i.e. "/var/www/html/wp-content/uploads/mass_mailer/"
-            $filepath = $subdir . '/' . $filename;
-            $image->writeImage( $filepath );
+            // copy from tmp to new absolute path
+            copy( $tempfile, $fullpath );
 
-            // return the url pointing to the path above i.e. "https://documentservices.com/wp-content/uploads/mass_mailer/"
-            $url = $upload_dir['baseurl'] . '/' . $uploads_subdir . '/' . $filename;
-            return $url;
+            return $fullpath;
         }
         else {
             return null;
