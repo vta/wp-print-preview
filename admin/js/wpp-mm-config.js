@@ -5,7 +5,7 @@
  *
  * This script handles the UI logic in our WP Print Preview: Mass Mailer subpage.
  */
-const { ajaxUrl, nonce } = mmAdminSettings;
+const { ajaxUrl } = mmAdminSettings;
 
 /**
  * Used to add event listener. Do not allow user to submit form if select element does not have value
@@ -35,14 +35,14 @@ const uploadTemplate = async (e) => {
     const formData  = new FormData(form);
     const fileUpload = fileInput.files[0];
 
-    // no file upload, @todo - err handling w/ message
+    // no file upload, @todo - err handling w/ message in frontend
     if (typeof fileUpload === 'undefined') {
         console.error('No file uploaded!');
         return;
     }
 
     // Note: Must hardcode our custom WP AJAX action to link to WP ajax handler
-    formData.append('action', 'update_mass_mailer_settings');
+    formData.append('action', 'add_mm_template');
 
     // send to custom AJAX to update_mass_mailer_settings hook/handler
     // NOTE: Do not set content-type for FormData type (took a day to figure out...)

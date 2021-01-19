@@ -1,7 +1,4 @@
 <?php
-
-include_once(plugin_dir_path( __DIR__ ) . '/includes/class-wp-print-preview-helper.php');
-
 /**
  * The file that defines the core plugin class
  *
@@ -29,6 +26,9 @@ include_once(plugin_dir_path( __DIR__ ) . '/includes/class-wp-print-preview-help
  * @subpackage Wp_Print_Preview/includes
  * @author     James Pham <jamespham93@yahoo.com>
  */
+
+require_once plugin_dir_path( __DIR__ ) . '/admin/class-wp-print-preview-admin-mm.php';
+
 class Wp_Print_Preview {
 
 	/**
@@ -160,17 +160,24 @@ class Wp_Print_Preview {
 	 */
 	private function define_admin_hooks() {
 
-		$plugin_admin = new Wp_Print_Preview_Admin( $this->get_plugin_name(), $this->get_version() );
+		$plugin_admin       = new Wp_Print_Preview_Admin( $this->get_plugin_name(), $this->get_version() );
+        $plugin_admin_mm    = new Wp_Print_Preview_Admin_Mass_Mailer();
 
+        /**
+         * Main Admin Hooks
+         */
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
 		$this->loader->add_action('admin_menu', $plugin_admin, 'create_admin_menu');
 
+        /**
+         * Mass Mailer Subpage & Related hooks
+         */
         // custom AJAX hooks to handle settings UPDATE (excluding _nopriv_ only allows authenticated users)
-        $this->loader->add_action( 'wp_ajax_update_mass_mailer_settings',  $plugin_admin, 'update_mass_mailer_settings' );
+        $this->loader->add_action( 'wp_ajax_add_mm_template', $plugin_admin_mm, 'add_mass_mailer_template' );
 
         // create custom post type to store Mass Mailer Template information
-        $this->loader->add_action( 'init', $plugin_admin, 'init_mm_template_post_types' );
+        $this->loader->add_action( 'init', $plugin_admin_mm, 'init_mm_template_post_types' );
 
 	}
 	/**
