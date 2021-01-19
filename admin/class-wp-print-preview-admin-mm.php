@@ -31,6 +31,9 @@ class Wp_Print_Preview_Admin_Mass_Mailer {
      */
     public function add_mass_mailer_template()
     {
+        /**
+         * EXTRACT RAW FORM DATA
+         */
         // extract text and template type
         error_log( json_encode($_POST, JSON_PRETTY_PRINT) );
         error_log( json_encode($_FILES, JSON_PRETTY_PRINT) );
@@ -51,31 +54,44 @@ class Wp_Print_Preview_Admin_Mass_Mailer {
             exit;
         }
 
+        // extract RAW file upload info
+        $uploaded_file_tmp  = $_FILES['wpp_mm_template_upload']['tmp_name'];
+        $uploaded_file_name = $_FILES['wpp_mm_template_upload']['name'];
+        $uploaded_file_size = $_FILES['wpp_mm_template_upload']['size'];
+        $uploaded_file_type = $_FILES['wpp_mm_template_upload']['type'];
+
         // copy tmp file to wp-content/uploads/wp-print-preview/mm-templates/[category]/
-        $this->_upload_mm_template_files(  )
+        $file = $this->_upload_mm_template_files( $uploaded_file_tmp, $template_type, $uploaded_file_name );
 
-        //        // format as an array an serialize as JSON
-        //        $post_content = array
-        //        (
-        //            'wpp_mm_template_name' => $template_name,
-        //            'wpp_mm_template_type' => $template_type,
-        //            'wpp_mm_template_file' => array
-        //            (
-        //                'filepath' => '',
-        //                'type'     => '',
-        //                'size'     => '',
-        //            )
-        //        );
-        //
-        //        /**
-        //         * store as Custom Post for ease of access & use
-        //         */
-        //        $postarr = array(
-        //            'post_type' => 'wpp_mm_template',
-        //            'post_content' => json_encode( $post_content )
-        //        );
-        //        wp_insert_post( $postarr );
+        // Error check for unsuccessful file write
+        if ( empty( $file ) ) {
+            // send back error message & error code (if possible)
+            exit;
+        }
 
+        /**
+         * STORE AS CUSTOM POST TYPE FOR USE FOR OTHER PARTS OF THIS PLUGIN
+         */
+        // format as an array an serialize as JSON
+        $post_content = json_encode(
+            array (
+                'wpp_mm_template_name' => $template_name,
+                'wpp_mm_template_type' => $template_type,
+                'wpp_mm_template_file' => array (
+
+                    'filepath' => $file,
+                    'type'     => $uploaded_file_type,
+                    'size'     => $uploaded_file_size,
+
+                )
+            )
+        );
+        $postarr = array(
+            'post_type'    => 'wpp_mm_template',
+            'post_content' => $post_content
+        );
+        wp_insert_post( $postarr );
+        
         exit;
     }
 
@@ -120,7 +136,7 @@ class Wp_Print_Preview_Admin_Mass_Mailer {
 
             // to avoid overwriting, append 1 to name until $fullpath is unique
             while ( file_exists( $fullpath ) ) {
-                preg_replace( '/(\.\w+$)/', '${1}1', $fullpath );
+                $fullpath = preg_replace( '/(\.\w+$)/', '${1}1', $fullpath );
             }
 
             // copy from tmp to new absolute path
