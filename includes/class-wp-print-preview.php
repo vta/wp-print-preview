@@ -173,8 +173,11 @@ class Wp_Print_Preview {
         /**
          * Mass Mailer Subpage & Related hooks
          */
-        // custom AJAX hooks to handle settings UPDATE (excluding _nopriv_ only allows authenticated users)
+        // custom AJAX hooks to handle settings CREATING new Mass Mailer Templates (excluding _nopriv_ only allows authenticated users)
         $this->loader->add_action( 'wp_ajax_add_mm_template', $plugin_admin_mm, 'add_mass_mailer_template' );
+
+        // custom AJAX hooks to handle settings UPDATE (excluding _nopriv_ only allows authenticated users)
+//        $this->loader->add_action( 'wp_ajax_delete_mm_template', $plugin_admin_mm, 'delete_mass_mailer_template' );
 
         // create custom post type to store Mass Mailer Template information
         $this->loader->add_action( 'init', $plugin_admin_mm, 'init_mm_template_post_types' );

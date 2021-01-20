@@ -20,12 +20,42 @@
  */
 
 class Wp_Print_Preview_Admin_Mass_Mailer {
+    /**
+     * Mass Mailer Template Custom Post Type
+     *
+     * Used in the main class-wp-print-preview.php
+     *
+     * Establishes data structure for storing Mass Mailer Templates in our database. Leverages WordPress
+     * Custom Post Types API. These template records are created in our "Mass Mailer" admin submenu page and
+     * are used displayed as a custom Gravity Forms field.
+     */
+    public function init_mm_template_post_types()
+    {
+        $args = array(
+            // For full range of label controls, see TemplatesDownloadWidget.php for more information
+            'labels'              => 'Mass Mailer Template',
+            'description'         => 'Mass mailer templates used to create preview and images for Document Services\' mass mailing service.',
+            'public'              => false, // May have to change later if GF cannot render for customers
+            'hierarchical'        => false,
+            'show_ui'             => false,
+            'show_in_menu'        => false,
+            'show_in_nav_menus'   => false,
+            'show_in_admin_bar'   => false,
+            'can_export'          => true,
+            'has_archive'         => true,
+            'exclude_from_search' => true,
+            'publicly_queryable'  => false,
+//            'capability_type'     => 'post',  // not sure yet
+            'show_in_rest'        => true,
+        );
+
+        register_post_type( 'wpp_mm_template', $args );
+    }
 
     /**
-     * Add Mass Mailer Template (AJAX handler)
+     * CREATE Mass Mailer Template (AJAX handler)
      *
-     * Takes form data from custom AJAX call and converts data into return envelope preview.
-     * Pass form data to "return_envelope_template"
+     * Creates a new wp_post record that stores Mass Mailer templates.
      * @TODO - add exception handling. And perhaps move this into a separate admin class in the future.
      * @since 2.0.0
      */
@@ -100,6 +130,20 @@ class Wp_Print_Preview_Admin_Mass_Mailer {
     }
 
     /**
+     * REMOVES Mass Mailer Template (AJAX handler)
+     *
+     * Deletes an existing wp_post record that stores Mass Mailer templates.
+     * @TODO - add exception handling. And perhaps move this into a separate admin class in the future.
+     * @since 2.0.0
+     */
+    public function delete_mass_mailer_template()
+    {
+        error_log( json_encode( $_POST, JSON_PRETTY_PRINT ) );
+        error_log( $_SERVER['REQUEST_METHOD'] );
+        exit;
+    }
+
+    /**
      * Upload Mass Mailer Template Files
      *
      * Used to upload
@@ -151,38 +195,6 @@ class Wp_Print_Preview_Admin_Mass_Mailer {
         else {
             return null;
         }
-    }
-
-    /**
-     * Mass Mailer Template Custom Post Type
-     *
-     * Used in the main class-wp-print-preview.php
-     *
-     * Establishes data structure for storing Mass Mailer Templates in our database. Leverages WordPress
-     * Custom Post Types API. These template records are created in our "Mass Mailer" admin submenu page and
-     * are used displayed as a custom Gravity Forms field.
-     */
-    public function init_mm_template_post_types()
-    {
-        $args = array(
-            // For full range of label controls, see TemplatesDownloadWidget.php for more information
-            'labels'              => 'Mass Mailer Template',
-            'description'         => 'Mass mailer templates used to create preview and images for Document Services\' mass mailing service.',
-            'public'              => false, // May have to change later if GF cannot render for customers
-            'hierarchical'        => false,
-            'show_ui'             => false,
-            'show_in_menu'        => false,
-            'show_in_nav_menus'   => false,
-            'show_in_admin_bar'   => false,
-            'can_export'          => true,
-            'has_archive'         => true,
-            'exclude_from_search' => true,
-            'publicly_queryable'  => false,
-//            'capability_type'     => 'post',  // not sure yet
-            'show_in_rest'        => true,
-        );
-
-        register_post_type( 'wpp_mm_template', $args );
     }
 
 }

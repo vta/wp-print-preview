@@ -55,8 +55,12 @@
 <script crossorigin src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
 <script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
 
+<!-- Experimental React Integration -->
 <script type="text/babel">
 
+    /**
+     * Array directly from DB
+     */
     const massMailerRecords = <?php echo json_encode(
         get_posts(
             array(
@@ -67,28 +71,6 @@
     ); ?>
 
     /**
-     * Table rows for each uploaded Mass Mailer template
-     */
-    const mmTableRows = massMailerRecords.map(({ post_content }, i) => {
-
-        // @todo - Maybe redo the way records are stored
-        // all records are stored in JSON format. Extract via destructure
-        const { wpp_mm_template_name, wpp_mm_template_type, wpp_mm_template_file } = JSON.parse(post_content);
-
-        // extract file object
-        const { filename, filepath } = wpp_mm_template_file;
-        console.log(filepath);
-
-        return(
-            <tr key={i}>
-                <td>{ wpp_mm_template_name }</td>
-                <td>{ wpp_mm_template_type }</td>
-                <td><a href={ filepath } download>{ filename }</a></td>
-            </tr>
-        );
-    });
-
-    /**
      * MassMailerTable
      *
      * Renders main Mass Mailer table
@@ -96,6 +78,53 @@
      * @constructor
      */
     const MassMailerTable = () => {
+
+        // METHODS
+        /**
+         * Deletes custom post w/ ID
+         */
+        const deleteRow = async (postId) => {
+
+            const deleleteConfirm = confirm('Are you sure you want to delete this template?');
+
+            if (deleleteConfirm) {
+                const payload = JSON.stringify({ postId });
+                const res = await fetch(`<?php echo admin_url( 'admin-ajax.php' ) ?>`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: payload
+                });
+            }
+
+        }
+
+        // RENDERS
+        /**
+         * Table rows for each uploaded Mass Mailer template
+         */
+        const mmTableRows = massMailerRecords.map(({ post_content, ID }, i) => {
+
+            // @todo - Maybe redo the way records are stored
+            // all records are stored in JSON format. Extract via destructure
+            const { wpp_mm_template_name, wpp_mm_template_type, wpp_mm_template_file } = JSON.parse(post_content);
+
+            // extract file object
+            const { filename, filepath } = wpp_mm_template_file;
+
+            return(
+                <tr key={i}>
+                    <td>{ wpp_mm_template_name }</td>
+                    <td>{ wpp_mm_template_type }</td>
+                    <td><a href={ filepath } download>{ filename }</a></td>
+                    <td>
+                        <button onClick={() => deleteRow(ID)}>Delete</button>
+                    </td>
+                </tr>
+            );
+        });
+
         return(
             <div>
                 {
