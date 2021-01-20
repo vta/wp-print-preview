@@ -69,6 +69,9 @@ class Wp_Print_Preview_Admin_Mass_Mailer {
             exit;
         }
 
+        // trim absolute path to WP root before storing
+        $wp_file = preg_replace( '/.*(\/wp-content\/.*)/','${1}', $file );
+
         /**
          * STORE AS CUSTOM POST TYPE FOR USE FOR OTHER PARTS OF THIS PLUGIN
          */
@@ -79,7 +82,8 @@ class Wp_Print_Preview_Admin_Mass_Mailer {
                 'wpp_mm_template_type' => $template_type,
                 'wpp_mm_template_file' => array (
 
-                    'filepath' => $file,
+                    'filename' => $uploaded_file_name,
+                    'filepath' => $wp_file,
                     'type'     => $uploaded_file_type,
                     'size'     => $uploaded_file_size,
 
@@ -91,7 +95,7 @@ class Wp_Print_Preview_Admin_Mass_Mailer {
             'post_content' => $post_content
         );
         wp_insert_post( $postarr );
-        
+
         exit;
     }
 

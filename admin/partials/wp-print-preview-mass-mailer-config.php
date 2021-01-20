@@ -4,16 +4,20 @@
  *
  * This file is used to markup the admin-facing aspects of the plugin.
  *
+ * NOTE: Experimental ReactJS is used for frontend development for this page. We can always revert, but this is for agile
+ * development proof-of-concept.
+ *
  * @link       https://jamespham.io
  * @since      2.0.0
- *
  * @package    Wp_Print_Print
  * @subpackage Wp_Print_Print/admin/partials
- * @updated
+ * @updated 1/20/2021
  */
 ?>
 <h1 class="wpp-mm-heading">Mass Mailer Settings</h1>
 
+<!--TODO - Create a tab, accordion, or separate into an action btn/link to this form -->
+<!--TODO - Create AJAX loading animation to inform user of loading process -->
 <form id="wpp-template-form" enctype="multipart/form-data" method="POST" onsubmit="uploadTemplate(event)">
 
     <fieldset>
@@ -44,3 +48,87 @@
     <?php submit_button(); ?>
 
 </form>
+
+<div id="mm-template-table"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.min.js" integrity="sha512-kp7YHLxuJDJcOzStgd6vtpxr4ZU9kjn77e6dBsivSz+pUuAuMlE2UTdKB7jjsWT84qbS8kdCWHPETnP/ctrFsA==" crossorigin="anonymous"></script>
+<script crossorigin src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
+
+<script type="text/babel">
+
+    const massMailerRecords = <?php echo json_encode(
+        get_posts(
+            array(
+                'post_type' => 'wpp_mm_template',
+                'post_status' => array( 'draft ')
+            )
+        )
+    ); ?>
+
+    /**
+     * Table rows for each uploaded Mass Mailer template
+     */
+    const mmTableRows = massMailerRecords.map(({ post_content }, i) => {
+
+        // @todo - Maybe redo the way records are stored
+        // all records are stored in JSON format. Extract via destructure
+        const { wpp_mm_template_name, wpp_mm_template_type, wpp_mm_template_file } = JSON.parse(post_content);
+
+        // extract file object
+        const { filename, filepath } = wpp_mm_template_file;
+        console.log(filepath);
+
+        return(
+            <tr key={i}>
+                <td>{ wpp_mm_template_name }</td>
+                <td>{ wpp_mm_template_type }</td>
+                <td><a href={ filepath } download>{ filename }</a></td>
+            </tr>
+        );
+    });
+
+    /**
+     * MassMailerTable
+     *
+     * Renders main Mass Mailer table
+     * @return {JSX.Element}
+     * @constructor
+     */
+    const MassMailerTable = () => {
+        return(
+            <div>
+                {
+                    massMailerRecords.length
+                    ?
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>
+                                        Template Name
+                                    </th>
+                                    <th>
+                                        Template Category
+                                    </th>
+                                    <th>
+                                        File
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            { mmTableRows }
+                            </tbody>
+                        </table>
+                    :
+                        <h2>No templates saved yet.</h2>
+                }
+            </div>
+        );
+    }
+
+    ReactDOM.render(
+        <MassMailerTable />,
+        document.getElementById('mm-template-table')
+    );
+
+</script>
