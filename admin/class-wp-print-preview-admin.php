@@ -1,5 +1,4 @@
 <?php
-
 /**
  * The admin-specific functionality of the plugin.
  *
@@ -67,11 +66,6 @@ class Wp_Print_Preview_Admin {
 
         include_once 'PrintPreviewAdminView.php';
 
-    }
-
-    function ballot_page_init() {
-
-        include_once 'PrintPreviewBallotAdminView.php';
     }
 
     /**
