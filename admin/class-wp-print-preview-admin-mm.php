@@ -46,7 +46,7 @@ class Wp_Print_Preview_Admin_Mass_Mailer {
             'exclude_from_search' => true,
             'publicly_queryable'  => false,
 //            'capability_type'     => 'post',  // not sure yet
-            'show_in_rest'        => true,
+            'show_in_rest'        => false,
         );
 
         register_post_type( 'wpp_mm_template', $args );
@@ -138,8 +138,32 @@ class Wp_Print_Preview_Admin_Mass_Mailer {
      */
     public function delete_mass_mailer_template()
     {
-        error_log( json_encode( $_POST, JSON_PRETTY_PRINT ) );
-        error_log( $_SERVER['REQUEST_METHOD'] );
+        // check if request passed post_id in payload
+        if ( ! isset( $_POST['post_id'] ) || empty ( $_POST['post_id'] ) ) {
+            // return HTTP error for missing payload
+            $err_msg = 'WP Print Preview: DELETE - Mass Mailer Template is missing a post ID.';
+            error_log( $err_msg );
+            exit;
+        }
+
+        $post_id = $_POST['post_id'];
+
+        // check if post_id existed
+            if ( ! get_post( $post_id ) ) {
+            // return HTTP error if post id doesn't exist...
+            $err_msg = sprintf( 'WP Print Preview: DELETE - Mass Mailer template post ID %d does not exist.', $post_id );
+            error_log( $err_msg );
+            exit;
+        }
+
+        $res = wp_delete_post( $post_id, $force_delete = true );
+
+        // check if deletion failed
+        if ( ! $res ) {
+            $err_msg = sprintf( 'WP Print Preview: DELETE - There was an error deleting the Mass Mailer template.');
+            error_log( $err_msg );
+        }
+
         exit;
     }
 

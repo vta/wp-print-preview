@@ -55,6 +55,13 @@
 <script crossorigin src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
 <script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
 
+<?php
+array(
+    'root' => esc_url_raw( rest_url() ),
+    'nonce' => wp_create_nonce( 'wp_rest' )
+);
+?>
+
 <!-- Experimental React Integration -->
 <script type="text/babel">
 
@@ -69,6 +76,15 @@
             )
         )
     ); ?>
+
+    /**
+     * REST API endpoint
+     */
+    const url = '<?php echo admin_url( 'admin-ajax.php' ); ?>';
+
+    /**
+     * NONCE
+     */
 
     /**
      * MassMailerTable
@@ -88,14 +104,18 @@
             const deleleteConfirm = confirm('Are you sure you want to delete this template?');
 
             if (deleleteConfirm) {
-                const payload = JSON.stringify({ postId });
-                const res = await fetch(`<?php echo admin_url( 'admin-ajax.php' ) ?>`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: payload
-                });
+
+                const formData = new FormData();
+                formData.append('action', 'delete_mm_template');
+                formData.append('post_id', postId);
+
+                const res = await fetch(`${url}`, {
+                    method: 'POST', // MUST MUST POST FOR PUT/DELETE METHOD TYPES
+                    body: formData
+                })
+                    .then(res => {
+                        console.log(res);
+                    });
             }
 
         }
