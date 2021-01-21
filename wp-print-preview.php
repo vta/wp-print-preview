@@ -85,12 +85,6 @@ function run_wp_print_preview()
 
 }
 
-// SOLUTION TO PREVIEW PAGE: (CONFIRMATION STORES ENTRY EVEN IF USER DID NOT CONFIRM)
-// 1. STORE ENTRY INFORMATION IN LOCAL VARIABLE
-// 2. IMMEDIATELY DELETE ENTRY FROM ENTRIES
-// 3. PROCESS LOCAL VARIABLE INTO A PREVIEW
-// 4. PROVIDE BUTTONS TO ROUTE BACK TO PREVIOUS FORM, CANCEL TO GO HOME, SUBMIT
-// RETURN "<html>". DO NOT ECHO
 // @see https://wordpress.stackexchange.com/questions/140466/custom-shortcode-being-executed-when-saving-page-in-wp-admin
 // USING SHORTCODE W/ WPPB TUTORIAL: https://github.com/JoeSz/WordPress-Plugin-Boilerplate-Tutorial/blob/master/plugin-name/tutorials/register_a_shortcode_in_plugin.php
 

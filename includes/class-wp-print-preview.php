@@ -130,6 +130,11 @@ class Wp_Print_Preview {
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-wp-print-preview-public.php';
 
+        /**
+         * Require Gravity Forms's Custom Classes
+         */
+        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'gravityforms/class-wp-print-preview-mm-field.php';
+
 		$this->loader = new Wp_Print_Preview_Loader();
 
 	}
