@@ -3,6 +3,7 @@
 class Wp_Print_Preview_Helper
 {
     /**
+     * Connected to WC hook callback "bc_entry_id_text_to_order_items()"
      * @param $entry - Gravity Forms entry object
      * @param $create25up - flag to indicate to create 25-up PDF (not required in preview)
      * @return string
@@ -202,7 +203,7 @@ class Wp_Print_Preview_Helper
 
         // Account for special characters when generating the filename
         $entry_filename = str_replace(
-            [' ', ',', '?', '/', '"', '\'', '(', ')', '[', ']', '{', '}', '!', '&', '#', '@', '$', '%', '*', '|', '^', '\\'],
+            [' ', ',', '?', '/', '"', '\'', '(', ')', '[', ']', '{', '}', '!', '&', '#', '@', '$', '%', '*', '|', '^', '\\', '.'],
             '_',
             'bizcard_' . $first_name . '_' . $last_name . '_entry_' . $entry['id']
         );
