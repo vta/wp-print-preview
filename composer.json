@@ -15,5 +15,8 @@
             "email": "bijanmmarkes@gmail.com"
         }
     ],
+    "config": {
+        "allow-plugins": false
+    },
     "minimum-stability": "stable"
 }
