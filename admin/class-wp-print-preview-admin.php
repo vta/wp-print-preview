@@ -51,15 +51,27 @@ class Wp_Print_Preview_Admin {
         $this->plugin_name = $plugin_name;
         $this->version     = $version;
 
-        add_action('admin_menu', [$this, 'register_menu']);
+        add_action('admin_menu', [ $this, 'register_menu' ]);
     }
 
+    /**
+     * Registers plugin menu in admin dashboard
+     * @return void
+     */
     public function register_menu() {
-
+        add_menu_page(
+            'main-menu',
+            'Print Preview',
+            'manage_options',
+            'vta-print',
+            [ $this, 'render_main_menu' ],
+            'dashicons-printer',
+            25
+        );
     }
 
     public function render_main_menu() {
-
+        include_once(__DIR__ . '/views/main-menu.php');
     }
 
     public function render_help_page() {

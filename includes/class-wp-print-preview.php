@@ -74,7 +74,7 @@ class Wp_Print_Preview {
 		} else {
 			$this->version = '1.0.0';
 		}
-		$this->plugin_name = 'wp-print-preview';
+		$this->plugin_name = 'vta-print-preview';
 
 		$this->load_dependencies();
 		$this->set_locale();
