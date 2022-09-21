@@ -31,10 +31,13 @@ if ( !defined('WPINC') ) {
 }
 
 // CONSTANTS //
-const SAVE_IMG_AJAX          = 'save_vta_img';
-const FILEROBOT_JS_CDN       = 'https://scaleflex.cloudimg.io/v7/plugins/filerobot-image-editor/latest/filerobot-image-editor.min.js';
-const VTA_IMAGE_TEMPLATE_CPT = 'vta_image_template';
-const WP_PRINT_SETTINGS_PAGE = 'vta-print';
+const SAVE_IMG_AJAX              = 'save_vta_img';
+const FILEROBOT_JS_CDN           = 'https://scaleflex.cloudimg.io/v7/plugins/filerobot-image-editor/latest/filerobot-image-editor.min.js';
+const WP_PRINT_SETTINGS_PAGE     = 'vta-print';
+const VTA_IMAGE_TEMPLATE_CPT     = 'vta_image_template';
+const VTA_IMAGE_PATH_META        = 'vta_image_path';
+const VTA_IMAGE_ANNOTATIONS_META = 'vta_image_annotations';
+const VTA_IMAGE_META             = 'vta_image_meta';
 
 // IMPORTS //
 require_once('models/VTAImageTemplate.php');
