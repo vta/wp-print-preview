@@ -2,6 +2,8 @@
 
 class VTAImageTemplates {
 
+    private VTAImageProcessor $image_processor;
+
     private string $plugin_name;
     private string $version;
 
@@ -16,6 +18,8 @@ class VTAImageTemplates {
     ) {
         $this->plugin_name = $plugin_name;
         $this->version     = $version;
+
+        $this->image_processor = new VTAImageProcessor();
 
         if ( is_admin() ) {
             add_action("wp_ajax_{$this->save_img_ajax}", [ $this, 'save_img' ]);

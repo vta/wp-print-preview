@@ -10,6 +10,9 @@ const { TABS, TOOLS } = FilerobotImageEditor;
 const config = {
     source: 'https://scaleflex.airstore.io/demo/stephen-walker-unsplash.jpg',
     onSave: async (editedImageObject, designState) => {
+        console.log('designState', designState);
+        console.log('editedImageObject', editedImageObject);
+
         const formData = new FormData();
         formData.append('action', action);
         formData.append('example', 123);

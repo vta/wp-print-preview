@@ -36,6 +36,7 @@ const FILEROBOT_JS_CDN = 'https://scaleflex.cloudimg.io/v7/plugins/filerobot-ima
 
 // IMPORTS //
 require_once('classes/VTAImageTemplates.php');
+require_once('classes/VTAImageProcessor.php');
 
 /**
  * Currently plugin version.
