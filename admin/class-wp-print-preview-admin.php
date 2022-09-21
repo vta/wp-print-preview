@@ -22,27 +22,12 @@
  */
 class Wp_Print_Preview_Admin {
 
-    /**
-     * The ID of this plugin.
-     *
-     * @since    1.0.0
-     * @access   private
-     * @var      string $plugin_name The ID of this plugin.
-     */
-    private string $plugin_name;
-
-    /**
-     * The version of this plugin.
-     *
-     * @since    1.0.0
-     * @access   private
-     * @var      string $version The current version of this plugin.
-     */
-    private string $version;
+    private string            $plugin_name;
+    private string            $version;
+    private VTAImageTemplates $vta_image_templates;
 
     /**
      * Initialize the class and set its properties.
-     *
      * @param string $plugin_name The name of this plugin.
      * @param string $version The version of this plugin.
      * @since 1.0.0
@@ -50,6 +35,8 @@ class Wp_Print_Preview_Admin {
     public function __construct( string $plugin_name, string $version ) {
         $this->plugin_name = $plugin_name;
         $this->version     = $version;
+
+        $this->vta_image_templates = new VTAImageTemplates($plugin_name, $version);
 
         add_action('admin_menu', [ $this, 'register_menu' ]);
     }

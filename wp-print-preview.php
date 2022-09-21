@@ -13,7 +13,7 @@
  * @package           Wp_Print_Preview
  *
  * @wordpress-plugin
- * Plugin Name:       WP Print Preview
+ * Plugin Name:       VTA Print Preview
  * Plugin URI:        https://github.com/vta/wp-print-preview
  * Description:       A WordPress print preview plugin to preview and output PNG file of a business card.
  * Version:           1.1.0
@@ -30,12 +30,19 @@ if ( !defined('WPINC') ) {
     die;
 }
 
+// CONSTANTS //
+const SAVE_IMG_AJAX    = 'save_vta_img';
+const FILEROBOT_JS_CDN = 'https://scaleflex.cloudimg.io/v7/plugins/filerobot-image-editor/latest/filerobot-image-editor.min.js';
+
+// IMPORTS //
+require_once('classes/VTAImageTemplates.php');
+
 /**
  * Currently plugin version.
  * Start at version 1.0.0 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define('WP_PRINT_PREVIEW_VERSION', '1.0.0');
+define('WP_PRINT_PREVIEW_VERSION', '1.1.0');
 
 /**
  * The code that runs during plugin activation.
