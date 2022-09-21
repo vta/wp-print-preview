@@ -50,7 +50,7 @@ class Wp_Print_Preview_Admin {
             'Print Preview Settings',
             'Print Preview',
             'manage_options',
-            'vta-print',
+            WP_PRINT_SETTINGS_PAGE,
             [ $this, 'render_main_menu' ],
             'dashicons-printer',
             25
