@@ -29,10 +29,11 @@
 if ( !defined('WPINC') ) {
     die;
 }
-
 // CONSTANTS //
+// Dependencies
 const SAVE_IMG_AJAX              = 'save_vta_img';
 const FILEROBOT_JS_CDN           = 'https://scaleflex.cloudimg.io/v7/plugins/filerobot-image-editor/latest/filerobot-image-editor.min.js';
+// Custom Post Type
 const WP_PRINT_SETTINGS_PAGE     = 'vta-print';
 const VTA_IMAGE_TEMPLATE_CPT     = 'vta_image_template';
 const VTA_IMAGE_PATH_META        = 'vta_image_path';
@@ -40,7 +41,11 @@ const VTA_IMAGE_ANNOTATIONS_META = 'vta_image_annotations';
 const VTA_IMAGE_META             = 'vta_image_meta';
 
 // IMPORTS //
+// Utils
+require_once('utils/common.php');
+// Models
 require_once('models/VTAImageTemplate.php');
+// Core classes
 require_once('classes/VTAImageTemplates.php');
 require_once('classes/VTAImageProcessor.php');
 

@@ -31,6 +31,9 @@ class VTAImageTemplates {
         // Register CPT
         add_action('init', [ $this, 'register_vta_image_templates' ]);
         add_filter('parent_file', [ $this, 'edit_image_highlight' ]);
+
+        // Custom Post Page / List Table
+        add_action('admin_init', [ $this, 'custom_edit_post' ]);
     }
 
     public function enqueue_scripts(): void {
@@ -134,11 +137,57 @@ class VTAImageTemplates {
         return $file;
     }
 
+    // NEW/EDIT POST //
+
+    /**
+     * Customizes New/Edit post page.
+     * @return void
+     */
+    public function custom_edit_post() {
+        if ( $this->is_post_page() ) {
+            $this->replace_title_placeholder();
+            $this->default_content();
+        }
+    }
+
     /**
      * "save_vta_img" POST Ajax handler. Saves image information & stores image file as PNG
      * @return void
      */
     public function save_img(): void {
         error_log('saving img...');
+    }
+
+    // PRIVATE METHODS //
+
+    /**
+     * Replaces "Add Title" with "Image Template Name"
+     * @return void
+     */
+    private function replace_title_placeholder(): void {
+        add_filter('enter_title_here', fn() => 'Image Template Name');
+    }
+
+    /**
+     * Inserts default description if there is none
+     * @return void
+     */
+    private function default_content(): void {
+        add_filter('default_content', function ( $content ) {
+            return !empty($content) ? $content : 'Image Template description here...';
+        });
+    }
+
+    /**
+     * Determines if current page is New/Edit page for current post
+     * @return bool
+     */
+    private function is_post_page(): bool {
+        [ 'path' => $path, 'query_params' => $query_params ] = get_query_params();
+        return preg_match("/(post-new|post)/", $path,) && in_array($this->post_type, $query_params);
+    }
+
+    private function is_list_table_page(): void {
+
     }
 }
