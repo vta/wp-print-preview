@@ -60,7 +60,7 @@ class Wp_Print_Preview_Admin {
      */
     public function register_menu() {
         add_menu_page(
-            'main-menu',
+            'Print Preview Settings',
             'Print Preview',
             'manage_options',
             'vta-print',
