@@ -99,26 +99,6 @@ class VTAImageTemplates {
                 'has_archive'  => true,
             ]
         );
-
-        // add as a sub-page menu under plugins menu
-        add_submenu_page(
-            WP_PRINT_SETTINGS_PAGE,
-            'VTA Image Templates',
-            'VTA Images',
-            'manage_options',
-            "edit.php?post_type={$this->post_type}",
-            false
-        );
-
-        // new VTA Image Template page
-        add_submenu_page(
-            WP_PRINT_SETTINGS_PAGE,
-            'New VTA Holiday',
-            'New VTA Holiday',
-            'manage_options',
-            "post-new.php?post_type={$this->post_type}",
-            false
-        );
     }
 
     /**

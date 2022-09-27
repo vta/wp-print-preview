@@ -41,11 +41,13 @@ class Wp_Print_Preview_Admin {
         add_action('admin_menu', [ $this, 'register_menu' ]);
     }
 
+    // MENU FUNCTIONS //
+
     /**
      * Registers plugin menu in admin dashboard
      * @return void
      */
-    public function register_menu() {
+    public function register_menu(): void {
         add_menu_page(
             'Print Preview Settings',
             'Print Preview',
@@ -55,9 +57,52 @@ class Wp_Print_Preview_Admin {
             'dashicons-printer',
             25
         );
+
+        $post_type = VTA_IMAGE_TEMPLATE_CPT;
+
+        // add as a sub-page menu under plugins menu
+        add_submenu_page(
+            WP_PRINT_SETTINGS_PAGE,
+            'VTA Image Templates',
+            'VTA Images',
+            'manage_options',
+            "edit.php?post_type=$post_type",
+           false
+        );
+
+        // new VTA Image Template page
+        add_submenu_page(
+            WP_PRINT_SETTINGS_PAGE,
+            'New VTA Holiday',
+            'New VTA Holiday',
+            'manage_options',
+            "post-new.php?post_type=$post_type",
+            false
+        );
     }
 
-    public function render_main_menu() {
+//    /**
+//     * Highlights the main menu
+//     * @param string $file
+//     * @return string
+//     */
+//    public function highlight_main_menu( string $file ): string {
+//        global $plugin_page;
+//
+//        $post_type = POST_TYPE;
+//        if ( preg_match("/$post_type/", $file) ) {
+//            $plugin_page = WP_PRINT_SETTINGS_PAGE;
+//        }
+//        return $file;
+//    }
+
+    // RENDER FUNCTIONS //
+
+    /**
+     * Renders menu page
+     * @return void
+     */
+    public function render_main_menu(): void {
         include_once(__DIR__ . '/views/main-menu.php');
     }
 
