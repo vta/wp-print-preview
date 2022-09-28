@@ -23,43 +23,41 @@ class VTAImageTemplates {
 
         $this->image_processor = new VTAImageProcessor();
 
+        // Register CPT
+        add_action('init', [ $this, 'register_vta_image_templates' ]);
+
+        // should only run in admin dashboard
         if ( is_admin() ) {
             add_action("wp_ajax_{$this->save_img_ajax}", [ $this, 'save_img' ]);
             add_action('admin_enqueue_scripts', [ $this, 'enqueue_scripts' ]);
+            add_filter('parent_file', [ $this, 'edit_image_highlight' ]);
+
+            // Custom Post Page / List Table
+            add_action('admin_init', [ $this, 'custom_edit_post' ]);
         }
-
-        // Register CPT
-        add_action('init', [ $this, 'register_vta_image_templates' ]);
-        add_filter('parent_file', [ $this, 'edit_image_highlight' ]);
-
-        // Custom Post Page / List Table
-        add_action('admin_init', [ $this, 'custom_edit_post' ]);
     }
 
+    /**
+     * Enqueues script for appropriate pages.
+     * @return void
+     */
     public function enqueue_scripts(): void {
-//        wp_enqueue_script(
-//            $this->file_robot_js,
-//            FILEROBOT_JS_CDN,
-//            [],
-//            '4.3.7'
-//        );
-//
-//        wp_enqueue_script(
-//            $this->file_editor_js,
-//            plugin_dir_url(__DIR__) . '/admin/js/image-editor.js',
-//            [ $this->file_robot_js ],
-//            $this->version,
-//            true
-//        );
-//
-//        wp_localize_script(
-//            $this->file_editor_js,
-//            $this->file_editor_obj,
-//            [
-//                'ajaxUrl' => admin_url('admin-ajax.php'),
-//                'action'  => $this->save_img_ajax
-//            ]
-//        );
+        // New/Edit post page
+        if ( $this->is_post_page() ) {
+            wp_enqueue_style(
+                "{$this->plugin_name}_post_css",
+                plugin_dir_url(__DIR__) . '/admin/css/post.css',
+                [],
+                $this->version
+            );
+            wp_enqueue_script(
+                "{$this->plugin_name}_post_js",
+                plugin_dir_url(__DIR__) . '/admin/js/post.js',
+                [ 'jquery' ],
+                $this->version,
+                true
+            );
+        }
     }
 
     // VTA IMAGE TEMPLATE CPT //
