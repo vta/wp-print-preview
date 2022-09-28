@@ -32,7 +32,6 @@ if ( !defined('WPINC') ) {
 // CONSTANTS //
 // Dependencies
 const SAVE_IMG_AJAX              = 'save_vta_img';
-const FILEROBOT_JS_CDN           = 'https://scaleflex.cloudimg.io/v7/plugins/filerobot-image-editor/latest/filerobot-image-editor.min.js';
 // Custom Post Type
 const WP_PRINT_SETTINGS_PAGE     = 'vta-print';
 const VTA_IMAGE_TEMPLATE_CPT     = 'vta_image_template';
@@ -41,6 +40,8 @@ const VTA_IMAGE_ANNOTATIONS_META = 'vta_image_annotations';
 const VTA_IMAGE_META             = 'vta_image_meta';
 
 // IMPORTS //
+// PHP PDFTK
+require_once('utils/php-pdftk/vendor/autoload.php');
 // Utils
 require_once('utils/common.php');
 // Models
@@ -48,6 +49,7 @@ require_once('models/VTAImageTemplate.php');
 // Core classes
 require_once('classes/VTAImageTemplates.php');
 require_once('classes/VTAImageProcessor.php');
+require_once('classes/PhpPdftk.php');
 
 /**
  * Currently plugin version.
