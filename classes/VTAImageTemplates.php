@@ -37,29 +37,29 @@ class VTAImageTemplates {
     }
 
     public function enqueue_scripts(): void {
-        wp_enqueue_script(
-            $this->file_robot_js,
-            FILEROBOT_JS_CDN,
-            [],
-            '4.3.7'
-        );
-
-        wp_enqueue_script(
-            $this->file_editor_js,
-            plugin_dir_url(__DIR__) . '/admin/js/image-editor.js',
-            [ $this->file_robot_js ],
-            $this->version,
-            true
-        );
-
-        wp_localize_script(
-            $this->file_editor_js,
-            $this->file_editor_obj,
-            [
-                'ajaxUrl' => admin_url('admin-ajax.php'),
-                'action'  => $this->save_img_ajax
-            ]
-        );
+//        wp_enqueue_script(
+//            $this->file_robot_js,
+//            FILEROBOT_JS_CDN,
+//            [],
+//            '4.3.7'
+//        );
+//
+//        wp_enqueue_script(
+//            $this->file_editor_js,
+//            plugin_dir_url(__DIR__) . '/admin/js/image-editor.js',
+//            [ $this->file_robot_js ],
+//            $this->version,
+//            true
+//        );
+//
+//        wp_localize_script(
+//            $this->file_editor_js,
+//            $this->file_editor_obj,
+//            [
+//                'ajaxUrl' => admin_url('admin-ajax.php'),
+//                'action'  => $this->save_img_ajax
+//            ]
+//        );
     }
 
     // VTA IMAGE TEMPLATE CPT //
