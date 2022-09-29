@@ -18,6 +18,7 @@ class VTAImageTemplates {
         // Register CPT
         add_action('init', [ $this, 'register_vta_image_templates' ]);
         add_action("save_post_{$this->post_type}", [ $this, 'save_post' ], 11, 3);
+        add_action("edit_post_{$this->post_type}", [ $this, 'edit_post' ], 10, 2);
 
         // should only run in admin dashboard
         if ( is_admin() ) {
@@ -86,9 +87,10 @@ class VTAImageTemplates {
                 'public'       => false,
                 'show_ui'      => true,
                 'show_in_menu' => false, // "$admin_url?page=$this->settings_page&post_type=$post_type",
-                'description'  => 'VTA Image Templates to be dynamically printed on the front-end.',
+                'description'  => 'VTA Image Templates to be dynamically generated with Gravity Forms entries.',
                 'hierarchical' => true,
                 'has_archive'  => true,
+                'supports'     => [ 'title', 'revisions' ]
             ]
         );
     }
@@ -150,10 +152,14 @@ class VTAImageTemplates {
      */
     public function save_post( int $post_ID, ?WP_Post $post, ?bool $update ): void {
         try {
-
+            $files = $_FILES;
         } catch ( Exception $e ) {
             error_log("VTAImageTemplates::save_post() error - $e");
         }
+    }
+
+    public function edit_post( int $post_ID, WP_Post $post ): void {
+
     }
 
     // RENDER METHODS //
@@ -174,7 +180,7 @@ class VTAImageTemplates {
                 </td>
                 <td class="pdf-upload-input">
                     <div class="pdf-drag-drop">
-                        <input id="pdf-input" type="file" accept="application/pdf,pdf" required>
+                        <input id="pdf-input" name="pdf_file" type="file" accept="application/pdf,pdf" required>
                     </div>
                 </td>
             </tr>
@@ -221,7 +227,7 @@ class VTAImageTemplates {
         // edit page Post type check
         $is_post_type = false;
         if ( $post_id = $query_params['post'] ?? null ) {
-            $wp_post = get_post($post_id);
+            $wp_post      = get_post($post_id);
             $is_post_type = $wp_post->post_type === $this->post_type;
         }
 
