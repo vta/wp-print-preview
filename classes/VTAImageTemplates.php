@@ -64,7 +64,7 @@ class VTAImageTemplates {
     public function register_vta_image_templates(): void {
         $admin_url = admin_url();
 
-        // labels for VTA Holiday (custom post)
+        // labels for VTA Image Templates (custom post)
         $labels = [
             'name'               => 'Image Templates',
             'singular_name'      => 'Image Template',
@@ -78,7 +78,7 @@ class VTAImageTemplates {
             'not_found_in_trash' => 'Image Templates found in Trash'
         ];
 
-        // create custom post type of "VTA Holiday"
+        // create custom post type of "VTA Image Template"
         register_post_type(
             $this->post_type,
             [
@@ -92,6 +92,8 @@ class VTAImageTemplates {
             ]
         );
     }
+
+    // ADMIN NAV MENU //
 
     /**
      * Highlights custom nested CPT submenus
@@ -148,7 +150,7 @@ class VTAImageTemplates {
      */
     public function save_post( int $post_ID, ?WP_Post $post, ?bool $update ): void {
         try {
-            
+
         } catch ( Exception $e ) {
             error_log("VTAImageTemplates::save_post() error - $e");
         }
@@ -215,7 +217,16 @@ class VTAImageTemplates {
      */
     private function is_post_page(): bool {
         [ 'path' => $path, 'query_params' => $query_params ] = get_query_params();
-        return preg_match("/(post-new|post)/", $path,) && in_array($this->post_type, $query_params);
+
+        // edit page Post type check
+        $is_post_type = false;
+        if ( $post_id = $query_params['post'] ?? null ) {
+            $wp_post = get_post($post_id);
+            $is_post_type = $wp_post->post_type === $this->post_type;
+        }
+
+        $is_post = in_array($this->post_type, $query_params) || $is_post_type;
+        return preg_match("/.*(post-new|post).*/", $path) && $is_post;
     }
 
     private function is_list_table_page(): void {

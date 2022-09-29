@@ -73,8 +73,8 @@ class Wp_Print_Preview_Admin {
         // new VTA Image Template page
         add_submenu_page(
             WP_PRINT_SETTINGS_PAGE,
-            'New VTA Holiday',
-            'New VTA Holiday',
+            'New VTA Image',
+            'New VTA Image',
             'manage_options',
             "post-new.php?post_type=$post_type",
             false
