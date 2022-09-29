@@ -2,16 +2,10 @@
 
 class VTAImageTemplates {
 
-    private VTAImageProcessor $image_processor;
-
     private string $plugin_name;
     private string $version;
 
     private string $save_img_ajax   = SAVE_IMG_AJAX;
-    private string $file_robot_js   = 'filerobot-image-editor-js';
-    private string $file_editor_js  = 'file-editor-js';
-    private string $file_editor_obj = 'fileEditorObj';
-
     private string $post_type = VTA_IMAGE_TEMPLATE_CPT;
 
     public function __construct(
@@ -20,8 +14,6 @@ class VTAImageTemplates {
     ) {
         $this->plugin_name = $plugin_name;
         $this->version     = $version;
-
-        $this->image_processor = new VTAImageProcessor();
 
         // Register CPT
         add_action('init', [ $this, 'register_vta_image_templates' ]);
@@ -162,7 +154,7 @@ class VTAImageTemplates {
                 </td>
                 <td class="pdf-upload-input">
                     <div class="pdf-drag-drop">
-                        <input id="pdf-input" type="file" required>
+                        <input id="pdf-input" type="file" accept="application/pdf" required>
                     </div>
                 </td>
             </tr>
