@@ -46,8 +46,8 @@ class VTAImageTemplate {
      * @param array $annotations
      * @return void
      */
-    public function set_annotations(array $annotations): void {
-        update_post_meta($this->get_post_id(), VTA_IMAGE_ANNOTATIONS_META, $annotations);
+    public function set_fields(array $annotations): void {
+        update_post_meta($this->get_post_id(), VTA_IMAGE_FIELDS_META, $annotations);
     }
 
     /**
@@ -114,8 +114,8 @@ class VTAImageTemplate {
      * Returns image template annotations metadata
      * @return array
      */
-    public function get_annotations(): array {
-        $annotations = get_post_meta($this->get_post_id(), VTA_IMAGE_ANNOTATIONS_META, true);
+    public function get_fields(): array {
+        $annotations = get_post_meta($this->get_post_id(), VTA_IMAGE_FIELDS_META, true);
         return is_array($annotations) ? $annotations : [];
     }
 
@@ -124,7 +124,7 @@ class VTAImageTemplate {
      * @return array
      */
     public function get_image_meta(): array {
-        $img_meta = get_post_meta($this->get_post_id(), VTA_IMAGE_ANNOTATIONS_META, true);
+        $img_meta = get_post_meta($this->get_post_id(), VTA_IMAGE_FIELDS_META, true);
         return is_array($img_meta) ? $img_meta : [];
     }
 

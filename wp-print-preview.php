@@ -31,13 +31,13 @@ if ( !defined('WPINC') ) {
 }
 // CONSTANTS //
 // Dependencies
-const SAVE_IMG_AJAX              = 'save_vta_img';
+const SAVE_IMG_AJAX = 'save_vta_img';
 // Custom Post Type
-const WP_PRINT_SETTINGS_PAGE     = 'vta-print';
-const VTA_IMAGE_TEMPLATE_CPT     = 'vta_image_template';
-const VTA_IMAGE_PATH_META        = 'vta_image_path';
-const VTA_IMAGE_ANNOTATIONS_META = 'vta_image_annotations';
-const VTA_IMAGE_META             = 'vta_image_meta';
+const WP_PRINT_SETTINGS_PAGE = 'vta-print';
+const VTA_IMAGE_TEMPLATE_CPT = 'vta_image_template';
+const VTA_IMAGE_PATH_META    = 'vta_image_path';
+const VTA_IMAGE_FIELDS_META  = 'vta_image_fields_annotations';
+const VTA_IMAGE_META         = 'vta_image_meta';
 
 // IMPORTS //
 // PHP PDFTK

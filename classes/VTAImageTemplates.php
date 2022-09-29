@@ -28,12 +28,13 @@ class VTAImageTemplates {
 
         // should only run in admin dashboard
         if ( is_admin() ) {
-            add_action("wp_ajax_{$this->save_img_ajax}", [ $this, 'save_img' ]);
             add_action('admin_enqueue_scripts', [ $this, 'enqueue_scripts' ]);
             add_filter('parent_file', [ $this, 'edit_image_highlight' ]);
 
-            // Custom Post Page / List Table
+            // Custom New/Edit Post Page
             add_action('admin_init', [ $this, 'custom_edit_post' ]);
+            add_action('add_meta_boxes', [$this, 'add_pdf_metabox']);
+            add_action("wp_ajax_{$this->save_img_ajax}", [ $this, 'save_img' ]);
         }
     }
 
@@ -126,6 +127,48 @@ class VTAImageTemplates {
             $this->replace_title_placeholder();
             $this->default_content();
         }
+    }
+
+    /**
+     * Add PDF meta box for file upload & PDF file information.
+     * @return void
+     */
+    public function add_pdf_metabox(): void {
+        if ( $this->is_post_page() ) {
+            add_meta_box(
+                'pdf-upload',
+                'PDF Upload',
+                [$this, 'render_pdf_upload'],
+                null,
+                'advanced',
+                'high'
+            );
+        }
+    }
+
+    /**
+     * PDF upload field. If PDF is already uploaded, it will show custom highly customized fields.
+     * @return void
+     */
+    public function render_pdf_upload() {
+        global $post;
+        
+        ?>
+
+        <table class="pdf-upload-field">
+            <tr class="pdf-upload-row">
+                <td class="pdf-upload-label">
+                    <label for="pdf-input">PDF Upload <span class="required">*</span></label>
+                </td>
+                <td class="pdf-upload-input">
+                    <div class="pdf-drag-drop">
+                        <input id="pdf-input" type="file" required>
+                    </div>
+                </td>
+            </tr>
+        </table>
+        
+        <?php
     }
 
     /**
