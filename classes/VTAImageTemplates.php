@@ -5,8 +5,8 @@ class VTAImageTemplates {
     private string $plugin_name;
     private string $version;
 
-    private string $save_img_ajax   = SAVE_IMG_AJAX;
-    private string $post_type = VTA_IMAGE_TEMPLATE_CPT;
+    private string $save_img_ajax = SAVE_IMG_AJAX;
+    private string $post_type     = VTA_IMAGE_TEMPLATE_CPT;
 
     public function __construct(
         string $plugin_name,
@@ -17,6 +17,7 @@ class VTAImageTemplates {
 
         // Register CPT
         add_action('init', [ $this, 'register_vta_image_templates' ]);
+        add_action("save_post_{$this->post_type}", [ $this, 'save_post' ], 11, 3);
 
         // should only run in admin dashboard
         if ( is_admin() ) {
@@ -25,7 +26,7 @@ class VTAImageTemplates {
 
             // Custom New/Edit Post Page
             add_action('admin_init', [ $this, 'custom_edit_post' ]);
-            add_action('add_meta_boxes', [$this, 'add_pdf_metabox']);
+            add_action('add_meta_boxes', [ $this, 'add_pdf_metabox' ]);
             add_action("wp_ajax_{$this->save_img_ajax}", [ $this, 'save_img' ]);
         }
     }
@@ -130,7 +131,7 @@ class VTAImageTemplates {
             add_meta_box(
                 'pdf-upload',
                 'PDF Upload',
-                [$this, 'render_pdf_upload'],
+                [ $this, 'render_pdf_upload' ],
                 null,
                 'advanced',
                 'high'
@@ -139,12 +140,29 @@ class VTAImageTemplates {
     }
 
     /**
+     * Custom save post action for VTA Image Template CPT.
+     * @param int $post_ID
+     * @param WP_Post|null $post
+     * @param bool|null $update
+     * @return void
+     */
+    public function save_post( int $post_ID, ?WP_Post $post, ?bool $update ): void {
+        try {
+            
+        } catch ( Exception $e ) {
+            error_log("VTAImageTemplates::save_post() error - $e");
+        }
+    }
+
+    // RENDER METHODS //
+
+    /**
      * PDF upload field. If PDF is already uploaded, it will show custom highly customized fields.
      * @return void
      */
     public function render_pdf_upload() {
         global $post;
-        
+
         ?>
 
         <table class="pdf-upload-field">
@@ -154,12 +172,12 @@ class VTAImageTemplates {
                 </td>
                 <td class="pdf-upload-input">
                     <div class="pdf-drag-drop">
-                        <input id="pdf-input" type="file" accept="application/pdf" required>
+                        <input id="pdf-input" type="file" accept="application/pdf,pdf" required>
                     </div>
                 </td>
             </tr>
         </table>
-        
+
         <?php
     }
 

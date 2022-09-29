@@ -42,14 +42,13 @@ const VTA_IMAGE_META         = 'vta_image_meta';
 // IMPORTS //
 // PHP PDFTK
 require_once('utils/php-pdftk/vendor/autoload.php');
+require_once('classes/PhpPdftk.php');
 // Utils
 require_once('utils/common.php');
 // Models
 require_once('models/VTAImageTemplate.php');
 // Core classes
 require_once('classes/VTAImageTemplates.php');
-require_once('classes/VTAImageProcessor.php');
-require_once('classes/PhpPdftk.php');
 
 /**
  * Currently plugin version.
