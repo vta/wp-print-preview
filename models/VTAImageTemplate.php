@@ -2,6 +2,7 @@
 
 class VTAImageTemplate {
 
+    private $post_type = VTA_IMAGE_TEMPLATE_CPT;
     private WP_Post $post;
     private string  $upload_dir;
     private string  $upload_url;
@@ -15,14 +16,19 @@ class VTAImageTemplate {
         if ( is_int($post) ) {
             $wp_post = get_post($post);
             if ( !$wp_post ) {
-                throw new Exception("VTAImageTemplate construction error - No post found for Post ID #$post");
+                throw new Exception("VTAImageTemplate::construct() error - No post found for Post ID #$post");
             }
             $this->post = $wp_post;
 
         } elseif ( $post instanceof WP_Post ) {
             $this->post = $post;
         } else {
-            throw new Exception("VTAImageTemplate construction error - Post not int or instance of WP_Post: $post");
+            throw new Exception("VTAImageTemplate::construct() error - Post not int or instance of WP_Post");
+        }
+
+        // incorrect post type
+        if ( $this->post->post_type !== $this->post_type ) {
+            throw new Exception("VTAImageTemplate::construct() - Incorrect post type. Expected \"{$this->post_type}\" but \"{$this->post->post_type}\" given.");
         }
 
         $wp_upload_dir = wp_upload_dir();
