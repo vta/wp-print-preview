@@ -37,7 +37,7 @@ class Wp_Print_Preview_Helper
         // stroke width
         $STROKE_WIDTH = 2;
 
-        // COLOR CONTANTS
+        // COLOR CONSTANTS
         $LIGHT_BLUE = '#4CB4E7';
         $DARK_BLUE = '#29588C';
         $DARK_GRAY = '#4C4E56';
@@ -240,6 +240,7 @@ class Wp_Print_Preview_Helper
             $uploads_dir = wp_upload_dir();
             $target = $uploads_dir['basedir'] . '/business_cards/' . $entry_filename . '.pdf';
             $target = str_replace( ' ', '_', $target );
+			$hr_backing = $assets_dir . 'HR-buscardback-final.pdf';
 
             // output & exit code for command line
             $output = [];
@@ -247,7 +248,12 @@ class Wp_Print_Preview_Helper
             // define PATH
             putenv( 'PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' );
             // run magick command to run
-            exec( 'magick convert ' . $source . ' -resize 50% ' . $target . ' 2>&1', $output, $res );
+	        // use magick if not in localhost
+	        $magick_cmd = is_int(strpos(site_url(), 'local')) ? '' : 'magick';
+			// convert to PDF & attach HR backing
+	        // TODO - logic for HR backing
+            exec( "$magick_cmd convert $source -resize 50% $target && " .
+            "$magick_cmd convert -density 600 $target $hr_backing $target 2>&1", $output, $res );
 
             if ( $res > 0 ) {
                 error_log( json_encode( $output, JSON_PRETTY_PRINT ) );
@@ -436,13 +442,17 @@ class Wp_Print_Preview_Helper
         $temp_file = 'business_card_template';
 
         // Used to create temp 25-up PNG image to retain resolution
-        $base_png = $assets_dir . $temp_file . '.png';
+	    // & NEW HR backing (already a PDF).
+	    $base_png   = $assets_dir . $temp_file . '.png';
+	    $hr_backing = $assets_dir . 'HR-buscardback-final.png';
 
         $uploads_dir = wp_upload_dir();
 
         // Create targets for temp 25-up PNG and final 25-up PDF output
-        $temp_25_png = $uploads_dir['basedir'] . '/business_cards/' . $filename . '_25_up.png';
-        $final_25_pdf = $uploads_dir['basedir'] . '/business_cards/' . $filename . '_25_up.pdf';
+	    $temp_25_png  = $uploads_dir['basedir'] . '/business_cards/' . $filename . '_25_up.png';
+	    $temp_25_png_hr  = $uploads_dir['basedir'] . '/business_cards/' . $filename . '_25_up_HR.png';
+	    $final_25_pdf = $uploads_dir['basedir'] . '/business_cards/' . $filename . '_25_up.pdf';
+	    $final_25_pdf_hr = $assets_dir . 'HR-buscardback-final-25.pdf';
 
         // output & exit code for command line
         $output = [];
@@ -454,23 +464,45 @@ class Wp_Print_Preview_Helper
          * 1. Create 25-up with PNG to retain resolution
          * 2. Convert to PDF and add border.
          * 3. Remove temp 25-up PNG from business_cards directory
+         * 4. Add HR 25-up backing to page 2.
          */
         // define PATH
         putenv( 'PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' );
+		// use magick if not in localhost
+		$magick_cmd = is_int(strpos(site_url(), 'local')) ? '' : 'magick';
+
+	    // TODO - add logic for HR backing
         exec(
-            '(magick montage ' . $base_png . ' -mode concatenate -duplicate 24 -tile 5x5 ' . $temp_25_png . ' && ' .
-            'magick convert ' . $temp_25_png . ' -density 600 -bordercolor white -border 150x600 ' . $final_25_pdf . ' && ' .
+            "($magick_cmd montage " . $base_png . ' -mode concatenate -duplicate 24 -tile 5x5 ' . $temp_25_png . ' && ' .
+            "$magick_cmd convert " . $temp_25_png . ' -density 600 -bordercolor white -border 150x600 ' . $final_25_pdf . ' && ' .
+            "$magick_cmd convert -density 600 $final_25_pdf $final_25_pdf_hr $final_25_pdf &&" .
             'rm ' . $temp_25_png . ' 2>&1) > /dev/null 2>/dev/null &',
             $output,
             $res
         );
+	    // exit with error code if command unsuccessful
+	    if ( $res > 0 ) {
+		    error_log( 'Error Code: ' . $res . "\n" . json_encode( $output, JSON_PRETTY_PRINT ) );
+		    var_dump( $output );
+		    var_dump( $res );
+		    exit( $res );
+	    }
 
-        // exit with error code if command unsuccessful
-        if ( $res > 0 ) {
-            error_log( 'Error Code: ' . $res . "\n" . json_encode( $output, JSON_PRETTY_PRINT ) );
-            var_dump( $output );
-            var_dump( $res );
-            exit( $res );
-        }
+		// // REPEAT THE SAME STEPS FOR BUSINESS CARD BACKING
+	    // // TODO - USE HR LOGIC TO DETERMINE DEPARTMENT...
+	    // exec(
+		//     "($magick_cmd montage " . $hr_backing . ' -mode concatenate -duplicate 24 -tile 5x5 ' . $temp_25_png_hr . ' && ' .
+		//     "$magick_cmd convert " . $temp_25_png_hr . ' -density 600 -bordercolor white -border 150x600 ' . $final_25_pdf_hr . ' && ' .
+		//     'rm ' . $temp_25_png_hr . ' 2>&1) > /dev/null 2>/dev/null &',
+		//     $output_HR,
+		//     $res_HR
+	    // );
+	    // // exit with error code if command unsuccessful
+	    // if ( $res_HR > 0 ) {
+		//     error_log( 'Error Code: ' . $res_HR . "\n" . json_encode( $output_HR, JSON_PRETTY_PRINT ) );
+		//     var_dump( $output_HR );
+		//     var_dump( $res_HR );
+		//     exit( $res_HR );
+	    // }
     }
 }

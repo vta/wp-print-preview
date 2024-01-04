@@ -94,3 +94,7 @@ function run_wp_print_preview()
 
 
 run_wp_print_preview();
+//
+// $entry = GFAPI::get_entry(15056);
+// $wc_print_preview = new WP_Print_Preview_Helper();
+// $wc_print_preview->business_card_proof( $entry, true, false );
