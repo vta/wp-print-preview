@@ -118,9 +118,9 @@ class MsGraphApi {
 		try {
 			// Uses https://graph.microsoft.com/.default scopes if none are specified
 			$tokenRequestContext = new ClientCredentialContext(
-				'',
-				'',
-				''
+				VTA_TENANT_ID,
+				CC_GRAPH_CLIENT_ID,
+				CC_GRAPH_SECRET_VAL
 			);
 			return new GraphServiceClient($tokenRequestContext);
 

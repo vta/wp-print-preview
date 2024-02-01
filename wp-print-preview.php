@@ -27,8 +27,13 @@
 
 // If this file is called directly, abort.
 if (!defined('WPINC')) {
-    die;
+	die;
 }
+
+include_once plugin_dir_path(__FILE__) . 'vendor/autoload.php';
+include_once plugin_dir_path(__FILE__) . 'utils/MsGraphApi.php';
+
+use wp_print_preview\utils\MsGraphApi;
 
 /**
  * Currently plugin version.
