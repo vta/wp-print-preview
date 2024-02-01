@@ -265,11 +265,15 @@ class Wp_Print_Preview_Helper
             // run magick command to run
 	        // use magick if not in localhost
 	        $magick_cmd = is_int(strpos(site_url(), 'local')) ? '' : 'magick';
-			// convert to PDF & attach HR backing
+			// convert to PDF
+	        $sh_cmd = "$magick_cmd convert $source -resize 50% $target";
+	        // attach HR backing if
 	        if ( $is_HR ) {
-		        exec("$magick_cmd convert $source -resize 50% $target && " .
-		             "$magick_cmd convert -density 600 $target $hr_backing $target 2>&1", $output, $res);
+	            $sh_cmd .= " && $magick_cmd convert -density 600 $target $hr_backing $target";
 	        }
+			// ignore shell errors results
+	        $sh_cmd .= " 2>&1";
+			exec($sh_cmd, $output, $res);
             if ( $res > 0 ) {
                 error_log( json_encode( $output, JSON_PRETTY_PRINT ) );
             }
@@ -492,12 +496,11 @@ class Wp_Print_Preview_Helper
 
 		// add HR backing if applicable.
 		if ( $is_HR ) {
-			$sh_cmd .= " && $magick_cmd convert -density 600 $final_25_pdf $final_25_pdf_hr $final_25_pdf &&" .
-			           'rm ' . $temp_25_png;
+			$sh_cmd .= " && $magick_cmd convert -density 600 $final_25_pdf $final_25_pdf_hr $final_25_pdf";
 		}
 
-		// ignore errors
-	    $sh_cmd .= ' 2>&1) > /dev/null 2>/dev/null &';
+		// remove PNG & ignore shell errors
+	    $sh_cmd .= " && rm $temp_25_png 2>&1) > /dev/null 2>/dev/null &";
 
 	    // TODO - add logic for HR backing
         exec($sh_cmd, $output, $res);
