@@ -493,8 +493,11 @@ class Wp_Print_Preview_Helper
 		// add HR backing if applicable.
 		if ( $is_HR ) {
 			$sh_cmd .= " && $magick_cmd convert -density 600 $final_25_pdf $final_25_pdf_hr $final_25_pdf &&" .
-			           'rm ' . $temp_25_png . ' 2>&1) > /dev/null 2>/dev/null &';
+			           'rm ' . $temp_25_png;
 		}
+
+		// ignore errors
+	    $sh_cmd .= ' 2>&1) > /dev/null 2>/dev/null &';
 
 	    // TODO - add logic for HR backing
         exec($sh_cmd, $output, $res);
@@ -543,7 +546,7 @@ class Wp_Print_Preview_Helper
 				return false;
 
 			foreach ( self::HR_DEPARTMENTS as $department )
-				if ( preg_match("/$department/", $user->getDepartment(), $matches, 'i') )
+				if ( preg_match("/$department/i", $user->getDepartment()) )
 					return true;
 			return false;
 
