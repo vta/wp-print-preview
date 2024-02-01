@@ -129,7 +129,7 @@ class Wp_Print_Preview_Public
         if ( isset( $_GET['entry_id'] ) ) {
 
             $entry = GFAPI::get_entry( $_GET['entry_id'] );
-            $image = ( new Wp_Print_Preview_Helper() )->business_card_proof( $entry, false, true );
+            $images = ( new Wp_Print_Preview_Helper() )->business_card_proof( $entry, false, true );
 
             // STORE IN PREVIEW PAGE TO USE FOR REDIRECT LATER
             $_SESSION['entry_id'] = $_GET['entry_id'];
@@ -187,6 +187,13 @@ class Wp_Print_Preview_Public
                 </script>";
         }
 
+	    /**
+	     * Images for the BC preview.
+	     */
+		$img_html = "";
+		foreach( $images as $image )
+			$img_html .= "<img class='bc-preview-image' src='/wp-content/plugins/wp-print-preview/public/assets/$image.png' />";
+
         /**
          * helper->business_card(first,last,email,address,title, etc... - maybe array or object) - standardized - not overly flexible
          */
@@ -194,9 +201,7 @@ class Wp_Print_Preview_Public
         return "
             <h3 style='text-align: center;'>Business Card Proof</h3>
             <p style='text-align: center;'>Here is a digital proof of your business card. To return the form, please click \"Back\"</p>
-            
-            <img class='bc-preview-image' src='/wp-content/plugins/wp-print-preview/public/assets/$image.png' />
-
+	        $img_html
             <!--have to pass event object manually-->
             <form method='post' id='confirm-bc'>
                 <!-- <button name='edit' value='edit'>Edit Order</button> -->

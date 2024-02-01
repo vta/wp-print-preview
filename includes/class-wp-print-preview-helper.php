@@ -18,7 +18,7 @@ class Wp_Print_Preview_Helper
      * Connected to WC hook callback "bc_entry_id_text_to_order_items()"
      * @param $entry - Gravity Forms entry object
      * @param $create25up - flag to indicate to create 25-up PDF (not required in preview)
-     * @return string
+     * @return string[]
      * @throws ImagickException
      */
     public function business_card_proof( $entry, $create25up, $isPreview )
@@ -284,8 +284,11 @@ class Wp_Print_Preview_Helper
             }
         }
 
-        // return the img filename to shortcode
-        return $temp_file;
+        // return the array of img filename to shortcode.
+	    $res = [ $temp_file ];
+	    if ( $is_HR )
+			$res[] = 'HR-buscardback-final';
+        return $res;
     }
 
     /**
@@ -464,7 +467,6 @@ class Wp_Print_Preview_Helper
         // Used to create temp 25-up PNG image to retain resolution
 	    // & NEW HR backing (already a PDF).
 	    $base_png   = $assets_dir . $temp_file . '.png';
-	    $hr_backing = $assets_dir . 'HR-buscardback-final.png';
 
         $uploads_dir = wp_upload_dir();
 
