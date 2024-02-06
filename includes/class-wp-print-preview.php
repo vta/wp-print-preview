@@ -114,11 +114,6 @@ class Wp_Print_Preview {
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-wp-print-preview-i18n.php';
 
-        /**
-         * The class responsible for adding Utilities and Parsing Excel files to JSON or PHP Objects
-         */
-        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-wp-print-preview-util.php';
-
 		/**
 		 * The class responsible for defining all actions that occur in the admin area.
 		 */

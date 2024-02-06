@@ -27,8 +27,13 @@
 
 // If this file is called directly, abort.
 if (!defined('WPINC')) {
-    die;
+	die;
 }
+
+include_once plugin_dir_path(__FILE__) . 'vendor/autoload.php';
+include_once plugin_dir_path(__FILE__) . 'utils/MsGraphApi.php';
+
+use wp_print_preview\utils\MsGraphApi;
 
 /**
  * Currently plugin version.
@@ -94,3 +99,7 @@ function run_wp_print_preview()
 
 
 run_wp_print_preview();
+//
+// $entry = GFAPI::get_entry(15056);
+// $wc_print_preview = new WP_Print_Preview_Helper();
+// $wc_print_preview->business_card_proof( $entry, true, false );
