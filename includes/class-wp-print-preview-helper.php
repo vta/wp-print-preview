@@ -551,7 +551,7 @@ class Wp_Print_Preview_Helper
 				return false;
 
 			foreach ( self::HR_DEPARTMENTS as $department )
-				if ( preg_match("/$department/i", $user->getDepartment()) )
+				if ( preg_match("#$department#i", $user->getDepartment()) )
 					return true;
 			return false;
 
