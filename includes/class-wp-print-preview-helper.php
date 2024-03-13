@@ -547,11 +547,14 @@ class Wp_Print_Preview_Helper
 			if (!$user)
 				$user = $graph_api->search_user_by_upn($email);
 			if (!$user)
+				$user = $graph_api->search_user_by_proxy_addresses($email);
+			if (!$user)
 				// if user still isn't found, then default to false.
 				return false;
 
-			foreach ( self::HR_DEPARTMENTS as $department )
-				if ( preg_match("#$department#i", $user->getDepartment()) )
+			$user_department = $user->getDepartment();
+			foreach ( self::HR_DEPARTMENTS as $hr_department )
+				if ( preg_match("#$hr_department#i", $user_department) )
 					return true;
 			return false;
 

@@ -26,6 +26,8 @@ class MsGraphApi {
 		'userPrincipalName',
 		'businessPhones',
 		'mobilePhone',
+		'proxyAddresses'
+
 	];
 
 	private GraphServiceClient $_graphClient;
@@ -106,6 +108,50 @@ class MsGraphApi {
 			return null;
 		} catch ( \Throwable $e ) {
 			error_log("MsGraphApi::search_user_by_email() error. - $e");
+			return null;
+		}
+	}
+
+	/**
+	 * Searches (filters) by proxy addresses. Some email aliases by be defined here...
+	 * @param string $email
+	 * @param int $top
+	 * @return User|null
+	 */
+	public function search_user_by_proxy_addresses( string $email, int $top = 1 ): ?User {
+		try {
+			// remove white spaces
+			$email = trim($email);
+
+			// do email search. Must be separate from above
+			$queryParams         = UsersRequestBuilderGetRequestConfiguration::createQueryParameters();
+			$queryParams->select = $this::SELECT_PARAMS;
+			$queryParams->count  = true;
+			$queryParams->filter = "proxyAddresses/any(p:endsWith(p,'$email'))";
+			$queryParams->top    = $top; // limit to just 1 search by default
+
+			$requestConfig                  = new UsersRequestBuilderGetRequestConfiguration();
+			$requestConfig->queryParameters = $queryParams;
+			$requestConfig->headers         = [ 'ConsistencyLevel' => 'eventual' ];
+
+			/** @var UserCollectionResponse $res */
+			$res   = $this->_graphClient->users()->get($requestConfig)->wait();
+			$value = $res->getValue();
+
+			if ( !$value || count($value) < 1 )
+				return null;
+
+			// just return the first user of the array (should be only one).
+			return $res->getValue()[0] ?? null;
+
+		} catch ( OdataError $e ) {
+			error_log("MsGraphApi::search_user_by_proxy_addresses() error. - {$e->getPrimaryErrorMessage()}");
+			return null;
+		} catch (\Exception $e) {
+			error_log("MsGraphApi::search_user_by_proxy_addresses() error. - $e");
+			return null;
+		} catch ( \Throwable $e ) {
+			error_log("MsGraphApi::search_user_by_proxy_addresses() error. - $e");
 			return null;
 		}
 	}
